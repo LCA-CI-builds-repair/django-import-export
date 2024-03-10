@@ -757,6 +757,18 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         if hasattr(cl, "queryset"):
             return cl.queryset
 
+    def get_queryset(self, request):
+        """
+        We override this method to skip the unnecessary COUNT query.
+        """
+        qs = self.root_queryset.all()
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        self.queryset = qs
+
+        return self.queryset
+
         # Fallback in case the ChangeList doesn't have queryset attribute set
         return cl.get_queryset(request)
 
