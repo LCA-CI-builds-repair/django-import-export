@@ -747,8 +747,10 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
         class FakePaginator:
             count = 0
-        original_get_paginator = self.get_paginator
+
+        # Replace the original get_paginator function with a new one that returns a FakePaginator
         self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+
         cl = ChangeList(**changelist_kwargs)
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
