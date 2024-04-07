@@ -684,6 +684,7 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
             response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Disposition"], f"attachment; filename=books_{date_str}.csv")
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
