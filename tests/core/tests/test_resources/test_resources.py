@@ -1103,6 +1103,7 @@ class ModelResourceTest(TestCase):
                 model = Book
 
         # Make sure we test with ManyToMany related objects
+        # Add the following line to make sure the test will pass
         cat1 = Category.objects.create(name="Cat 1")
         cat2 = Category.objects.create(name="Cat 2")
         self.book.categories.add(cat1)
