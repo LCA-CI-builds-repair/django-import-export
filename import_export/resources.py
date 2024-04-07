@@ -1361,6 +1361,9 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
                 else:
+                    # If model field is not declared in `ModelResource`, use the default
+                    # `export_order` value from `ModelResource`
+                    field = self.export_order
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
 
                 field_list.append(
