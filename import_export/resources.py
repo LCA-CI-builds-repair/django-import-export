@@ -1361,6 +1361,10 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
                 else:
+                    # If model field is not declared in `ModelResource`, add a placeholder field
+                    field = ResourceField(attribute=f.name, column_name=f.name)
+
+                fields.append(field)
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
 
                 field_list.append(
