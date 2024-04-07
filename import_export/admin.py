@@ -749,7 +749,11 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             count = 0
         original_get_paginator = self.get_paginator
         self.get_paginator = lambda request, queryset, per_page: FakePaginator()
-        cl = ChangeList(**changelist_kwargs)
+        self.fake_paginator = FakePaginator()  # Create a new instance of FakePaginator
+        cl = ChangeList(request, self.model, self.list_display, self.list_display_links, self.list_filter,
+                        self.date_hierarchy, self.search_fields, self.list_select_related, self.list_per_page,
+                        self.list_max_show_all, self.list_editable, self)
+        cl.paginate(paginator=self.fake_paginator, request=request)  # Pass the new instance of FakePaginator to the paginate method
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
 
