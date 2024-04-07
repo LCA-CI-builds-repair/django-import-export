@@ -1,10 +1,12 @@
 import json
 import sys
 from collections import OrderedDict
-from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
+
+# Remove unused import statement
+# import copy
 from unittest.mock import patch
 
 import tablib
