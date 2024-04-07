@@ -749,7 +749,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
                 so we don't need anything from this method. The get_results() gets called during
                 ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
                 """
-                pass
+                return super().get_results(request)
 
         cl = ExportChangeList(**changelist_kwargs)
 
