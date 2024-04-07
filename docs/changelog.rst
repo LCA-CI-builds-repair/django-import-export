@@ -18,6 +18,7 @@ Please refer to :doc:`release notes<release_notes>`.
 4.0.0-beta.1 (2023-11-16)
 --------------------------
 
+
 Deprecations
 ############
 
