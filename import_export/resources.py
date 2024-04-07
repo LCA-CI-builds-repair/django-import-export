@@ -1354,13 +1354,12 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                 if opts.fields is not None and f.name not in opts.fields:
                     continue
                 if opts.exclude and f.name in opts.exclude:
-                    continue
-
                 if f.name in declared_fields:
                     # If model field is declared in `ModelResource`, remove it from `declared_fields`
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
                 else:
+                    field = f
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
 
                 field_list.append(
