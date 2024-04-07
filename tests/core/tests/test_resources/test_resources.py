@@ -1090,20 +1090,15 @@ class ModelResourceTest(TestCase):
         dataset = self.resource.export(queryset=Book.objects.none())
         self.assertEqual(len(dataset), 0)
 
-    @ignore_widget_deprecation_warning
-    def test_import_data_skip_unchanged(self):
-        class MyBookResource(resources.ModelResource):
-            save_count = 0
+...
 
-            def save_instance(self, instance, is_create, row, **kwargs):
-                self.save_count += 1
+```python
+# Remove this line
+import copy
 
-            class Meta:
-                skip_unchanged = True
-                model = Book
+...
+```
 
-        # Make sure we test with ManyToMany related objects
-        cat1 = Category.objects.create(name="Cat 1")
         cat2 = Category.objects.create(name="Cat 2")
         self.book.categories.add(cat1)
         self.book.categories.add(cat2)
