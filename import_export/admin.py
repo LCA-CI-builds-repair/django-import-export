@@ -753,7 +753,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
         cl = ExportChangeList(**changelist_kwargs)
 
-        # get_queryset() is already called during initialization, it is enough to get it's results
+        # get_queryset() is already called during initialization, it is enough to get its results
         if hasattr(cl, "queryset"):
             return cl.queryset
 
