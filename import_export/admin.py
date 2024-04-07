@@ -743,20 +743,19 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             changelist_kwargs["search_help_text"] = self.search_help_text
 
         class ExportChangeList(ChangeList):
-            def get_results(self, request):
-                """
-                We override this method because we only call ChangeList.get_queryset()
-                so we don't need anything from this method. The get_results() gets called during
-                ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
-                """
-                pass
+        def get_results(self, request):
+            """
+            We override this method because we only call ChangeList.get_queryset()
+            so we don't need anything from this method. The get_results() gets called during
+            ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
+            """
+            return super().get_results(request)
 
-        cl = ExportChangeList(**changelist_kwargs)
+    cl = ExportChangeList(**changelist_kwargs)
 
-        # get_queryset() is already called during initialization, it is enough to get it's results
-        if hasattr(cl, "queryset"):
-            return cl.queryset
-
+    # get_queryset() is already called during initialization, it is enough to get it's results
+    if hasattr(cl, "queryset"):
+        return cl.queryset
         # Fallback in case the ChangeList doesn't have queryset attribute set
         return cl.get_queryset(request)
 
