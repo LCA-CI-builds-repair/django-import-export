@@ -5,6 +5,13 @@ from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
+
+
+def test_example():
+    example = {'name': 'John', 'age': 30}
+    copied_example = deepcopy(example)
+    assert example == copied_example
+
 from unittest.mock import patch
 
 import tablib
