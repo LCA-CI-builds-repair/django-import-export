@@ -1361,6 +1361,9 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
                 else:
+                    # Add the field to `declared_fields`
+                    declared_fields.append(f.name)
+                continue
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
 
                 field_list.append(
