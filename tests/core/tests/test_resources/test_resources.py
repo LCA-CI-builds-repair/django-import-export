@@ -5,6 +5,18 @@ from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
+
+import pytest
+import django
+from django.test import TestCase
+from django.http import HttpRequest, HttpResponse
+from django.contrib.auth.models import User
+
+pytestmark = pytest.mark.django_db
+
+class TestResources(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(username='testuser', email='test@test.com')
 from unittest.mock import patch
 
 import tablib
