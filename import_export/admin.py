@@ -744,12 +744,24 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
         original_show_full_result_count = self.show_full_result_count
         self.show_full_result_count = False
+class FakePaginator:
+    count = 0
 
-        class FakePaginator:
-            count = 0
-        original_get_paginator = self.get_paginator
-        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
-        cl = ChangeList(**changelist_kwargs)
+def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.original_get_paginator = self.get_paginator
+
+def __enter__(self):
+    self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+    return self
+
+def __exit__(self, exc_type, exc_val, exc_tb):
+    self.get_paginator = self.original_get_paginator
+
+# Use the context manager during testing:
+with ChangeListContextManager(**changelist_kwargs) as cl:
+    # Perform tests that require the fake paginator here
+# After the 'with' block, the original get_paginator will be restored automatically.
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
 
