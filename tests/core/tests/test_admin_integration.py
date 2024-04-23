@@ -16,8 +16,62 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.test.testcases import TestCase, TransactionTestCase
 from django.test.utils import override_settings
-from django.utils.translation import gettext_lazy as _
-from openpyxl.reader.excel import load_workbook
+from django.utils.translation import gettimport datetime
+
+class Timport datetime
+
+class TestAdminIntegration(TestCase):import datetime
+from core.models import Book
+
+class TestAdminIntegration(TestCase):
+    def test_export_book(self):
+        Book.objects.create(id=2, name="Safe Book Name")
+        response = self.client.get("/admin/core/book/export/")lass TestAdminIntegration(TestCase):
+    def test_export_book(self):
+        data = {"file_format": str(xlsx_index), "resource": 1}
+        response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(
+            response["Content-Type"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )test_export_book(self):
+        response = self.client.get("/admin/core/book/export/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Export/Import only book names")
+
+        data = {
+            "file_format": "0",
+            "resource": 1,
+        }
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="Book-{}.csv"'.format(date_str),
+        )on(TestCase):
+    def test_export_book(self):
+        data = {
+            "file_format": "0",
+        }
+        date_str = datetime.datetime.now().strftime("%Y-%m-%d")
+        with self.assertNumQueries(7):  # Should not contain COUNT queries from ModelAdmin.get_results()
+            response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(
+            response["Content-Disposition"],
+            'attachment; filename="Book-{}.csv"'.format(date_str),
+        )
+        self.assertEqual(
+            b"id,name,author,author_email,imported,published,"
+            b"published_time,price,added,categories\r\n",
+            response.content,
+        )m openpyxl.reader.excel import load_workbook
 from tablib import Dataset
 
 from import_export import formats
