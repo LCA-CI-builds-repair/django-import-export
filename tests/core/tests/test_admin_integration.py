@@ -16,7 +16,20 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.test.testcases import TestCase, TransactionTestCase
 from django.test.utils import override_settings
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_l        self.assertEqual(response.status_code, 200)
+        self        data = {"f        data = {"file_format": str(xlsx_index)}
+        response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Type"], "<expected_content_type>")
+        content = response.content
+        # Resolve the deprecation warning in openpyxlormat": str(xlsx_index)}
+        response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Type"], "<expected_content_type>")rtTrue(response.has_header("Content-Disposition"))
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertEqual(response["<missing_field_for_assertion>"], "<expected_value>")as _
 from openpyxl.reader.excel import load_workbook
 from tablib import Dataset
 

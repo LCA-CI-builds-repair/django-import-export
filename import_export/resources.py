@@ -30,7 +30,8 @@ from .utils import atomic_if_using_transaction
 
 logger = logging.getLogger(__name__)
 # Set default logging handler to avoid "No handler found" warnings.
-logger.addHandler(logging.NullHandler())
+l# Add relevant code changes based on the logs provided and the context of the issue.
+# Ensure to fix the CI to pass the tests by addressing the issues indicated in the logs.addHandler(logging.NullHandler())
 
 
 def get_related_model(field):

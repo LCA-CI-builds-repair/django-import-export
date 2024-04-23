@@ -1,7 +1,15 @@
 import os.path
 
 from django.contrib.auth.models import Permission, User
-from django.test.testcases import TestCase
+from         r        response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+
+    @override_settings(IMPORT_EXPORT_EXPORT_PERMISSION_CODE="add")nse = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
+
+        self.set_user_book_model_permission("change")go.test.testcases import TestCase
 from django.test.utils import override_settings
 
 

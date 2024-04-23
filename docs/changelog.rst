@@ -12,8 +12,10 @@ Changelog
 
 - Added support for django5 (#1634)
 - Show list of exported fields in Admin UI (#1685)
-- Added `CONTRIBUTING.md`
-- Added support for python 3.12 (#1698)
+- Added `CONTRIBUTING.# Focus on fi# Focus on fixing the issue in the test files related to the handling of POST request responses.
+# Ensure the assertions for response status code and headers are correctly implemented to pass the tests.issue in the test # Focus on fixing the issue in the test files related to the handling of POST request responses.
+# Ensure the assertions for response status code and headers are correctly implemented to pass the tests.related to the POST request response handling.
+# Ensure the assertions for response status code and headers are correctly implemented to pass the tests.- Added support for python 3.12 (#1698)
 - Update Finnish translations (#1701)
 
 3.3.3 (2023-11-11)
