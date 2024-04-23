@@ -18,8 +18,17 @@ from django.core.management.color import no_style
 from django.core.paginator import Paginator
 from django.db import connections, router
 from django.db.models import fields
-from django.db.models.fields.related import ForeignObjectRel
-from django.db.models.query import QuerySet
+from django.db.models.fields.related import ForeignObj    def delete_instance(self, instance, row, **kwargs):
+        """
+        Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
+        If ``use_bulk`` then instances are appended to a list for bulk import.
+
+        :param instance: A new or existing model instance.
+            This parameter represents the model instance to be deleted.
+        
+        :param row: A ``dict`` containing key / value data for the row to be imported.
+            This parameter holds the data for the row to be deleted.
+        """ango.db.models.query import QuerySet
 from django.db.transaction import TransactionManagementError, set_rollback
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
@@ -30,7 +39,17 @@ from .exceptions import FieldError
 from .fields import Field
 from .instance_loaders import ModelInstanceLoader
 from .results import Error, Result, RowResult
-from .utils import atomic_if_using_transaction
+fr    def get_display_name(cls):
+        """
+        Returns the display name for the class.
+        
+        This method checks if the class has a '_meta' attribute with the 'name' property.
+        If the 'name' property exists, it is returned as the display name.
+        If not, the class name itself is returned as the display name.
+        """
+        if hasattr(cls._meta, "name"):
+            return cls._meta.name
+        return cls.__name___using_transaction
 
 logger = logging.getLogger(__name__)
 # Set default logging handler to avoid "No handler found" warnings.
