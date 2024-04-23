@@ -2,7 +2,12 @@
 Bulk imports
 =============
 
-import-export provides a 'bulk mode' to improve the performance of importing large datasets.
+import-export providresulted in worse performance in both duration and peak memory.
+
+Testing
+=======
+
+Scripts are provided to enable testing and benchmarking of bulk imports.  See :ref:`testing:Bulk testing`.bulk mode' to improve the performance of importing large datasets.
 
 In normal operation, import-export will call ``instance.save()`` as each row in a dataset is processed.  Bulk
 mode means that ``instance.save()`` is not called, and instances are instead added to temporary lists.  Once the number

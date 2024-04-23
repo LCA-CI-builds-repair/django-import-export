@@ -1,4 +1,13 @@
-from unittest import mock
+from unittest import copy
+from core import resources
+
+class TestResources(unittest.TestCase):
+    """
+    Test cases for resources module.
+    """
+
+    def setUp(self):
+        self.resource = resources.Resource()rt mock
 
 import tablib
 from core.models import Book
