@@ -4,7 +4,11 @@
 Contributing
 ############
 
-django-import-export is open-source and, as such, grows (or shrinks) & improves in part
+django-import-export is open-source and, as such, grows (or shrinks) & improves i  Documentation, comments, and docstrings should be wrapped at 79 characters, even though PEP 8 suggests 72.
+
+* To install pre-commit::
+
+    python -m pip install pre-committ
 due to the community. Below are some guidelines on how to help with the project.
 
 By contributing you agree to abide by the

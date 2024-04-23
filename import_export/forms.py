@@ -1,7 +1,9 @@
 import os.path
-import warnings
-
-from django import forms
+import warnings            resource_choices = []
+            for i, resource in enumerate(resources):
+                resource_choices.append((i, resource.get_display_name()))
+            self.fields["resource"].choices = resource_choices
+        else:m django import forms
 from django.conf import settings
 from django.contrib.admin.helpers import ActionForm
 from django.utils.translation import gettext_lazy as _

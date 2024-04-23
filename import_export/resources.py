@@ -15,8 +15,18 @@ from django.core.exceptions import (
 )
 from django.core.management.color import no_style
 from django.core.paginator import Paginator
-from django.db import connections, router
-from django.db.models.fields.related import ForeignObjectRel
+from django.db import connections, r        try:
+            if len(self.delete_instances) > 0:
+                if not         """
+        Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
+        If ``use_bulk`` then instances are appended to a list for bulk import.
+        """
+        self.before_delete_instance(instance, dry_run)_transactions and dry_run:
+                    pass
+                else:
+                    delete_ids = [o.pk for o in self.delete_instances]
+                    self._meta.model.objects.filter(pk__in=delete_ids).delete()
+        except Exception as e:om django.db.models.fields.related import ForeignObjectRel
 from django.db.models.query import QuerySet
 from django.db.transaction import TransactionManagementError, set_rollback
 from django.utils.encoding import force_str
@@ -24,7 +34,13 @@ from django.utils.safestring import mark_safe
 
 from . import widgets
 from .fields import Field
-from .instance_loaders import ModelInstanceLoader
+from .instance_loader                try:
+                    for line in sequence_sql:
+                        cursor.execute(line)
+                finally:
+                    cursor.close()
+
+    @classmethodt ModelInstanceLoader
 from .results import Error, Result, RowResult
 from .utils import atomic_if_using_transaction
 

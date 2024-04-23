@@ -25,7 +25,11 @@ from django.utils.html import strip_tags
 
 from import_export import fields, resources, results, widgets
 from import_export.instance_loaders import ModelInstanceLoader
-from import_export.resources import Diff
+from impor        # diff_header and invalid_row.values should match too
+        self.assertEqual(result.diff_headers, ["id", "name", "birthday"])
+        self.assertEqual(invalid_row.values, ("1", "123", "---"))
+
+    def test_known_invalid_fields_are_excluded_from_model_instance_cleaning(self):ort.resources import Diff
 
 from ..models import (
     Author,

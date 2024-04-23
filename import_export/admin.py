@@ -24,7 +24,12 @@ from .forms import (
     ImportForm,
     export_action_form_factory,
 )
-from .mixins import BaseExportMixin, BaseImportMixin
+from .mixins im            choices.insert(0, ("", "---"))
+
+        self.action_form = export_action_form_factory(choices)
+        super().__init__(*args, **kwargs)
+
+    def export_admin_action(self, request, queryset):aseExportMixin, BaseImportMixin
 from .results import RowResult
 from .signals import post_export, post_import
 from .tmp_storages import TempFolderStorage

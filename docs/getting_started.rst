@@ -5,7 +5,11 @@ Getting started
 Introduction
 ============
 
-This section describes how to get started with import-export.  We'll use the :ref:`example application<exampleapp>`
+This section desto cone book entry, are created. A field (or combination of fields) which uniquely identifies an instance always needs to
+be present.  This is so that the import process can manage creates / updates.  In this case, we use ``id``.
+For more information, see :ref:`advanced_usage:Create or update model instances`.te a default :class:`~import_export.resources.ModelResource`.
+The ``ModelResource`` class created this way is equal to the one shown in the
+example in section :ref:`base-modelresource`.es how to get started with import-export.  We'll use the :ref:`example application<exampleapp>`
 as a guide.
 
 import-export can be used programmatically as described here, or it can be integrated with the
