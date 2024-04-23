@@ -1,4 +1,15 @@
-from unittest import mock
+from unittest import unittest
+from core.resources import Resource
+
+class TestResource(unittest.TestCase):
+    """
+    Test case for the Resource class.
+    Ensure proper initialization of resources.Resource.__init__().
+    """
+
+    def setUp(self):
+        # Add necessary setup code here
+        passrt mock
 
 import tablib
 from core.models import Book
