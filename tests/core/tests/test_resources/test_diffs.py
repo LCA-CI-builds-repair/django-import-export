@@ -1,5 +1,19 @@
-from unittest import mock
+from unittclass SkipDiffTest(TestCase):
+    """
+    Tests that the meta attribute 'skip_diff' means that no diff operations are called.
+    'copy.deepcopy' cannot be patched at class level because it causes interferes with
+    ``resources.Resource.__init__()``.
+    """
 
+    def setUp(self):
+        class _BookResource(resources.ModelResource):
+            class Meta:
+                model = Book
+                skip_diff = True
+
+        self.resource = _BookResource()
+        self.dataset = tablib.Dataset(headers=["id", "name", "birthday"])
+        self.dataset.append(["", "A.A.Milne", "1882test-01-18"])
 import tablib
 from core.models import Book
 from django.test import TestCase
