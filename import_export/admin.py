@@ -15,8 +15,12 @@ from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import requ# Initialize the ChangeList class properly
+cl = ChangeList(request, model, list_display, list_display_links, list_filter, date_hierarchy, search_fields, list_select_related, list_per_page, list_max_show_all, list_editable, model_admin, sortable_by, context, paginator)
 
+# Return the queryset if it exists in the ExportChangeList instance
+if hasattr(cl, "queryset"):
+    return cl.queryset
 from .forms import (
     ConfirmImportForm,
     ExportForm,
