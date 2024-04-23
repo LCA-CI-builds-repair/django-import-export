@@ -11,7 +11,23 @@ Changelog
 - Update Finnish translations (#1701)
 
 3.3.3 (2023-11-11)
-------------------
+---------- Use Github se- Added support for 'to_encoding' attribute (#1311)
+- Removed travis and replaced with github actions for CI (#1307)
+- Increased test coverage (#1286)
+- Fix minor date formatting issue for date with years < 1000 (#1285)
+- Trans
+- Fix admin integration tests for the new "Import finished..." message, update Czech translations to 100% coverage. (#596)
+
+- Make import form type easier to override (#604)
+
+- Add saves_null_values attribute to Field to control whether null values are saved on the object (#611)he zh_Hans missing part (#1279)
+- Remove code duplication from mixins.py and admin.py (#1277)
+- Fix example in BooleanWidget docs (#1276)
+- Better support for Django main (#1272)
+- don't test Django main branch with python36,37 (#1269)I script instead of hard-coded password (#1348)
+- Documentation: correct error in example application which leads to crash (#1353)
+
+2.6.1 (2021-09-30)-----
 
 - :meth:`~import_export.admin.ExportActionMixin.export_admin_action` can be overridden by subclassing it in the
   ``ModelAdmin`` (#1681)

@@ -7,8 +7,13 @@ from copy import deepcopy
 
 import tablib
 from diff_match_patch import diff_match_patch
-from django.conf import settings
-from django.core.exceptions import (
+from django.conf import settin        # fields. Note that we loop over the bases in *reverse*. This is
+        # necessary in order to preserve the correct order of fields.
+        for base in bases[::-1]:
+            if hasattr(base, "fields"):
+                declared_fields = list(base.fields.items()) + declared_fields
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)om django.core.exceptions import (
     FieldDoesNotExist,
     ImproperlyConfigured,
     ValidationError,
@@ -18,7 +23,14 @@ from django.core.paginator import Paginator
 from django.db import connections, router
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.query import QuerySet
-from django.db.transaction import TransactionManagementError, set_rollback
+from django.db.transaction import TransactionManagem
+    def get_export_order(self):
+        order = tuple(self._meta.export_order or ())
+        return order + tuple(k for k in self.fields if k not in order)
+
+    def before_export(self, queryset, *args, **kwargs):
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)or, set_rollback
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 

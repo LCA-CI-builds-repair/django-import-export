@@ -4,7 +4,13 @@ import warnings
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.timezone import now
-from django.views.generic.edit import FormView
+from django.views.generic.        export_form = kwargs.get("export_form")
+        export_class = self.choose_export_resource_class(export_form)
+        export_resource_kwargs = self.get_export_resource_kwargs(
+            request, *args, **kwargs
+        )
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(request, queryset, per_page)import FormView
 
 from .formats import base_formats
 from .forms import ExportForm
