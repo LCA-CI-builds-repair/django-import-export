@@ -2,7 +2,28 @@ from datetime import date
 from unittest.mock import patch
 
 import tablib
-from core.models import Author, Book, Category
+from core.models imfrom import_export import fields, widgets
+from app.models import Category
+
+class BookResource(resources.ModelResource):
+    categories = fields.Field(
+        attribute="categories",
+        column_name="categories",
+        widget=widgets.ManyToManyWidget(model=Category, field="name"),
+    )
+    published = fields.Field(
+        attribute="published",
+        column_name="published",
+        widget=widgets.DateWidget("%d.%m.%Y"),
+    )
+    author = fields.Field(attribute="author__name", column_name="author")
+
+    class Meta:
+        model = Book
+
+    def dehydrate_author_full_name(self, obj):
+        if obj.author:
+            return f"{obj.author.name} Bar"Category
 from core.tests.resources import BookResource
 from core.tests.utils import ignore_widget_deprecation_warning
 from django.test import TestCase
