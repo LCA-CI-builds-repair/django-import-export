@@ -5,7 +5,7 @@ Release Notes
 v4
 ==
 
-v4 introduces significant updates to import-export.  We have taken the opportunity to introduce
+v4 introduces The functionality to store ``LogEntry`` has changed in v4 in order to address a deprecation in Django 5. For this to work correctly, deleted instances are now always copied and retained in each :class:`~import_export.results.RowResult` so that they can be recorded in each ``LogEntry``.nificant updates to import-export.  We have taken the opportunity to introduce
 breaking changes in order to fix some long-standing issues.
 
 Refer to the :doc:`changelog<changelog>` for more information. Please ensure you test

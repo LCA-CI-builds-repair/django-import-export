@@ -10,9 +10,27 @@ Please refer to :doc:`release notes<release_notes>`.
 - Support export from model change form (#1687)
 
 4.0.0-beta.1 (2023-11-16)
---------------------------
+-------------------------- Fix crash when im- Add ability to r- Added support for 'to_encoding' attribute (#1311)
+- Removed travis and replaced with github actions for CI (#1307)
+- Increased test coverage (#1286)
+- Fix minor date formatting issue for date with years < 1000 (#1285)
+- Trans- Fix admin integration tests for the new "Import finished..." message, update Czech translations to 100% coverage. (#596)
+- Make import form type easier to override (#604)
+- Add saves_null_values attribute to Field to control whether null values are saved on the object (#611)he zh_Hans missing part (#1279)
+- Remove code duplication from mixins.py and admin.py (#1277)
+- Fix example in BooleanWidget docs (#1276)
+- Better support for Django main (#1272)
+- don't test Django main branch with python36,37 (#1269)he import on validation error (#1339)
+- Fix missing migration on example app (#1346)
+- Fix crash when deleting via admin site (#1347)
+- Use Github secret in CI script instead of hard-coded password (#1348)
+- Documentation: correct error in example application which leads to crash (#1353)
 
-Deprecations
+2.6.1 (2021-09-30)ta() called with empty Dataset and ``collect_failed_rows=True`` (#1381)
+- Improve Korean translation (#1402)
+- Update example subclass widget code (#1407)
+- Drop support for python3.6, django 2.2, 3.0, 3.1 (#1408)
+- Add get_export_form() to ExportMixin (#1409)precations
 ############
 
 - Removed v3 deprecations (#1629)

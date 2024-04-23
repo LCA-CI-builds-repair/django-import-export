@@ -51,7 +51,14 @@ def has_natural_foreign_key(model):
     )
 
 
-class ResourceOptions:
+class Resou            )
+            if sequence_sql:
+                cursor = connection.cursor()
+                try:
+                    for line in sequence_sql:
+                        cursor.execute(line)
+                finally:
+                    cursor.close()ns:
     """
     The inner Meta class allows for class-level configuration of how the
     Resource should behave. The following options are available:
