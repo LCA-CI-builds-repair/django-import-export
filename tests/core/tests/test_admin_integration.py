@@ -39,7 +39,12 @@ class AdminTestMixin(object):
     legacybook_import_url = "/admin/core/legacybook/import/"
     legacybook_process_import_url = "/admin/core/legacybook/process_import/"
     child_import_url = "/admin/core/child/import/"
-    child_process_import_url = "/admin/core/child/process_import/"
+    ch        self._is_str_in_response(
+            "books.xls",
+            "1",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )rocess_import_url = "/admin/core/child/process_import/"
 
     def setUp(self):
         super().setUp()

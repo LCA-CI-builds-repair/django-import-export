@@ -15,7 +15,11 @@ from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import requi        cl = ChangeList(**changelist_kwargs)
+        self.show_full_result_count = original_show_full_result_count
+        self.get_paginator = original_get_paginator
+
+        return cl.get_queryset(request)T
 
 from .forms import (
     ConfirmImportForm,
