@@ -1,4 +1,11 @@
-import json
+ifrom cofrom core.models import (
+    Author,
+    Book,
+    Category,
+    Entry,
+    Profile,
+)ort deepcopy
+from datetime import datet json
 import sys
 from collections import OrderedDict
 from copy import deepcopy
@@ -37,21 +44,105 @@ from django.core.exceptions import (
     ValidationError,
 )
 from django.core.paginator import Paginator
-from django.db import IntegrityError
-from django.db.models import CharField, Count
-from django.db.utils import ConnectionDoesNotExist
-from django.test import TestCase, TransactionTestCase, skipUnlessDBFeature
-from django.utils.encoding import force_str
-from django.utils.html import strip_tags
+from django.db import I    @ignore_widget_deprecation_warning
+    def test_before_import_access_to_kwargs(self):
+        class B(BookResource):
+            def before_import(self, dataset, **kwargs):
+                if "extra_arg" in kwargs:
+                    dataset.headers[dataset.headers.index("author_email")] = "old_email"
+                    dataset.insert_col(
+                        0, lambda row: kwargs["extra_arg"], header="author_email"
+                    )
 
-from import_export import exceptions, fields, resources, results, widgets
-from import_export.instance_loaders import ModelInstanceLoader
-from import_export.options import ResourceOptions
-from import_export.resources import Diff
+        resource = B()
+        result = resource.import_data(
+            self.dataset, raise_errors=True, extra_arg="extra@example.com"
+        )
+        self.assertFalse(result.has_errors())
+        self.assertEqual(len(result.rows), 1)
+        instance = Book.objects.get(pk=self.book.pk)
+        self.assertEqual(instance.author_email, "extra@example.com")
 
+    def test_before_import_raises_error(self):
+        class B(BookResource):
+            def before_import(self, dataset, **kwargs):
+                raise Exception("This is an invalid dataset")
 
-class ResourceTestCase(TestCase):
-    def setUp(self):
+        resource = B()
+        with self.assertRaises(Exception) as cm:
+            resource.import_data(self.dataset, raise_errors=True)
+        self.assertEqual("This is an invalid dataset", cm.exception.args[0])
+
+    @ignore_widget_deprecation_warning
+    def test_after_import_raises_error(self):
+        class B(BookResource):
+            def after_import(
+                self, dataset, result, using_transactions, dry_run, **kwargs
+            ):
+                raise Exception("This is an invalid dataset")
+
+        resource = B()
+        with self.assertRaises(Exception) as cm:
+            resource.import_data(self.dataset, raise_errors=True)
+        self.assertEqual("This is an invalid dataset", cm.exception.args[0)
+
+    def test_link_to_nonexistent_field(self):
+        with self.assertRaises(FieldDoesNotExist) as cm:
+
+            class BrokenBook1(resources.ModelResource):
+                class Meta:
+                    model = Book
+                    fields = ("nonexistent__invalid",)
+
+        self.assertEqual(
+            "Book.nonexistent: Book has no field named 'nonexistent'",
+            cm.exception.args[0],
+        )
+
+        with self.assertRaises(FieldDoesNotExist) as cm:
+
+            class BrokenBook2(resources.ModelResource):
+                class Meta:
+                    model = Book
+                    fields = ("author__nonexistent",)
+
+        self.assertEqual(
+            "Book.author.nonexistent: Author has no field named 'nonexistent'",
+            cm.exception.args[0],
+        )
+
+    def test_link_to_nonrelation_field(self):
+        with self.assertRaises(KeyError) as cm:
+
+            class BrokenBook1(resources.ModelResource):
+                class Meta:
+                    model = Book
+                    fields = ("published__invalid",)
+
+        self.assertEqual("Book.published is not a relation", cm.exception.args[0])
+
+        with self.assertRaises(KeyError) as cm:
+
+            class BrokenBook2(resources.ModelResource):
+                class Meta:
+                    model = Book
+                    fields = ("author__name__invalid",)
+
+        self.assertEqual("Book.author.name is not a relation", cm.exception.args[0])
+
+    def test_override_field_construction_in_resource(self):
+        class B(resources.ModelResource):
+            class Meta:
+                model = Book
+                fields = ("published",)
+
+            @classmethod
+            def field_from_django_field(self, field_name, django_field, readonly):
+                if field_name == "published":
+                    return {"sound": "quack"}
+
+        B()
+        self.assertEqual({"sound": "quack"}, B.fields["published"])f):
         self.my_resource = MyResource()
 
     def test_fields(self):

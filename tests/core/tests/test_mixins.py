@@ -1,10 +1,34 @@
 import warnings
 from unittest import mock
-from unittest.mock import MagicMock
+from unittest.mock import MagicMoc        """
+        test that if the class-under-test defines a get_filterset()
+        method, then this is called as required.
+        """
 
-from core.models import Book, Category
-from django.http import HttpRequest
-from django.test.testcases import TestCase
+        class TestMixin(mixins.ExportViewFormMixin):
+            mock_get_filterset_call_count = 0
+            mock_get_filterset_class_call_count = 0
+
+            def __init__(self):
+                self.model = MagicMock()
+                self.request = MagicMock(spec=HttpRequest)
+                self.model.__name__ = "mockModel"
+
+            def get_filterset(self, filterset_class):
+                self.mock_get_filterset_call_count += 1
+                return MagicMock()
+
+            def get_filterset_class(self):
+                self.mock_get_filterset_class_call_count += 1
+                return MagicMock()
+
+        m = TestMixin()
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=DeprecationWarning)
+            res = m.form_valid(self.form)
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(1, m.mock_get_filterset_call_count)
+        self.assertEqual(1, m.mock_get_filterset_class_call_count)mport TestCase
 from django.urls import reverse
 
 from import_export import admin, formats, forms, mixins, resources

@@ -1,6 +1,27 @@
 from datetime import datetime
-from unittest import mock
-from unittest.mock import MagicMock
+from unittest im    def test_export_displays_ui_select_page():
+        data = {
+            "action": ["export_admin_action"],
+            "_selected_action": [str(self.cat1.id)],
+        }
+        response = self.client.post("/admin/core/category/", data)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("form", response.context)
+        export_form = response.context["form"]
+        data = export_form.initial
+        self.assertEqual([self.cat1.id], data["export_items"])
+        self.assertIn("Export 1 selected item.", str(response.content))
+
+    @ignore_widget_deprecation_warning
+    def test_export_displays_ui_select_page_multiple_items():
+        data = {
+            "action": ["export_admin_action"],
+            "_selected_action": [str(self.cat1.id), str(self.cat2.id)],
+        }
+        response = self.client.post("/admin/core/category/", data)
+        
+        self.assertEqual(response.status_code, 200)st.mock import MagicMock
 
 from core.admin import CategoryAdmin
 from core.models import Book, Category

@@ -12,14 +12,89 @@ from django.contrib.admin.models import DELETION, LogEntry
 from django.http import HttpRequest
 from django.test.testcases import TestCase, TransactionTestCase
 from django.test.utils import override_settings
-from django.utils.translation import gettext_lazy as _
+fro    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.TempFolderStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_TempFolderStorage_read(self):
+        self._is_str_in_response("books.csv", "0")
 
-from import_export.admin import ExportMixin
-from import_export.formats import base_formats
-from import_export.formats.base_formats import XLSX
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.TempFolderStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_TempFolderStorage_read_mac(self):
+        self._is_str_in_response("books-mac.csv", "0")
 
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.TempFolderStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_TempFolderStorage_read_iso_8859_1(self):
+        self._is_str_in_response("books-ISO-8859-1.csv", "0", "ISO-8859-1")
 
-class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.TempFolderStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_TempFolderStorage_read_binary(self):
+        self._is_str_in_response("books.xls", "1")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.CacheStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_CacheStorage_read(self):
+        self._is_str_in_response("books.csv", "0")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.CacheStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_CacheStorage_read_mac(self):
+        self._is_str_in_response("books-mac.csv", "0")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.CacheStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_CacheStorage_read_iso_8859_1(self):
+        self._is_str_in_response("books-ISO-8859-1.csv", "0", "ISO-8859-1")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.CacheStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_CacheStorage_read_binary(self):
+        self._is_str_in_response("books.xls", "1")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.MediaStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_MediaStorage_read(self):
+        self._is_str_in_response("books.csv", "0")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.MediaStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_MediaStorage_read_mac(self):
+        self._is_str_in_response("books-mac.csv", "0")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.MediaStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_MediaStorage_read_iso_8859_1(self):
+        self._is_str_in_response("books-ISO-8859-1.csv", "0", "ISO-8859-1")
+
+    @override_settings(
+        IMPORT_EXPORT_TMP_STORAGE_CLASS="import_export.tmp_storages.MediaStorage"
+    )
+    @ignore_widget_deprecation_warning
+    def test_import_action_handles_MediaStorage_read_binary(self):
+        self._is_str_in_response("books.xls", "1")tMixin, TestCase):
     def test_import_export_template(self):
         response = self.client.get("/admin/core/book/")
         self.assertEqual(response.status_code, 200)

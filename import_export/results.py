@@ -6,7 +6,14 @@ from tablib import Dataset
 
 
 class Error:
-    def __init__(self, error, traceback=None, row=None):
+    def __init__(    def process_errors(self):
+        """Process any critical errors during the import process."""
+        return any(row.errors for row in self.rows if row.errors)
+
+    def has_errors(self):
+        """Returns a boolean indicating whether the import process resulted in
+        any critical (non-validation) errors for this result."""
+        return self.process_errors()eback=None, row=None):
         self.error = error
         self.traceback = traceback
         self.row = row

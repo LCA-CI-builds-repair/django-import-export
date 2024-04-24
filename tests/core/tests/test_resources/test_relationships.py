@@ -1,7 +1,27 @@
 import tablib
 from core.models import Book, Category, Person, Role, UUIDBook, UUIDCategory
-from core.tests.resources import BookResource
-from core.tests.utils import ignore_widget_deprecation_warning
+from core.tests.resources import B        self.assertFalse(result.has_errors())
+        self.assertEqual(len(result.rows), 1)
+        self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_NEW)
+
+    @ignore_widget_deprecation_warning
+    def test_many_to_many_widget_update(self):
+        # the book is associated with 1 category ('Category 2')
+        # when we import a book with category 1, the book
+        # should be updated, not skipped, so that Category 2 is replaced by Category 1
+        book = Book.objects.first()
+        dataset_headers = ["id", "name", "categories"]
+        dataset_row = [book.id, book.name, "1"]
+        dataset = tablib.Dataset(headers=dataset_headers)
+        dataset.append(dataset_row)
+
+        book_resource = BookResource()
+        book_resource._meta.skip_unchanged = True
+
+        result = book_resource.import_data(dataset, raise_errors=True)
+        self.assertFalse(result.has_errors())
+        self.assertEqual(len(result.rows), 1)
+        self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE)ore.tests.utils import ignore_widget_deprecation_warning
 from django.contrib.auth.models import User
 from django.test import TestCase
 

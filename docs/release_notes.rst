@@ -5,7 +5,75 @@ Release Notes
 v4
 ==
 
-v4 introduces significant updates to import-export.  We have taken the opportunity to introduce
+v4 introduces significant updates Export Action
+-------------
+
+The export action has been updated to include the export workflow in version 4. Prior to version 4,      - ``after_delete_instance(self, instance, row, **kwargs)``
+     - * ``dry_run`` param now in ``kwargs``
+       * ``using_transactions`` param now in ``kwargs``
+       * ``row`` added as a mandatory argument
+
+   * - ``before_export(self, queryset, *args, **kwargs)``
+     - ``before_export(self, queryset, **kwargs)``
+     - * removed unused ``*args`` list
+
+   * - ``after_export(self, queryset, data, *args, **kwargs)``
+     - ``after_export(self, queryset, dataset, **kwargs)``
+     - * removed unused ``*args`` list
+       * renamed ``data`` to ``dataset``
+
+   * - ``filter_export(self, queryset, *args, **kwargs)``
+     - ``filter_export(self, queryset, **kwargs)``
+     - * removed unused ``*args`` list
+
+   * - ``export_field(self, field, obj)``
+     - ``export_field(self, field, instance)``
+     - * renamed ``obj`` to ``instance``
+
+   * - ``export(self, *args, queryset=None, **kwargs)``
+     - ``export(self, queryset=None, **kwargs)``
+     - * removed unused ``*args`` list
+
+:class:`import_export.mixins.BaseImportMixin`
+---------------------------------------------
+
+Parameter changes
+^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Previous
+     - New
+     - Summary
+
+   * - ``get_import_resource_kwargs(self, request, *args, **kwargs)``
+     - ``get_import_resource_kwargs(self, request, **kwargs)``
+     -  * ``using_transactions`` param now in ``kwargs``
+        * ``dry_run`` param now in ``kwargs``
+        * removed unused ``*args`` list
+
+
+:class:`import_export.mixins.BaseExportMixin`
+---------------------------------------------
+
+Parameter changes
+^^^^^^^^^^^^^^^^^
+
+.. list-table::
+   :header-rows: 1
+
+   * - Previous
+     - New
+     - Summary
+
+   * - ``get_export_resource_kwargs(self, request, *args, **kwargs)``
+     - ``get_export_resource_kwargs(self, request, **kwargs)``
+     -  * removed unused ``*args`` list
+
+   * - ``get_export_resource_kwargs(self, request, *args, **kwargs)``
+     - ``get_export_resource_kwargs(self, request, **kwargs)``
+     -  * removed unused ``*args`` listtion. However, this bypassed the export workflow, leading to the inability to select the export resource. This issue has been resolved in version 4, ensuring that the export workflow is now available when exporting through the Admin UI action. For more information, refer to the :ref:`export documentation<export_via_admin_action>`.-export.  We have taken the opportunity to introduce
 breaking changes in order to fix some long-standing issues.
 
 Refer to the :doc:`changelog<changelog>` for more information. Please ensure you test
