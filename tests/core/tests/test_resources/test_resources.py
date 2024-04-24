@@ -1,4 +1,7 @@
-import json
+ifrom collections import OrderedDict
+from copy import deepcopy
+from decimal import Decimal, InvalidOperation
+from unittest.mock import patch, mock, skipUnlessson
 import sys
 from collections import OrderedDict
 from copy import deepcopy
@@ -49,8 +52,32 @@ from import_export.instance_loaders import ModelInstanceLoader
 from import_export.options import ResourceOptions
 from import_export.resources import Diff
 
+import tablib
+from django.test import TestCase
+from your_module.resources import BookWithChaptersResource
+from your_module.models import BookWithChapters
+from your_module.decorators import ignore_widget_deprecation_warning
 
-class ResourceTestCase(TestCase):
+class TestBookWithChaptersResource(TestCase):
+    
+    def setUp(self):
+        super().setUp()
+        self.resource = BookWithChaptersResource()
+        self.chapters = ["Introduction", "Middle Chapter", "Ending"]
+        self.book = BookWithChapters.objects.create(name="foo")
+        self.dataset = tablib.Dataset(headers=["id", "name", "chapters"])
+        row = [self.book.id, "Some book", ",".join(self.chapters)]
+        self.dataset.append(row)
+
+    @ignore_widget_deprecation_warning
+    def test_import_of_data_with_array(self):
+        self.assertListEqual(self.book.chapters, [])
+        result = self.resource.import_data(self.dataset, raise_errors=True)
+
+        self.assertFalse(result.has_errors())
+        self.assertEqual(len(result.rows), 1)
+
+        self.book.refresh_from_db()stCase(TestCase):
     def setUp(self):
         self.my_resource = MyResource()
 

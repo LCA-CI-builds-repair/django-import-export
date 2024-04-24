@@ -1,5 +1,95 @@
-from datetime import date
-from unittest.mock import patch
+ffrom unittest.mock import patch
+
+import tablib
+from core.models import Author, Book, Catego        categories = fields.Field(
+            attribute="categories",
+            column_name="c        # Issue (#1663)
+
+        categories = [
+            Category.objects.create(name="sci-fi"),
+            Category.objects.create(name="rom    @patch("import_export.fields.Field.save")
+    @ignore_widget_deprecation_warning
+    def test_import_with_missing_field_in_row(self, mock_field_save, mock_logger):
+        dataset = tablib.Dataset(*[(1, "Some book")], headers=["id", "name"])
+        self.resource = BookResource()
+        result = self.resource.import_data(dataset)
+        self.assertFalse(result.has_errors())
+        mock_logger.debug.assert_any_call(
+            "skipping field '<import_export.fields.Field: author_email>' "
+            "- column name 'author_email' is not present in row"
+        )     ]
+        author = Author.objects.create(name="Foo")
+        book = Book.objects.create(
+            name="The Lord Of The Rings", author=author, published=date(2022, 2, 2)
+        )
+        book.categories.set(categories)
+
+        self.resource = ImportExportFieldOrderTest.DeclaredModelFieldBookResource()
+        declared_field_names = (
+            "published",
+            "author",  # FK
+            "categories",  # M2M
+        )
+        export_order = self.resource.get_export_order()
+        model_fields_names = [
+            field.name for field in self.resource._meta.model._meta.get_fields()
+        ]
+
+        for declared_field_name in declared_field_names:
+            self.assertEqual(
+                model_fields_names.index(declared_field_name),
+                export_order.index(declared_field_name),
+            )
+
+        # Validate non-model field is exported last unless specified
+        self.assertEqual(export_order[-1], "author_full_name")
+
+    # Separate test method for testing meta fields not altering export order
+    def test_meta_fields_not_alter_export_order(self):
+        class DeclaredModelFieldBookResource(
+            ImportExportFieldOrderTest.BaseBookResource
+        ):
+            # Non-model field, should come after model fields by default
+            author_full_name = fields.Field(
+                attribute="author__name",
+                column_name="author full name",
+            )nyToManyWidget(model=Category, field="name"),
+        )
+        published = fields.Field(
+            attribute="published",
+            column_name="published",
+            widget=widgets.DateWidget("%d.%m.%Y"),
+        )
+        author = fields.Field(attribute="author__name", column_name="author")
+
+        class Meta:
+            model = Book
+
+        def dehydrate_author_full_name(self, obj):
+            if obj.author:
+                return f"{obj.author.name} Bar"
+
+            return ""sources import BookResource
+from core.tests.utils import ignore_widget_deprecation_warning
+from django.test import TestCase
+
+from import_export import exceptions, fields, resources, widgets
+
+
+class AfterImportComparisonTest(TestCase):
+    is_published = False
+
+    class BookResource(resources.ModelResource):
+        def after_import_row(self, row, row_result, **kwargs):
+            if (
+                getattr(row_result.original, "published") is None
+                and getattr(row_result.instance, "published") is not None
+            ):
+                self.is_published = True
+
+        class Meta:
+            model = Book
+            store_instance = Truefrom unittest.mock import patch
 
 import tablib
 from core.models import Author, Book, Category

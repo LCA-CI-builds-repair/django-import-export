@@ -1,4 +1,18 @@
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+ffrom django.test import TestCase
+
+from import_export.results import InvalidRow
+
+
+class InvalidRowTest(TestCase):
+    def test_invalid_row_creation(self):
+        row_data = ["John Doe", "john.doe@example.com"]
+        error_messages = ["Invalid email format"]
+        row_number = 1
+        invalid_row = InvalidRow(row_data=row_data, error_messages=error_messages, row_number=row_number)
+
+        self.assertEqual(invalid_row.row_data, row_data)
+        self.assertEqual(invalid_row.error_messages, error_messages)
+        self.assertEqual(invalid_row.row_number, row_number)ango.core.exceptions import NON_FIELD_ERRORS, ValidationError
 from django.test import TestCase
 
 from import_export.results import InvalidRow

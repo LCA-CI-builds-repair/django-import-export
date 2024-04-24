@@ -5,7 +5,75 @@ Release Notes
 v4
 ==
 
-v4 introduces significant updates to import-export.  We have taken the opportunity to introduce
+v4 introduces significant updates to import-export===========
+
+Version 4 of import-export introduces several minor changes to the API.
+
+If you have customized i- ``after_delete_instance(self, instance, row, **kwargs)``
+  - * ``dry_run`` and ``using_transactions`` parameters now in ``kwargs``
+  - * Added ``row`` as a mandatory argument
+
+- ``before_export(self, queryset, **kwargs)``
+  - * Removed unused ``*args`` list
+
+- ``after_export(self, queryset, dataset, **kwargs)``
+  - * Removed unused ``*args`` list
+  - * Renamed ``data`` to ``dataset``
+
+- ``filter_export(self, queryset, **kwargs)``
+  - * Removed unused ``*args`` list
+
+- ``export_field(self, field, instance)``
+  - * Renamed ``obj`` to ``instance``
+
+- ``export(self, queryset=None, **kwargs)``
+  - * Removed unused ``*args`` list
+
+:class:`import_export.mixins.BaseImportMixin`
+---------------------------------------------
+
+Parameter changes
+^^^^^^^^^^^^^^^^^
+
+.. list-table::
+  :header-rows: 1
+
+  * - Previous
+    - New
+    - Summary
+
+  * - ``get_import_resource_kwargs(self, request, **kwargs)``
+    -  * ``using_transactions`` and ``dry_run`` parameters now in ``kwargs``
+    -  * Removed unused ``*args`` list
+
+
+:class:`import_export.mixins.BaseExportMixin`
+---------------------------------------------
+
+Parameter changes
+^^^^^^^^^^^^^^^^^
+
+.. list-table::
+  :header-rows: 1
+
+  * - Previous
+    - New
+    - Summary
+
+  * - ``get_export_resource_kwargs(self, request, **kwargs)``
+    - * Removed unused ``*args`` list
+
+  * - ``get_export_resource_kwargs(self, request, **kwargs)``
+    - * Removed unused ``*args`` list
+
+  * - ``get_data_for_export(self, request, queryset, **kwargs)``
+    - * Removed unused ``*args`` listation to work with version 4. If you have not overridden any methods, these changes should not affect your code.
+
+The API changes include modifications to method arguments, along with changes to some method names.
+
+For more information, refer to `this PR <https://github.com/django-import-export/django-import-export/pull/1641/>`.
+
+Methods that process row data have been updated to standardize method arguments. This update resolves inconsistency issues that arose from variations in parameters between method calls, making extensibility easier.e opportunity to introduce
 breaking changes in order to fix some long-standing issues.
 
 Refer to the :doc:`changelog<changelog>` for more information. Please ensure you test

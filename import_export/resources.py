@@ -1,5 +1,67 @@
-import functools
-import logging
+iimport logging
+import traceback
+
+from collections import OrderedDict
+from copy import deepcopy
+from html import escape
+
+import tablib
+from diff_match_patch import diff_match_patch
+
+from django.conf import settings
+from django.core.exceptions import ImproperlyCo        ``full_clean()`` method is not called, and only the errors raised by
+        ``import_instance()`` are re-raised.
+        """
+        if import_validation_errors is None:
+            errors = {}
+        else:
+            errors = import_validation_errors.copy()
+        if self._meta.clean_model_instances:
+            try:
+                instance.full_clean(
+                    exclude=errors.keys(),
+                                      row_result.import_t        except Exception as e:
+            row_result.import_type = RowResult.IMPORT_TYPE_ERROR
+            # There is no point logging a transaction error for each row
+            # when only the original error is likely to be relevant
+            if not isinstance(e, TransactionManagementError):
+                logger.debug(e, exc_info=e)
+            tb_info = traceback.format_exc()
+        except ValidationError as e:
+            row_result.import_type = RowResult.IMPORT_TYPE_INVALID
+            row_result.validation_error = eResult.IMPORT_TYPE_DELETE
+                    row_result.add_instance_info(instance)
+                    if self._meta.store_instance:
+                        # create a copy before deletion so id fields are retained
+                        row_result.instance = deepcopy(instance)
+                    self.delete_instance(instance, row, **kwargs)
+                    if not skip_diff:
+                        diff.compare_with(self, None)
+                else:
+                    import_validation_errors = {}
+                    try:unique=validate_unique,
+                )
+            except ValidationError as e:
+                errors.update(e.error_dict)
+
+        if errors:
+            raise ValidationError(errors)onError
+from django.core.management.color import no_style
+from django.core.paginator import Paginator
+from django.db import connections, router
+from django.db.models import fields
+from django.db.models.query import QuerySet
+from django.db.transaction import TransactionManagementError, set_rollback
+from django.utils.encoding import force_str
+from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy as _
+
+from . import widgets
+from .declarative import DeclarativeMetaclass, ModelDeclarativeMetaclass
+from .exceptions import FieldError
+from .fields import Field
+from .results import Error, Result, RowResult
+from .utils import atomic_if_using_transaction, get_related_modelging
 import traceback
 from collections import OrderedDict
 from copy import deepcopy

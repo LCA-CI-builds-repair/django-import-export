@@ -4,7 +4,28 @@ from unittest import mock
 from unittest.mock import MagicMock, patch
 
 import django
-from core.admin import AuthorAdmin, BookAdmin, CustomBookAdmin, ImportMixin
+from core.admin import AuthorAdmin, BookAdmin, CustomBookAdmin,         with mock.patch(
+            "import_export.admin.TempFolderStorage    @ignore_widget_deprecation_warning
+    def test_import_mac_with_valid_data(self):
+        # GET the import form
+        response = self.client.get(self.book_import_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "admin/import_export/import.html")
+        self.assertContains(response, 'form action=""')
+
+        # POST the import data
+        response = self._do_import_post(self.book_import_url, "books-mac.csv")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("result", response.context)
+        self.assertFalse(response.context["result"].has_errors())
+        self.assertIn("confirm_form", response.context)  ) as mock_tmp_folder_storage:
+            mock_tmp_folder_storage.side_effect = ValueError("some unknown error")
+            response = self._do_import_post(self.book_import_url, "books.csv")
+        self.assertEqual(response.status_code, 200)
+        target_msg = (
+            "'ValueError' encountered while trying to read file. "
+            "Ensure you have chosen the correct format for the file."
+        )in
 from core.models import Author, Book, EBook, Parent
 from core.tests.admin_integration.mixins import AdminTestMixin
 from core.tests.utils import ignore_widget_deprecation_warning
