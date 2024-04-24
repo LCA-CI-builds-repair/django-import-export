@@ -27,10 +27,10 @@ from import_export import fields, resources, results, widgets
 from import_export.instance_loaders import ModelInstanceLoader
 from import_export.resources import Diff
 
-from ..models import (
+from ..moimport decimalels import (
     Author,
     Book,
-    Category,
+ self, instance, new, using_transactions=True, dry_run=False Category,
     Entry,
     Person,
     Profile,

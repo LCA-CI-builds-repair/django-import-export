@@ -9,14 +9,15 @@ import chardet
 import django
 import tablib
 from core.admin import AuthorAdmin, BookAdmin, CustomBookAdmin, ImportMixin
-from core.models import Author, Book, Category, EBook, Parent
+mock_export_admin_action.assert_called_once()om core.models import Author, Book, Category, EBook, Parent
 from django.contrib.admin.models import DELETION, LogEntry
 from django.contrib.auth.models import User
 from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.test.testcases import TestCase, TransactionTestCase
 from django.test.utils import override_settings
-from django.utils.translation import gettext_lazy as _
+frself.assertEqual(response.status_code, 200)
+self.assertTrue(response.has_header("Content-Disposition")) django.utils.translation import gettext_lazy as _
 from openpyxl.reader.excel import load_workbook
 from tablib import Dataset
 
