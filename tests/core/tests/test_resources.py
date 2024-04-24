@@ -43,9 +43,65 @@ from ..models import (
 )
 
 
-class MyResource(resources.Resource):
-    name = fields.Field()
-    email = fields.Field()
+class MyResource(resources.Resour    def test_foreign_keys_export(self):
+        """
+        Test exporting foreign keys.
+        """
+        author1 = Author.objects.create(name="Foo")
+        self.book.author = author1
+        self.book.save()
+
+        dataset = self.resource.export(Book.objects.all())
+        self.assertEqual(dataset.dict[0]["author"], author1.pk)
+
+    def test_foreign_keys_import(self):
+        """
+        Test importing foreign keys.
+        """
+        author2 = Author.objects.create(name="Bar")
+        headers = ["id", "name", "author"]
+        row = [None, "FooBook", author2.pk]
+        dataset = tablib.Dataset(row, headers=headers)
+        self.resource.import_data(dataset, raise_errors=True)
+
+        book = Book.objects.get(name="FooBook")
+        self.assertEqual(book.author, author2)
+
+    def test_m2m_export(self):
+        """
+        Test exporting many-to-many relationships.
+        """
+        cat1 = Category.objects.create(name="Cat 1")
+        cat2 = Category.objects.create(name="Cat 2")
+        self.book.categories.add(cat1)
+        self.book.categories.add(cat2)
+
+        dataset = self.resource.export(Book.objects.all())
+        self.assertEqual(dataset.dict[0]["categories"], "%d,%d" % (cat1.pk, cat2.pk))
+
+    def test_m2m_import(self):
+        """
+        Test importing many-to-many relationships.
+        """
+        cat1 = Category.objects.create(name="Cat 1")
+        headers = ["id", "name", "categories"]
+        row = [None, "FooBook", str(cat1.pk)]
+        dataset = tablib.Dataset(row, headers=headers)
+        self.resource.import_data(dataset, raise_errors=True)
+
+        book = Book.objects.get(name="FooBook")
+        self.assertIn(cat1, book.categories.all())
+
+    def test_m2m_options_import(self):
+        """
+        Test importing many-to-many relationships with options.
+        """
+        cat1 = Category.objects.create(name="Cat 1")
+        cat2 = Category.objects.create(name="Cat 2")
+        headers = ["id", "name", "categories"]
+        row = [None, "FooBook", "Cat 1|Cat 2"]
+        dataset = tablib.Dataset(row, headers=headers)
+        self.resource.import_data(dataset, raise_errors=True) fields.Field()
     extra = fields.Field()
 
     def __init__(self, **kwargs):

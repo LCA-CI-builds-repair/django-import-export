@@ -29,7 +29,181 @@ from import_export.admin import (
 )
 from import_export.formats import base_formats
 from import_export.formats.base_formats import DEFAULT_FORMATS
-from import_export.tmp_storages import TempFolderStorage
+from import_exp    def test_action_form_choices(self):
+        """
+        Test the choices in the action form.
+        "    mock_request = MagicMock(spec=HttpRequest)
+    mock_request.POST = {"file_format": 0}
+
+    class TestMixin(ExportMixin):
+        model = Book
+
+        def __init__(self, test_str=None):
+            self.test_str = test_str
+
+        def get_data_for_export(self, request, queryset, *args, **kwargs):
+            d    def test_import_action_empty_author_email(se    def test_import_action_xls(self):
+        """
+        Test importing action with XLS file format.
+        """
+        self._is_str_in_response(
+            "books.xls",
+            "1",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )       """
+        Test importing action with empty author email.
+        """
+        self._do_import_post(
+            self.book_import_url, "books-empty-author-email.xlsx", xlsx_index
+        )
+        self.assertEqual(1, Book.objects.count())
+
+    def test_import_action_mac(self):
+        """
+        Test importing action with Mac encoding.
+        """
+        self._is_str_in_response(
+            "books-mac.csv",
+            "0",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )
+
+    def test_import_action_iso_8859_1(self):
+        """
+        Test importing action with ISO-8859-1 encoding.
+        """
+        self._is_str_in_response(
+            "books-ISO-8859-1.csv",
+            "0",
+            "ISO-8859-1",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )
+
+    def test_import_action_decode_error(self):
+        """
+        Test decoding error in importing action.
+        """
+        # attempting to read a file with the incorrect encoding should raise an error
+        self._is_regex_in_response(
+            "books-ISO-8859-1.csv",
+            "0",
+            follow=True,
+            encoding="utf-8-sig",
+            regex_in_response=(
+                ".*UnicodeDecodeError.* encountered " "while trying to read file"
+            ),"name"])
+            dataset.append([1, self.test_str])
+            return dataset
+
+        def get_export_queryset(self, request):
+            return list()
+
+        def get_export_filename(self, request, queryset, file_format):
+            return "f"
+
+    def setUp(self):
+        self.file_format = formats.base_formats.CSV()
+        self.export_mixin = self.TestMixin(test_str="teststr")
+
+    def test_to_encoding_not_set_default_encoding_is_utf8(self):
+        """
+        Test default encoding is utf-8 when not set.
+        """
+        self.export_mixin = self.TestMixin(test_str="teststr")
+        data = self.export_mixin.get_export_data(
+            self.file_format, list(), request=self.mock_request
+        )
+        csv_dataset = tablib.import_set(data)
+        self.assertEqual("teststr", csv_dataset.dict[0]["name"])
+
+    def test_to_encoding_set(self):
+        """
+        Test encoding is set correctly.
+        """
+        self.export_mixin = self.TestMixin(test_str="ハローワールド")
+        data = self.export_mixin.get_export_data(
+            self.file_format, list(), request=self.mock_request, encoding="shift-jis"
+        )
+        encoding = chardet.detect(bytes(data))["encoding"]
+        self.assertEqual("SHIFT_JIS", encoding)
+
+    def test_to_encoding_set_incorrect(self):
+        """
+        Test incorrect encoding setting raises LookupError.
+        """
+        self.export_mixin = self.TestMixin()
+        with self.assertRaises(LookupError):
+            self.export_mixin.get_export_data(
+                self.file_format,
+                list(),
+                request=self.mock_request,
+                encoding="bad-encoding",
+            )
+
+    def test_to_encoding_not_set_for_binary_file(self):
+        """
+        Test encoding is not set for binary file.
+        """
+        self.export_mixin = self.TestMixin(test_str="teststr")
+        self.file_format = formats.base_formats.XLSX()
+        data = self.export_mixin.get_export_data(
+            self.file_format, list(), request=self.mock_request
+        )
+        binary_dataset = tablib.import_set(data)
+        self.assertEqual("teststr", binary_dataset.dict[0]["name"])
+
+    @mock.patch("import_export.admin.ImportForm")
+    def test_export_action_to_encoding(self, mock_form):
+        """
+        Test encoding in export action is set correctly.
+        """
+        mock_form.is_valid.return_value = True
+        self.export_mixin.to_encoding = "utf-8"
+        with mock.patch(
+            "import_export.admin.ExportMixin.get_export_data"
+        ) as mock_get_export_data:
+            self.export_mixin.export_action(self.mock_request)
+            encoding_kwarg = mock_get_export_data.call_args_list[0][1]["encoding"]
+            self.assertEqual("utf-8", encoding_kwarg)
+
+    @mock.patch("import_export.admin.ImportForm")
+    def test_export_admin_action_to_encoding(self, mock_form):
+        """
+        Test encoding in admin action is set correctly.
+        """
+        class TestExportActionMixin(ExportActionMixin):
+            def get_export_filename(self, request, queryset, file_format):
+                return "f"
+
+        self.mock_request.POST = {"file_format": "1"}   items = list(action_form.base_fields.items())
+        file_format = items[len(items) - 1][1]
+        choices = file_format.choices
+
+        self.assertNotEqual(choices[0][0], "---")
+        self.assertEqual(choices[0][1], "csv")
+
+    def test_export_admin_action_formats(self):
+        """
+        Test the export formats in the admin action.
+        """
+        mock_model = mock.MagicMock()
+        mock_site = mock.MagicMock()
+
+        class TestCategoryAdmin(ExportActionModelAdmin):
+            def __init__(self):
+                super().__init__(mock_model, mock_site)
+
+        class TestFormatsCategoryAdmin(ExportActionModelAdmin):
+            def __init__(self):
+                super().__init__(mock_model, mock_site)
+
+            export_formats = [base_formats.CSV, base_formats.JSON]
+
+        m = TestCategoryAdmin()
+        action_form = m.action_formpFolderStorage
 
 
 class AdminTestMixin(object):

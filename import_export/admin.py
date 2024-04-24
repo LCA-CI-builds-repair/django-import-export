@@ -15,9 +15,44 @@ from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST
+from django.views.deco        changelist_kwargs = {
+            "request": request,
+            "model": self.model,
+            "list_display": list_display,
+            "list_display_links": list_display_links,
+            "list_filter": list_filter,
+            "date_hierarchy": self.date_hierarchy,
+            "search_fields": search_fields,
+            "list_select_related": list_select_related,
+            "list_per_page": self.list_per_page,
+            "list_max_show_all": self.list_max_show_all,
+            "list_editable": self.list_editable,
+            "model_admin": self,
+        }
+        changelist_kwargs["sortable_by"] = self.sortable_by
+        if django.VERSION >= (4, 0):
+            changelist_kwargs["search_help_text"] = self.search_help_text
 
-from .forms import (
+        original_show_full_result_count = self.show_full_result_count
+        self.show_full_result_count = False
+
+        class FakePaginator:
+            count = 0
+        original_get_paginator = self.get_paginator
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
+        self.show_full_result_count = original_show_full_result_count
+        self.get_paginator = original_get_paginator
+
+        return cl.get_queryset(request)
+
+    def get_export_data(self, file_format, queryset, *args, **kwargs):
+        """
+        Returns file_format representation for given queryset.
+        """
+        request = kwargs.pop("request")
+        if not self.has_export_permission(request):
+            raise PermissionDenied.forms import (
     ConfirmImportForm,
     ExportForm,
     ImportExportFormBase,

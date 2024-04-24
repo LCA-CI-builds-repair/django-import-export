@@ -8,7 +8,24 @@ Changelog
 - Show list of exported fields in Admin UI (#1685)
 - Added `CONTRIBUTING.md`
 - Added support for python 3.12 (#1698)
-- Update Finnish translations (#1701)
+- Update Finnish- Fixed handling of LF character when usin------------------
+
+- Big integer support for Integer widget (#788)
+- Run `compilemessages` command to keep .mo files in sync (#1299)
+- Added `skip_html_diff` meta attribute (#1329)
+- Added python3.10 to tox and CI environment list (#1336)
+- Add ability to rollback the import on validation error (#1339)
+- Fix missing migration on example app (#1346)
+- Fix crash when deleting via admin site (#1347)
+- Use Github secret in CI script instead of hard-coded password (#1348)
+- Documentation: Correct error in example application which leads to crash (#1353)age` (#1417)
+- Bugfix: `skip_row()` handles M2M field when UUID pk used
+- Fix broken link to tablib formats page (#1418)
+- Fix broken image ref in `README.rst`
+- Bugfix: `skip_row()` fix crash when model has m2m field and none is provided in upload (#1439)
+- Fix deprecation in example application: Added support for transitional form renderer (#1451)
+
+Developmenttions (#1701)
 
 3.3.3 (2023-11-11)
 ------------------
