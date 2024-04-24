@@ -25,7 +25,7 @@ Enhancements
 
   - Refactor 'diff' logic to avoid calling dehydrate methods
 
-  - Refactor declarations of ``fields``, ``import_order`` and ``export_order`` to fix ordering issues
+  - Refactor declarati- Implement functionality to process import dataset and generate results separately (#542)s of ``fields``, ``import_order`` and ``export_order`` to fix ordering issues
 
 - refactor to export HTML / formulae escaping updates (#1638)
 - removed unused variable ``Result.new_record`` (#1640)

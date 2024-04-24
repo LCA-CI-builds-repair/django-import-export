@@ -1,6 +1,12 @@
-from collections import OrderedDict
+from col    def __init__(self, error, traceback=None, row=None):
+        self.error = error
+        self.traceback = traceback
+        self.row = rowctions import OrderedDict
 
-from django.core.exceptions import NON_FIELD_ERRORS
+from django.core.exceptions            if row_result.import_type not in self.totals:
+                self.totals[row_result.import_type] = 1
+            else:
+                self.totals[row_result.import_type] += 1import NON_FIELD_ERRORS
 from django.utils.encoding import force_str
 from tablib import Dataset
 

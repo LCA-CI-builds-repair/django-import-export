@@ -1,4 +1,9 @@
-from django import forms
+from django import    """
+   from django import forms
+
+class CustomForm(forms.Form):
+    passCustomized ConfirmImportForm, with author field required
+    """forms
 
 from import_export.forms import ConfirmImportForm, ExportForm, ImportForm
 

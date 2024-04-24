@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from import_export.admin import (
+from ifrom core.mixins import ImportMixin
+from def process_kwargs():
+    return kwargsjango.contrib import admin
+
+class AuthorAdmin(ImportMixin, admin.ModelAdmin):
+    pass_export.admin import (
     ExportActionModelAdmin,
     ImportExportModelAdmin,
     ImportMixin,

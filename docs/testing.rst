@@ -1,5 +1,13 @@
 Testing
-=======
+===# Best PracticeCoverage
+########
+
+Code coverage is a metric used to measure the extent to which the source code of a program is tested by a particular test suite. It helps in identifying areas of code that are not exercised by tests, enabling developers to write additional tests for better coverage.or Writing Test Cases
+# Include descriptive test method names
+# Follow the Arrange-Act-Assert pattern
+# Use setUp and tearDown methods for common test setup and teardown
+# Utilize mocking for external dependencies
+# Write test cases that cover both positive and negative scenarios===
 
 All tests can be run using `tox <https://tox.wiki/en/latest/>`_ simply by running the `tox` command.  By default, tests
 are run against a local sqlite2 instance.  `pyenv <https://github.com/pyenv/pyenv>`_ can be used to manage multiple

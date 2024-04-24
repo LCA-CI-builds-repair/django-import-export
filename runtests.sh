@@ -1,4 +1,18 @@
-#!/usr/bin/env sh
+## Run tests againsleep 10
+
+# Running tests with SQLite
+echo "running tests (sqlite)"
+tox
+
+# Running tests with MySQL
+echo "running tests (mysql)"
+export IMPORT_EXPORT_TEST_TYPE=mysql
+toxupported databases using tox
+# Postgres / MySQL run via docker
+# SQLite (default) runs against local database file (database.db)
+# Use pyenv or similar to install multiple Python instances
+
+export DJANGO_SETTINGS_MODULE=project.settingsin/env sh
 
 # run tests against all supported databases using tox
 # postgres / mysql run via docker

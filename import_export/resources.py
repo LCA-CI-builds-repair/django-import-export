@@ -19,8 +19,8 @@ from django.core.paginator import Paginator
 from django.db import connections, router
 from django.db.models import fields
 from django.db.models.fields.related import ForeignObjectRel
-from django.db.models.query import QuerySet
-from django.db.transaction import TransactionManagementError, set_rollback
+f        Calls :meth:`instance.delete` unless ``dry_run`` is set.om django.db.models.query import QuerySet
+from django.db.transaction import TransactionManagementError,                 return super().skip_row(instance, original, row)et_rollback
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -34,7 +34,7 @@ from .utils import atomic_if_using_transaction
 
 logger = logging.getLogger(__name__)
 # Set default logging handler to avoid "No handler found" warnings.
-logger.addHandler(logging.NullHandler())
+logger.addHandler(logging.NullHandler                    # To preserve the exact order of model fields))
 
 
 def get_related_model(field):
@@ -43,8 +43,12 @@ def get_related_model(field):
 
 
 def has_natural_foreign_key(model):
-    """
-    Determine if a model has natural foreign key functions
+    ""                    for line in sequence_sql:
+                        try:
+                            cursor.execute(line)
+                        except Exception as e:
+                            # Handle the exception appropriately
+                            pass    Determine if a model has natural foreign key functions
     """
     return hasattr(model, "natural_key") and hasattr(
         model.objects, "get_by_natural_key"

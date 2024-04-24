@@ -57,7 +57,20 @@ class ResourceTestCase(TestCase):
         """Check that fields were determined correctly"""
 
         # check that our fields were determined
-        self.assertIn("name", self.my_resource.fields)
+                                           # Add more content or context here     self.chapter_numbers = [1, 2, 3]
+            self.book = BookWithChapterNumbers.objects.create(
+                name="foo", chapter_numbers=self.chapter_numbers
+            ).assertListEqual(self.book.chapters, [])
+            result = self.resource.import_data(self.dataset, raise_errors=True)
+
+            self.assertFalse(result.has_errors())
+            self.assertEqual(len(result.rows), 1)
+
+            self.book.refresh_from_db()
+            self.assertListEqual(self.book.chapters, self.chapters).chapters = ["Introduction", "Middle Chapter", "Ending"]
+            self.book = BookWithChapters.objects.create(name="foo")
+            self.dataset = tablib.Dataset(headers=["id", "name", "chapters"])
+            row = [self.book.id, "Some book", self.chapters]elf.assertIn("name", self.my_resource.fields)
 
         # check that resource instance fields attr isn't link to resource cls
         # fields

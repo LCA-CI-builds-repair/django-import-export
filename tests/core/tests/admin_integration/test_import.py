@@ -19,7 +19,8 @@ from import_export.formats import base_formats
 
 
 class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
-    def test_import_export_template(self):
+    def test_import_expo            str_in_response="Import finished, with 1 new book and 0 updated books.",
+        )_template(self):
         response = self.client.get("/admin/core/book/")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(
