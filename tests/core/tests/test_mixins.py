@@ -1,7 +1,72 @@
 from unittest import mock
 from unittest.mock import MagicMock
 
-from core.models import Book, Category
+from core.modfrom django.http import HttpRequest
+from unittest.mock import MagicMock
+class BaseImportModelAdminTest(mixins.BaseImportMixin):
+    call_count = 0
+
+    def get_resource_classes(self):
+        self.call_count += 1
+
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        self.call_count += 1
+
+class BaseExportModelAdminTest(mixins.BaseExportMixin):
+    call_count = 0
+
+    def get_resource_classes(self):
+        self.call_count += 1
+
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        self.call_count += 1
+
+def test_get_import_resource_class_calls_self_get_resource_class(self):
+    admin = BaseImportModelAdminTest()
+    admin.get_import_resource_classes()
+    assert admin.call_count == 1
+
+def test_get_import_resource_kwargs_calls_self_get_resource_kwargs(self):
+    admin = BaseImportModelAdminTest()
+    admin.get_import_resource_kwargs(Mock(spec=HttpRequest))
+    assert admin.call_count == 1
+
+def test_get_export_resource_class_calls_self_get_resource_class(self):
+    admin = BaseExportModelAdminTest()
+    admin.get_export_resource_classes()
+    assert admin.call_count == 1
+
+def test_get_export_resource_kwargs_calls_self_get_resource_kwargs(self):
+    admin = BaseExportModelAdminTest()
+    admin.get_export_resource_kwargs(Mock(spec=HttpRequest))
+    assert admin.call_count == 1
+
+class BaseModelResourceClassTest(mixins.BaseImportMixin, mixins.BaseExportMixin): TestMixin(TestCase):
+    def test_form_valid(self):
+        class TestMixin:
+            def __init__(self):
+                self.mock_get_filterset_call_count = 0
+                self.mock_get_filterset_class_call_count = 0
+                self.model = MagicMock()
+                self.request = MagicMock(spec=HttpRequest)
+                self.model.__name__ = "mockModel"
+
+            def get_filterset(self, filterset_class):
+                self.mock_get_filterset_call_count += 1
+                return MagicMock()
+
+            def get_filterset_class(self):
+                self.mock_get_filterset_class_call_count += 1
+                return MagicMock()
+
+        m = TestMixin()
+        res = m.form_valid(MagicMock())  # Assuming form is passed as MagicMock
+        self.assertEqual(200, res.status_code)
+        self.assertEqual(1, m.mock_get_filterset_call_count)
+        self.assertEqual(1, m.mock_get_filterset_class_call_count)
+
+
+class BaseImportMixinTest(TestCase):egory
 from django.http import HttpRequest
 from django.test.testcases import TestCase
 from django.urls import reverse

@@ -1,7 +1,29 @@
 import os.path
 
 from django.contrib.auth.models import Permission, User
-from django.test.testcases import TestCase
+from djanfrom django.test import override_settings
+from django.test import TestCase
+
+
+class PermissionsTest(TestCase):
+    def test_check_export_button(self):
+        self.set_user_book_model_permission("change")
+
+        response = self.client.get("/admin/core/book/")
+        widget = "import_link"
+        self.assertIn(widget, response.content.decode())
+        widget = "export_link"
+        self.assertNotIn(widget, response.content.decode())
+
+    @override_settings(IMPORT_EXPORT_EXPORT_PERMISSION_CODE="add")
+    def test_check_export_button(self):
+        self.set_user_book_model_permission("change")
+
+        response = self.client.get("/admin/core/book/")
+        widget = "import_link"
+        self.assertIn(widget, response.content.decode())
+        widget = "export_link"
+        self.assertNotIn(widget, response.content.decode())s import TestCase
 from django.test.utils import override_settings
 
 
