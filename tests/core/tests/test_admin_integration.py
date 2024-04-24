@@ -18,7 +18,13 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpRequest
 from django.test import RequestFactory
 from django.test.testcases import TestCase, TransactionTestCase
-from django.test.utils import override_settings
+from django.test.utilfrom django.test import TestCase
+from myapp.models import MyModel
+
+class TestAdminIntegration(TestCase):
+    def test_get_queryset(self):
+        # Call the method from the superclass using the class name
+        return MyModelAdmin.get_queryset(request)import override_settings
 from django.utils.translation import gettext_lazy as _
 from openpyxl.reader.excel import load_workbook
 from tablib import Dataset

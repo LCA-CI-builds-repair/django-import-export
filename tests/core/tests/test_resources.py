@@ -24,7 +24,32 @@ from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 
 from import_export import fields, resources, results, widgets
-from import_export.instance_loaders import ModelInstanceLoader
+from import_export.resourcself.assertEqual(result.invalid_rows[self.assertT# Test dataset = tarow = list(self.dataset.pop())
+# Comment out the line below to prevent setting pk to something that would yield an error
+# set pk to something that would yield errorib.Dataset(headers=["id", "name"])
+dataset.append(["", "123"])
+
+result = resource.import_data(dataset, raise_errors=False)
+self.assertTrue(result.has_validation_errors())
+self.assertEqual(result.invalid_rows[0].error_count, 1)
+self.assertEqual(
+    result.invalid_rows[0].field_specific_errors, check the behavior of the custom widget on the parent class
+class TestResource(AuthorResourceWithCustomWidget):
+    class Meta:
+        model = Author
+        clean_model_instances = Truelt.has_validation_errors())
+
+# Check the invalid row itself
+invalid_row = result.invalid_rows[0]
+self.assertEqual(invalid_row.error_count, 1)
+self.assertEqual(
+    invalid_row.field_specific_errors, {"name": ["'123' is not a valid value"]}
+)
+# Ensure diff_header and invalid_row.values match
+self.assertEqual(result.diff_headers, ["id", "name", "birthday"])
+self.assertEqual(invalid_row.values, ("1", "123", "---"))cific_errors["name"],= AuthorResourceWithCustomWidget()
+dataset = tablib.Dataset(headers=["id", "name", "birthday"])
+dataset.append(["", "A.A.Milne", "1882-01-18"])ance_loaders import ModelInstanceLoader
 from import_export.resources import Diff
 
 from ..models import (

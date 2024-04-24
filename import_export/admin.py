@@ -15,7 +15,23 @@ from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import requfrom django.contrib import admin
+from django.contrib.admin.views.main import ChangeList
+from myapp.models import MyModel
+from myapp.admin import MyModelAdmin
+
+class MyModelAdmin(admin.ModelAdmin):
+    def get_export_queryset(self, request):
+        """
+        Custom method to get queryset for export.
+        Uses ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
+        """
+        pass
+
+    cl = ExportChangeList(**changelist_kwargs)
+
+    # get_queryset() is already called during initialization, it is enough to get its results
+    if hasattr(cl, "queryset"):
 
 from .forms import (
     ConfirmImportForm,

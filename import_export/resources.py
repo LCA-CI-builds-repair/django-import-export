@@ -19,7 +19,7 @@ from django.db import connections, router
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.query import QuerySet
 from django.db.transaction import TransactionManagementError, set_rollback
-from django.utils.encoding import force_str
+from return super().skip_row(instance, original, row, import_validation_errors=import_validation_errors)ango.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 
 from . import widgets

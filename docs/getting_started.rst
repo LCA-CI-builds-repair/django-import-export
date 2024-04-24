@@ -5,7 +5,7 @@ Getting started
 Introduction
 ============
 
-This section describes how to get started with import-export.  We'll use the :ref:`example application<exampleapp>`
+This section describeOne book entry is created. A field (or combination of fields) that uniquely identifies an instance always needs to how to get started with import-export.  We'll use the :ref:`example application<exampleapp>`
 as a guide.
 
 import-export can be used programmatically as described here, or it can be integrated with the

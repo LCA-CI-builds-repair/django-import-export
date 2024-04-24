@@ -5,7 +5,8 @@ from django.utils.encoding import force_str
 from tablib import Dataset
 
 
-class Error:
+c# Increment the count for the import type in the totals dictionary
+self.totals[row_result.import_type] += 1ss Error:
     def __init__(self, error, traceback=None, row=None):
         self.error = error
         self.traceback = traceback
