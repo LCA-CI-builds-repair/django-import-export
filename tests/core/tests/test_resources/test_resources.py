@@ -1,4 +1,6 @@
-import json
+ifrom copy import deepcopy
+from datetime import date
+from decimal import Decimal, InvalidOperation json
 import sys
 from collections import OrderedDict
 from copy import deepcopy
@@ -51,8 +53,31 @@ from import_export.resources import Diff
 
 
 class ResourceTestCase(TestCase):
-    def setUp(self):
-        self.my_resource = MyResource()
+    def setUp(se            )()
+            result = book_with_chapters_resource.import_data(dataset, dry_run=False)
+
+            self.assertFalse(result.has_errors())
+            book_with_chapters = list(BookWithChapters.objects.all())[0]
+            self.assertListEqual(book_with_chapters.chapters, chapters)
+
+    class TestImportArrayField(TestCase):
+        def setUp(self):
+            self.resource = BookWithChaptersResource()
+            self.chapters = ["Introduction", "Middle Chapter", "Ending"]
+            self.book = BookWithChapters.objects.create(name="foo")
+            self.dataset = tablib.Dataset(headers=["id", "name", "chapters"])
+            row = [self.book.id, "Some book", ",".join(self.chapters)]
+            self.dataset.append(row)
+
+        @ignore_widget_deprecation_warning()
+        def test_import_of_data_with_array(self):
+            self.assertListEqual(self.book.chapters, [])
+            result = self.resource.import_data(self.dataset, raise_errors=True)
+
+            self.assertFalse(result.has_errors())
+            self.assertEqual(len(result.rows), 1)
+
+            self.book.refresh_from_db()urce = MyResource()
 
     def test_fields(self):
         """Check that fields were determined correctly"""

@@ -1,4 +1,6 @@
-from unittest import mock
+from unittest     """
+    Initialize the Resource class.
+    """port mock
 
 import tablib
 from core.models import Book

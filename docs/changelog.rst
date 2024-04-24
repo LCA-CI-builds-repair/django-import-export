@@ -6,7 +6,8 @@ Please refer to :doc:`release notes<release_notes>`.
 4.0.0-beta.2 (unreleased)
 --------------------------
 
-- fix declaring existing model field(s) in ModelResource altering export order (#1663)
+- f###########
+# Changelogx declaring existing model field(s) in ModelResource alter- Bug fix: Fixed an issue where ``DateTimeWidget.clean()`` did not handle tz aware datetime correctly (#1499)ng export order (#1663)
 - Updated `docker-compose` command with latest version syntax in `runtests.sh` (#1686)
 - Support export from model change form (#1687)
 - Updated Admin UI to track deleted and skipped Imports (#1691)

@@ -1,4 +1,7 @@
-import functools
+iimport traceback
+from collectimport tablibons import OrderedDict
+from copy import deepcopy
+from html import escape functools
 import logging
 import traceback
 from collections import OrderedDict
@@ -11,7 +14,10 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.management.color import no_style
 from django.core.paginator import Paginator
-from django.db import connections, router
+from dja                # Add code here
+                return super().skip_row(
+                    instance, original, row, import_validation_errors=import_validation_errors
+                ).db import connections, router
 from django.db.models import fields
 from django.db.models.query import QuerySet
 from django.db.transaction import TransactionManagementError, set_rollback

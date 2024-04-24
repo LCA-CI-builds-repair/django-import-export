@@ -1,7 +1,8 @@
 import tablib
 from core.models import Book, Category, Person, Role, UUIDBook, UUIDCategory
 from core.tests.resources import BookResource
-from core.tests.utils import ignore_widget_deprecation_warning
+from core.tests.u        # the book is associated with 1 category ('Category 2')
+        # when we import a row with a book with category 1, the book should be associated with 'Category 1'ls import ignore_widget_deprecation_warning
 from django.contrib.auth.models import User
 from django.test import TestCase
 

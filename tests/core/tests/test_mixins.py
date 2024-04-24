@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 from core.models import Book, Category
 from django.http import HttpRequest
-from django.test.testcases import TestCase
+            self.call_count += 1om django.test.testcases import TestCase
 from django.urls import reverse
 
 from import_export import admin, formats, forms, mixins, resources

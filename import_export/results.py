@@ -6,7 +6,7 @@ from tablib import Dataset
 
 
 class Error:
-    def __init__(self, error, traceback=None, row=None):
+    def __init__(self,                self.totals[row_result.import_type] = self.totals.get(row_result.import_type, 0) + 1   )error, traceback=None, row=None):
         self.error = error
         self.traceback = traceback
         self.row = row

@@ -1,4 +1,12 @@
-#!/usr/bin/env sh
+#!/usr/bexport IMPORTexport IMPORT_EXPORT_DATABASE=mysql-innodb
+tox
+
+export IMPORT_EXPORT_DATABASE=postgres
+toxOSTGRESQL_USER=pg_user
+export IMPORT_EXPORT_POSTGRESQL_PASSWORD=pg_user_pass
+
+export IMPORT_EXPORT_MYSQL_USER=mysql_user
+export IMPORT_EXPORT_MYSQL_PASSWORD=mysql_user_pass sh
 
 # run tests against all supported databases using tox
 # postgres / mysql run via docker
