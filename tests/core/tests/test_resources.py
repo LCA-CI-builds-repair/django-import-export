@@ -20,7 +20,282 @@ from django.db import IntegrityError
 from django.db.models import CharField, Count
 from django.db.utils import ConnectionDoesNotExist
 from django.test import TestCase, TransactionTestCase, skipUnlessDBFeature
-from django.utils.encoding import force_str
+from d        self.resource = BookResourceWithStoreInstance()
+        r        self.assertTrue(result.has_validation_errors())
+        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+
+    def test_import_data_raises_field_specific_validation_errors_with_skip_unchanged(
+        self,
+    ):
+        resource = AuthorResource()
+        resource._meta.skip_unchanged = True
+
+        author = Author.objects.create(name="Some author")
+
+        dataset = tablib.Dataset(headers=["id", "birthday"])
+        dataset.append([author.id, "1882test-01-18"])
+
+        result = resource.import_data(dataset, raise_errors=False)
+
+        self.assertTrue(result.has_validation_errors())        entry = Entry.objects.create(user=user)
+        row = [
+            entry.pk,
+            "bar",
+        ]
+        self.dataset = tablib.Dataset(headers=["id", "username"])
+        self.dataset.append(row)
+        result = EntryResource().import_data(
+            self.dataset, raise_errors=True, dry_run=False
+        )self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+
+    def test_import_data_empty_dataset_with_collect_failed_rows(self):
+        resource = AuthorResource()
+        result = resource.import_data(tablib.Dataset(), collect_failed_rows=True)
+        self.assertEqual(["Error"], result.failed_dataset.headers)
+
+    def test_collect_failed_rows(self):
+        resource = ProfileResource()
+        headers = ["id", "user"]
+        # 'user' is a required field, the database will raise an error.
+        row = [None, None]
+        dataset = tablib.Dataset(row, headers=headers)
+        result = resource.import_data(
+            dataset,
+            dry_run=True,
+            use_transactions=True,
+            collect_failed_rows=True,
+        )
+        self.assertEqual(result.failed_dataset.headers, ["id", "user", "Error"])
+        self.assertEqual(len(result.failed_dataset), 1)
+        # We can't check the error message because it's package- and version-dependent
+
+    def test_row_result_raise_errors(self):
+        resource = ProfileResource()
+        headers = ["id", "user"]
+        # 'user' is a required field, the database will raise an error.
+        row = [None, None]
+        dataset = tablib.Dataset(row, headers=headers)
+        with self.assertRaises(IntegrityError):
+            resource.import_data(
+                dataset,
+                dry_run=True,
+                use_transactions=True,
+                raise_errors=True,
+            )
+
+    def test_collect_failed_rows_validation_error(self):
+        resource = ProfileResource()
+        row = ["1"]
+        dataset = tablib.Dataset(row, headers=["id"])
+        with mock.patch(
+            "import_export.resources.Field.save", side_effect=ValidationError("fail!")
+        ):
+            result = resource.import_data(
+                dataset,
+                dry_run=True,
+                use_transactions=True,
+                collect_failed_rows=True,
+            )
+        self.assertEqual(result.failed_dataset.headers, ["id", "Error"])
+        self.assertEqual(
+            1,
+            len(result.failed_dataset),
+        )
+        self.assertEqual("1", result.failed_dataset.dict[0]["id"])
+        self.assertEqual(
+            "{'__all__': ['fail!']}", result.failed_dataset.dict[0]["Error"]
+        )
+
+    def test_row_result_raise_ValidationError(self):
+        resource = ProfileResource()
+        row = ["1"]
+        dataset = tablib.Dataset(row, headers=["id"])
+        with mock.patch(
+            "import_export.resources.Field.save", side_effect=ValidationError("fail!")
+        ):
+            with self.assertRaisesRegex(ValidationError, "{'__all__': \\['fail!'\\]}"):
+                resource.import_data(
+                    dataset,
+                    dry_run=True,
+                    use_transactions=True,
+                    raise_errors=True,
+                )
+
+    def test_import_data_handles_widget_valueerrors_with_unicode_messages(self):
+        resource = AuthorResourceWithCustomWidget()
+        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
+        dataset.append(["", "A.A.Milne", "1882-01-18"])
+
+        result = resource.import_data(dataset, raise_errors=False)
+
+        self.assertTrue(result.has_validation_errors())
+        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertEqual(
+            result.invalid_rows[0].field_specific_errors["name"],
+            ["Ова вриједност је страшна!"],
+        )
+
+    def test_model_validation_errors_not_raised_when_clean_model_instances_is_false(
+        self,
+    ):
+        class TestResource(resources.ModelResource):
+            class Meta:
+                model = Author
+                clean_model_instances = False
+
+        resource = TestResource()
+        dataset = tablib.Dataset(headers=["id", "name"])
+        dataset.append(["", "123"])
+
+        result = resource.import_data(dataset, raise_errors=False)
+        self.assertFalse(result.has_validation_errors())
+        self.assertEqual(len(result.invalid_rows), 0)
+
+    def test_model_validation_errors_raised_when_clean_model_instances_is_true(self):
+        class TestResource(resources.ModelResource):
+            class Meta:
+                model = Author
+                clean_model_instances = True
+                export_order = ["id", "name", "birthday"]
+
+        # create test dataset
+        # NOTE: column order is deliberately strange
+        dataset = tablib.Dataset(headers=["name", "id"])
+        dataset.append(["123", "1"])
+
+        # run import_data()
+        resource = TestResource()
+        result = resource.import_data(dataset, raise_errors=False)
+
+        # check has_validation_errors()
+        self.assertTrue(result.has_validation_errors())
+
+        # check the invalid row itself
+        invalid_row = result.invalid_rows[0]
+        self.assertEqual(invalid_row.error_count, 1)
+        self.assertEqual(
+            invalid_row.field_specific_errors, {"name": ["'123' is not a valid value"]}
+        )
+        # diff_header and invalid_row.values should match too
+        self.assertEqual(result.diff_headers, ["id", "name", "birthday"])
+        self.assertEqual(invalid_row.values, ("1", "123", "---"))
+
+    def test_known_invalid_fields_are_excluded_from_model_instance_cleaning(self):
+        # The custom widget on the parent class should complain about
+        # 'name' first, preventing Author.full_clean() from raising the
+        # error as it does in the previous test
+
+        class TestResource(AuthorResourceWithCustomWidget):
+            class Meta:
+                model = Author
+                clean_model_instances = True
+
+        resource = TestResource()
+        dataset = tablib.Dataset(headers=["id", "name"])
+        dataset.append(["", "123"])
+
+        result = resource.import_data(dataset, raise_errors=False)
+        self.assertTrue(result.has_validation_errors())
+        self.assertEqual(result.invalid_rows[0].error_count, 1)
+        self.assertEqual(
+            result.invalid_rows[0].field_specific_errors,
+            {"name": ["Ова вриједност је страшна!"]},
+        )
+
+    def test_import_data_error_saving_model(self):
+        row = list(self.dataset.pop())
+        # set pk to something that would yield error
+        row[0] = "foo"
+        self.dataset.append(row)
+        result = self.resource.import_data(self.dataset, raise_errors=False)
+
+        self.assertTrue(result.has_errors())
+        self.assertTrue(result.rows[0].errors)
+        actual = result.rows[0].errors[0].error
+        self.assertIsInstance(actual, (ValueError, InvalidOperation))
+        self.assertIn(
+            str(actual),
+            {
+                "could not convert string to float",
+                "[<class 'decimal.ConversionSyntax'>]",
+            },
+        )
+
+    def test_import_data_delete(self):
+        class B(BookResource):
+            delete = fields.Field(widget=widgets.BooleanWidget())
+
+            def for_delete(self, row, instance):
+                return self.fields["delete"].clean(row)
+
+        row = [self.book.pk, self.book.name, "1"]
+        dataset = tablib.Dataset(*[row], headers=["id", "name", "delete"])
+        result = B().import_data(dataset, raise_errors=True)
+        self.assertFalse(result.has_errors())
+        self.assertEqual(
+            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_DELETE
+        )
+        self.assertFalse(Book.objects.filter(pk=self.book.pk))
+        self.assertIsNone(result.rows[0].instance)
+        self.assertIsNone(result.rows[0].original)
+
+    def test_import_data_delete_store_instance(self):
+        class B(BookResource):
+            delete = fields.Field(widget=widgets.BooleanWidget())
+
+            def for_delete(self, row, instance):
+                return self.fields["delete"].clean(row)
+
+            class Meta:
+                store_instance = True
+
+        row = [self.book.pk, self.book.name, "1"]
+        dataset = tablib.Dataset(*[row], headers=["id", "name", "delete"])
+        result = B().import_data(dataset, raise_errors=True)
+        self.assertEqual(
+            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_DELETE
+        )
+        self.assertIsNotNone(result.rows[0].instance)
+
+    def test_save_instance_with_dry_run_flag(self):
+        class B(BookResource):
+            def before_save_instance(self, instance, using_transactions, dry_run):
+                super().before_save_instance(instance, using_transactions, dry_run)
+                if dry_run:
+                    self.before_save_instance_dry_run = True
+                else:
+                    self.before_save_instance_dry_run = False
+
+            def save_instance(
+                self, instance, new, using_transactions=True, dry_run=False
+            ):
+                super().save_instance(instance, new, using_transactions, dry_run)
+                if dry_run:
+                    self.save_instance_dry_run = True
+                else:
+                    self.save_instance_dry_run = False
+
+            def after_save_instance(self, instance, using_transactions, dry_run):
+                super().after_save_instance(instance, using_transactions, dry_run)
+                if dry_run:
+                    self.after_save_instance_dry_run = True
+                else:
+                    self.after_save_instance_dry_run = False
+
+        resource = B()
+        resource.import_data(self.dataset, dry_run=True, raise_errors=True)
+        self.assertTrue(resource.before_save_instance_dry_run)
+        self.assertTrue(resource.save_instance_dry_run)
+        self.assertTrue(resource.after_save_instance_dry_run)e(result.rows[0].original)
+        self.assertEqual(1, Book.objects.count())
+        book = Book.objects.first()
+        self.assertEqual(book.pk, result.rows[0].instance.pk)
+
+    @skipUnlessDBFeature("supports_transactions")
+    @mock.patch("import_export.resources.connections")
+    def test_import_data_no_transaction(self, mock_db_connections):coding import force_str
 from django.utils.html import strip_tags
 
 from import_export import fields, resources, results, widgets

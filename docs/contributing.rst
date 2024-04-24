@@ -4,7 +4,15 @@
 Contributing
 ############
 
-django-import-export is open-source and, as such, grows (or shrinks) & improves in part
+django-import-export is open-source and, as such, grows (or shrinks) & Development
+-----------
+
+* All files should be formatted using the black auto-formatter. This will be run by pre-commit if configured.
+
+* The project repository includes an ``.editorconfig`` file. We recommend using a text editor with EditorConfig support
+  to avoid indentation and whitespace issues.
+
+* We allow up to 88 characters as this is the line length used by black. This check is included when you run flake8.n part
 due to the community. Below are some guidelines on how to help with the project.
 
 By contributing you agree to abide by the

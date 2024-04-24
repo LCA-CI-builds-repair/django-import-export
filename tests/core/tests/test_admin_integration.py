@@ -40,7 +40,21 @@ class AdminTestMixin(object):
     book_import_url = "/admin/core/book/import/"
     book_process_import_url = "/admin/core/book/process_import/"
     legacybook_import_url = "/admin/core/legacybook/import/"
-    legacybook_process_import_url = "/admin/core/legacybook/process_import/"
+    legacybook_process_import_url        self._is_str_in_response(
+            "books-mac.csv",
+            "0",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )
+
+    def test_import_action_iso_8859_1(self):
+        self._is_str_in_response(
+            "books-ISO-8859-1.csv",
+            "0",
+            "ISO-8859-1",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )/legacybook/process_import/"
     child_import_url = "/admin/core/child/import/"
     child_process_import_url = "/admin/core/child/process_import/"
 

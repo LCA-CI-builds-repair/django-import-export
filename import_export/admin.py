@@ -12,8 +12,76 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
-from django.utils.decorators import method_decorator
-from django.utils.module_loading import import_string
+from django.utils.decorators import method_                import_file.tmp_storage_name = tmp_storage.name
+
+                try:
+                    # then read the file, using the proper format-specific mod                ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
+                """
+                pass
+
+        cl = ExportChangeList(**changelist_kwargs)
+
+        # get_queryset() is already called during initialization, it is enough to get it's results
+        if hasattr(cl, "queryset"):
+            return cl.queryset
+
+        # Fallback in case the ChangeList doesn't have queryset attribute set
+        return cl.get_queryset(request)
+
+    def get_export_data(self, file_format, queryset, *args, **kwargs):
+        """
+        Returns file_format representation for given queryset.
+        """
+        request = kwargs.pop("request")
+        if not self.has_export_permission(request):
+            raise PermissionDenied # warning, big files may exceed memory
+                    data = tmp_storage.read()
+                    dataset = input_format.create_dataset(data)
+                except Exception as e:
+                    self.add_data_read_fail_error_to_form(import_form, e)
+
+                if not import_form.errors:
+                    # prepare kwargs for import data, if needed
+                    res_kwargs = self.get_import_resource_kwargs(
+                        request, *args, form=import_form, **kwargs
+                    )
+                    resource = self.choose_import_resource_class(import_form)(
+                        **res_kwargs
+                    )
+                    resources = [resource]
+
+                    # prepare additional kwargs for import_data, if needed
+                    imp_kwargs = self.get_import_data_kwargs(
+                        request, *args, form=import_form, **kwargs
+                    )
+                    result = resource.import_data(
+                        dataset,
+                        dry_run=True,
+                        raise_errors=False,
+                        file_name=import_file.name,
+                        user=request.user,
+                        **imp_kwargs,
+                    )
+
+                    context["result"] = result
+
+                    if not result.has_errors() and not result.has_validation_errors():
+                        if getattr(self.get_form_kwargs, "is_original", False):
+                            # Use new API
+                            context["confirm_form"] = self.create_confirm_form(
+                                request, import_form=import_form
+                            )
+                        else:
+                            confirm_form_class = self.get_confirm_form_class(request)
+                            initial = self.get_confirm_form_initial(
+                                request, import_form
+                            )
+                            context["confirm_form"] = confirm_form_class(
+                                initial=self.get_form_kwargs(
+                                    form=import_form, **initial
+                                )
+                            )
+                else:port_string
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
