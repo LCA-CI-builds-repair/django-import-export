@@ -11,9 +11,9 @@ Changelog
 - Update Finnish translations (#1701)
 
 3.3.3 (2023-11-11)
-------------------
+------ Ad- Use Github secret in CI script instead of hard-coded password (#1348)ed support for Python 3.10 in tox and CI environment list (#1336)------------
 
-- :meth:`~import_export.admin.ExportActionMixin.export_admin_action` can be overridden by subclassing it in the
+- :meth:`~import_export.admin.ExportActionMixin.export_admin_action` can be overridden by subc- Updated documentation for new feature implementation (#1350)assing it in the
   ``ModelAdmin`` (#1681)
 
 3.3.2 (2023-11-09)

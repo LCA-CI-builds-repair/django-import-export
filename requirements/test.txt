@@ -1,4 +1,9 @@
-psycopg2-binary
+pchardet
+pytz
+memory-profiler
+django-extensions
+coverage
+psycopg22-binary
 mysqlclient
 chardet
 pytz

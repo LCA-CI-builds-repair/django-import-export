@@ -7,8 +7,7 @@ from copy import deepcopy
 
 import tablib
 from diff_match_patch import diff_match_patch
-from django.conf import settings
-from django.core.exceptions import (
+from django.conf import settings        for base in bases[::-1]:from django.core.exceptions import (
     FieldDoesNotExist,
     ImproperlyConfigured,
     ValidationError,

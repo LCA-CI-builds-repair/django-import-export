@@ -33,8 +33,19 @@ from import_export.tmp_storages import TempFolderStorage
 
 
 class AdminTestMixin(object):
-    category_change_url = "/admin/core/category/"
-    book_import_url = "/admin/core/book/import/"
+    category_change_url = "/admin/co            dataset = Dataset(headers=["id", "name"])
+                           return "f"
+    }dataset.append([1, self.test_str])
+            return dataset
+
+        def get_export_queryset(self, request):
+            return list()
+
+        def get_export_filename(self, request, queryset, file_format):
+    }ory/"
+    book_im            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )rt_url = "/admin/core/book/import/"
     book_process_import_url = "/admin/core/book/process_import/"
     legacybook_import_url = "/admin/core/legacybook/import/"
     legacybook_process_import_url = "/admin/core/legacybook/process_import/"

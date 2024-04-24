@@ -15,7 +15,12 @@ from django.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.http import require_POST
+from django.views.deco        changelist_kwar        original_get_paginator = self.get_paginator
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
+        self.show_full_result_count = original_show_full_result_count
+        self.get_paginator = original_get_paginator            "request": request,
+        }tors.http import require_POST
 
 from .forms import (
     ConfirmImportForm,
