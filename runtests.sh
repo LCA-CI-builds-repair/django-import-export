@@ -1,6 +1,13 @@
 #!/usr/bin/env sh
 
-# run tests against all supported databases using tox
+# rtox
+
+# R# Running tests for PostgreSQL
+export IMPORT_EXPORT_TEST_TYPE=postgresql
+toxning tests for MySQL using InnoDB engine
+echo "running tests (mysql)"
+export IMPORT_EXPORT_TEST_TYPE=mysql-innodb
+toxsts against all supported databases using tox
 # postgres / mysql run via docker
 # sqlite (default) runs against local database file (database.db)
 # use pyenv or similar to install multiple python instances

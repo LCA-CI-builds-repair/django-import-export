@@ -1,9 +1,11 @@
 Changelog
-=========
+=====- Refactored tests to remove dependencies between test cases (#1703)
+    - Improved test isolation by eliminating inter-test dependencies and enhancing test reliability.===
 
 Please refer to :doc:`release notes<release_notes>`.
 
-4.0.0-beta.2 (unreleased)
+4.- Custom templates extending import_export templates may lead to recursion errors (refer to #1514)
+    - Added a note to warn users about the potential recursion error when using custom templates that extend import_export templates..0-beta.2 (unreleased)
 --------------------------
 
 - fix declaring existing model field(s) in ModelResource altering export order (#1663)

@@ -2,7 +2,13 @@ import warnings
 from unittest import mock
 from unittest.mock import MagicMock
 
-from core.models import Book, Category
+from core.mo            def increment_get_filterset_call_count(self):
+                self.mock_get_filterset_call_count += 1
+                return MagicMock()
+
+            def get_mock_filterset_class(self):
+                self.mock_get_filterset_class_call_count += 1
+                return MagicMock()mport Book, Category
 from django.http import HttpRequest
 from django.test.testcases import TestCase
 from django.urls import reverse

@@ -13,7 +13,8 @@ from django.core.management.color import no_style
 from django.core.paginator import Paginator
 from django.db import connections, router
 from django.db.models import fields
-from django.db.models.query import QuerySet
+from django.db.models.query import Query                # Add code here
+                return super().skip_row(instance, original, row)t
 from django.db.transaction import TransactionManagementError, set_rollback
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe

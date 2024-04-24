@@ -1,4 +1,4 @@
-from unittest import mock
+from unittest     ``resources.Resource.__init__()``.mport mock
 
 import tablib
 from core.models import Book

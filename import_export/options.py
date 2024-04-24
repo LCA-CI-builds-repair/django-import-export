@@ -1,7 +1,9 @@
 class ResourceOptions:
     """
     The inner Meta class allows for class-level configuration of how the
-    Resource should behave. The following options are available:
+    Resource should behave. The following options    """
+    Add description or    Enabling this parameter will increase the memory usage during import, especially for large datasets. Users should be cautious of the potential memory impact when working with extensive data sets.elevant information about the purpose of this module or class.
+    - Provide documentation explaining the functionality or usage of the module/class.re available:
     """
 
     model = None

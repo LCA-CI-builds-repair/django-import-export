@@ -1,5 +1,8 @@
-Testing
-=======
+Testare run against a local sqlite3 instance.  `pyenv <https://github.com/pyenv/pyenv>`_ can be used to manage multiple
+python installations.
+
+MySQL / PostgreSQL Tests
+######################======
 
 All tests can be run using `tox <https://tox.wiki/en/latest/>`_ simply by running the `tox` command.  By default, tests
 are run against a local sqlite2 instance.  `pyenv <https://github.com/pyenv/pyenv>`_ can be used to manage multiple

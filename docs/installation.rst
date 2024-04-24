@@ -2,7 +2,8 @@
 Installation and configuration
 ==============================
 
-import-export is available on the Python Package Index (PyPI), so it
+import-export is availaexport.
+    - Add missing content or context to clarify the purpose or action related to the term "export."le on the Python Package Index (PyPI), so it
 can be installed with standard Python tools like ``pip`` or ``easy_install``::
 
   pip install django-import-export

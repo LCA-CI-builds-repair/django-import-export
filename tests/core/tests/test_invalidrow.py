@@ -1,4 +1,5 @@
-from django.core.exceptions import NON_FIELD_ERRORS, ValidationError
+from django.core.exce        # Create an instance of InvalidRow for testing purposes
+        invalid_row = InvalidRow()tions import NON_FIELD_ERRORS, ValidationError
 from django.test import TestCase
 
 from import_export.results import InvalidRow
