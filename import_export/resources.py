@@ -15,8 +15,96 @@ from django.core.exceptions import (
     ValidationError,
 )
 from django.core.management.color import no_style
-from django.core.paginator import Paginator
-from django.db import connections, router
+from django.core.paginator imp    def bulk_create_ob    def bulk_update_objec    def bulk_delete_objects(
+        self, using_transactions, dry_run, raise_errors, batch_size=None, result=No    def import_row(self, row, **kwargs):
+        """
+        Imports a single row of data.
+
+        :param row: A dictionary containing key/value data for the row to be imported.
+        :param \**kwargs: Additional keyword arguments for the import process.
+        """
+        pass
+
+    def delete_instance(self, instance, row, **kwargs):
+        r"""
+        Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
+        If ``use_bulk`` is enabled, instances are appended to a list for bulk import.
+
+        :param instance: A new or existing model instance.
+        :param row: A dictionary containing key/value data for the row to be deleted.
+        :param \**kwargs: Additional keyword arguments for the delete process.
+        """    """
+        Deletes objects by filtering on a list of instances to be deleted,
+        then calling ``delete()`` on the entire queryset.
+        """
+        try:
+            if len(self.delete_instances) > 0:
+                 def reset_sql_sequences(self, **kwargs):
+        """
+        Reset the SQL sequences after new objects are imported.
+        """
+        # Adapted from Django's loaddata
+        dry_run = self._is_dry_run(kwargs)
+        if not dry_run and any(
+            r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
+        ):
+            db_connection = self.get_db_connection_name()
+            connection = connections[db_connection]
+            sequence_sql = connection.ops.sequence_reset_sql(
+                no_style(), [self._meta.model]
+            )
+            if sequence_sql:
+                cursor = connection.cursor()
+                try:
+                    for line in sequence_sql:
+                        cursor.execute(line)
+                finally:
+                    cursor.close()
+
+    @classmethod
+    def get_display_name(cls):
+        if hasattr(cls._meta, "name"):
+            return cls._meta.name
+        return cls.__name__ns and dry_run:
+                    pass
+                else:
+                    delete_ids = [o.pk for o in self.delete_instances]
+                    self._meta.model.objects.filter(pk__in=delete_ids).delete()
+        except Exception as e:
+            # Handle the exception raised during bulk delete process
+            pass self, using_transactions, dry_run, raise_errors, batch_size=None, result=None
+    ):
+        """
+        Updates objects by calling ``bulk_update``.
+        """
+        try:
+            if len(self.update_instances) > 0:
+                if not using_transactions and dry_run:
+                    pass
+                else:
+                    self._meta.model.objects.bulk_update(
+                        self.update_instances,
+                        self.get_bulk_update_fields(),
+                        batch_size=batch_size,
+                    )
+        except Exception as e:
+            # Handle the exception raised during bulk update process
+            passself, using_transactions, dry_run, raise_errors, batch_size=None, result=None
+    ):
+        """
+        Creates objects by calling ``bulk_create``.
+        """
+        try:
+            if len(self.create_instances) > 0:
+                if not using_transactions and dry_run:
+                    pass
+                else:
+                    self._meta.model.objects.bulk_create(
+                        self.create_instances, batch_size=batch_size
+                    )
+        except Exception as e:
+            # Handle the exception raised during bulk creation process
+            passfrom django.db import connections, router
 from django.db.models import fields
 from django.db.models.fields.related import ForeignObjectRel
 from django.db.models.query import QuerySet

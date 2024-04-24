@@ -1,7 +1,53 @@
 import os.path
 
-from django import forms
-from django.conf import settings
+from django ifrom django import forms
+
+class ImportExportFofrom django import forms
+
+class ImportExportForm(forms.Form):
+    file_format = forms.ChoiceField(
+        label=_("Format"),
+        choices=(),
+    )
+    export_items = forms.MultipleChoiceField(
+        widget=forms.MultipleHiddenInput(), required=False
+    )
+
+    def __init__(self, formats, *args, **kwargs):
+        self.formats = formats
+        resources = kwargs.pop("resources", None)
+        super().__init__(*args, resources=resources, **kwargs)
+        choices = []
+        for i, f in enumerate(formats):
+            choices.append(
+                (
+                    str(i),
+                    f().get_title(),
+                )
+            )
+        if len(formats) > 1:
+            choices.insert(0, ("", "---"))
+        elif len(formats) == 1:
+            field = self.fields["file_format"]
+            field.value = formats[0]().get_title()
+            field.initial = 0
+            field.widget.attrs["readonly"] = True
+        else:
+            raise ValueError("invalid export formats list")ile = forms.FileField(label=_("File to import"))
+    input_format = forms.ChoiceField(
+        label=_("Format"),
+        choices=(),
+    )
+
+    def __init__(self, import_formats, *args, **kwargs):
+        self.import_formats = import_formats
+        resources = kwargs.pop("resources", None)
+        super().__init__(*args, **kwargs)
+        choices = [(str(i), f().get_title()) for i, f in enumerate(import_formats)]
+        if len(import_formats) > 1:
+            choices.insert(0, ("", "---"))
+            self.fields["import_file"].widget.attrs["class"] = "guess_format"
+            self.fields["input_format"].widget.attrs["class"] = "guess_format"om django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
 

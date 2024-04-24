@@ -15,10 +15,26 @@ from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
 
 from import_export.admin import ExportMixin
-from import_export.formats import base_formats
+from import_export.forma    def _do_import_post(self, url, filename, input_format, encoding=None, follow=False):
+        response = self.client.post(
+            url,
+            {
+                "file": open(filename, "rb"),
+                "input_format": input_format,
+                "encoding": encoding,
+            },
+            follow=follow,
+        )
+        return response
 
-
-class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
+    def test_import_books_from_csv(self):
+        self._is_str_in_response(
+            filename="books.csv",
+            input_format="csv",
+            follow=True,
+            str_in_response="Import finished, with 1 new and 0 updated books.",
+        )
+        self.assertEqual(1, Book.objects.count())ss ImportAdminIntegrationTest(AdminTestMixin, TestCase):
     def test_import_export_template(self):
         response = self.client.get("/admin/core/book/")
         self.assertEqual(response.status_code, 200)

@@ -4,7 +4,38 @@ from unittest.mock import MagicMock
 
 from core.models import Book, Category
 from django.http import HttpRequest
-from django.test.testcases import TestCase
+froclass BaseImportModelAdminTest(mixins.BaseImportMixin):
+    call_count = 0
+
+    def get_import_resource_classes(self):
+        self.call_count += 1
+
+    def get_import_resource_kwargs(self, request, *args, **kwargs):
+        self.call_count += 1
+
+class BaseExportModelAdminTest(mixins.BaseExportMixin):
+    call_count = 0
+
+    def get_resource_classes(self):
+        self.call_count += 1
+
+    def get_resource_kwargs(self, request, *args, **kwargs):
+        self.call_count += 1
+
+def test_get_import_resource_class_calls_self_get_resource_class(self):
+    admin = self.BaseImportModelAdminTest()
+    admin.get_import_resource_classes()
+    self.assertEqual(1, admin.call_count)
+
+def test_get_import_resource_kwargs_calls_self_get_resource_kwargs(self):
+    admin = self.BaseImportModelAdminTest()
+    admin.get_import_resource_kwargs(self.request)
+    self.assertEqual(1, admin.call_count)
+
+def test_get_export_resource_class_calls_self_get_resource_class(self):
+    admin = self.BaseExportModelAdminTest()
+    admin.get_resource_classes()
+    self.assertEqual(1, admin.call_count)mport TestCase
 from django.urls import reverse
 
 from import_export import admin, formats, forms, mixins, resources

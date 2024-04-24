@@ -11,8 +11,20 @@ from django.core.exceptions import PermissionDenied
 from django.forms import MultipleChoiceField, MultipleHiddenInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.template.response import TemplateResponse
-from django.urls import path, reverse
+from django.template.response import TemplateRes    """
+    Export mixin.
+
+    This is intended to be mixed with django.contrib.admin.ModelAdmin
+    https://docs.djangoproject.com/en/dev/ref/contrib/admin/
+    """
+
+    # Template for change_list view
+    import_export_change_list_template = "admin/import_export/change_list_export.html"
+    # Template for export view
+    export_template_name = "admin/import_export/export.html"
+    # Export data encoding
+    to_encoding = None
+    # Form class to use for the initial import stepngo.urls import path, reverse
 from django.utils.decorators import method_decorator
 from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _

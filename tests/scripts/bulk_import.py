@@ -7,9 +7,24 @@ import time
 from functools import wraps
 
 import tablib
-from memory_profiler import memory_usage
+from memory_profiler import memory_uimport tablib
 
-from import_export import resources
+rows = [(b.id, b.name, b.author_email, b.price) for b in all_books]
+dataset = tablib.Dataset(*rows, headers=["id", "name", "author_email", "price"])
+
+book_resource = _BookResource()  # Assuming _BookResource is initialized elsewhere
+do_import_duration(book_resource, dataset)
+
+assert Book.objects.count() == 0
+
+# Recreate rows that have been deleted
+Book.objects.bulk_create(books)
+assert Book.objects.count() == NUM_ROWS
+
+all_books = Book.objects.all()
+rows = [(b.id, b.name, b.author_email, b.price) for b in all_books]
+dataset = tablib.Dataset(*rows, headers=["id", "name", "author_email", "price"])
+do_import_mem(book_resource, dataset)t_export import resources
 from import_export.instance_loaders import CachedInstanceLoader
 
 from core.models import Book  # isort:skip

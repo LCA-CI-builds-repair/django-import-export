@@ -1,7 +1,170 @@
 from datetime import date
-from unittest.mock import patch
+from unittest.mock imp    def get_queryset(self):
+     def dehydrate_author_full_name(self, obj):
+        if obj.author:
+            return f"{obj.author.name} Bar"
+        return ""
 
-import tablib
+class ImportExportFieldOrderTest(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.pk = Book.objects.create(name="Ulysses", price="1.99").pk
+        self.dataset = tablib.Dataset(headers=["id", "name", "price"])
+        row = [self.pk, "Some book", "19.99"]
+        self.dataset.append(row)
+
+    @ignore_widget_deprecation_warning
+    def test_import_order_defined(self):
+        self.resource = OrderedBookResource()
+        self.resource.import_data(self.dataset)
+        self.assertEqual(["price", "name", "id"], self.resource.field_names)
+
+    @ignore_widget_deprecation_warning
+    def test_import_order_undefined(self):
+        self.resource = UnorderedBookResource()
+        self.resource.import_data(self.dataset)
+        self.assertEqual(["price", "id", "name"], self.resource.field_names)
+
+    @ignore_widget_deprecation_warning
+    def test_export_order_defined(self):
+        self.resource = OrderedBookResource()
+        data = self.resource.export()
+        target = f"price,name,id\r\n1.99,Ulysses,{self.pk}\r\n"
+        self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_export_order_undefined(self):
+        self.resource = UnorderedBookResource()
+        data = self.resource.export()
+        target = f"price,id,name\r\n1.99,{self.pk},Ulysses\r\n"
+        self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_subset_import_order(self):
+        self.resource = SubsetOrderedBookResource()
+        self.resource.import_data(self.dataset)
+        self.assertEqual(["name", "price", "id", "published"], self.resource.field_names)
+
+    @ignore_widget_deprecation_warning
+    def test_subset_export_order(self):
+        self.resource = SubsetOrderedBookResource()
+        data = self.resource.export()
+        target = f"published,price,id,name\r\n,1.99,{self.pk},Ulysses\r\n"
+        self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_duplicate_import_order(self):
+        self.resource = DuplicateFieldsBookResource()
+        self.resource.import_data(self.dataset)
+        self.assertEqual(["id", "price", "name"], self.resource.field_names)
+
+    @ignore_widget_deprecation_warning
+    def test_duplicate_export_order(self):
+        self.resource = DuplicateFieldsBookResource()
+        data = self.resource.export()
+        target = f"id,price,name\r\n{self.pk},1.99,Ulysses\r\n"
+        self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_fields_as_list_import_order(self):
+        self.resource = FieldsAsListBookResource()
+        self.resource.import_data(self.dataset)
+        self.assertEqual(["id", "price", "name"], self.resource.field_names)
+
+    @ignore_widget_deprecation_warning
+    def test_fields_as_list_export_order(self):
+        self.resource = FieldsAsListBookResource()
+        data = self.resource.export()
+        target = f"id,price,name\r\n{self.pk},1.99,Ulysses\r\n"
+        self.assertEqual(target, data.csv)
+
+    @ignore_widget_deprecation_warning
+    def test_declared_model_fields_not_alter_export_order(self):
+        # Issue (#1663)
+        categories = [
+            Category.objects.create(name="sci-fi"),
+            Category.objects.create(name="romance"),
+        ]
+        author = Author.objects.create(name="Foo")
+        book = Book.objects.create(
+            name="The Lord Of The Rings", author=author, published=date(2022, 2, 2)
+        )
+        book.categories.set(categories)
+
+        self.resource = DeclaredModelFieldBookResource()
+        declared_field_names = (
+            "published",
+            "author",  # FK
+            "categories",  # M2M
+        )
+        export_order = self.resource.get_export_order()
+        model_fields_names = [
+            field.name for field in self.resource._meta.model._meta.get_fields()
+        ]
+
+        for declared_field_name in declared_field_names:
+            self.assertEqual(
+                model_fields_names.index(declared_field_name),
+                export_order.index(declared_field_name),
+            )
+
+        # Validate non-model field is exported last unless specified
+        self.assertEqual(export_order[-1], "author_full_name")
+
+    @ignore_widget_deprecation_warning
+    def test_meta_fields_not_alter_export_order(self):
+        class DeclaredModelFieldBookResource(
+            ImportExportFieldOrderTest.BaseBookResource
+        ):
+            author_full_name = fields.Field(
+                attribute="author",
+                column_name="author full name",
+            )
+            categories = fields.Field(
+                attribute="categories",
+                column_name="categories",
+                widget=widgets.ManyToManyWidget(model=Category, field="name"),
+            )
+            published = fields.Field(
+                attribute="published",
+                column_name="published",
+                widget=widgets.DateWidget("%d.%m.%Y"),
+            )
+            author = fields.Field(attribute="author__name", column_name="author")
+
+            class Meta:
+                model = Book
+                fields = (
+                    "id",
+                    "author__name",
+                    "author",
+                    "author_full_name",
+                    "categories",
+                    "published",
+                )
+
+            def dehydrate_author_full_name(self, obj):
+                if obj.author:lds were called.
+        """
+        self.field_names.append(field.column_name)
+
+class UnorderedBookResource(BaseBookResource):
+    class Meta:
+        fields = ("price", "id", "name")
+        model = Book
+
+class OrderedBookResource(BaseBookResource):
+    class Meta:
+        fields = ("price", "id", "name")
+        import_order = ("price", "name", "id")
+        export_order = ("price", "name", "id")
+        model = Book
+
+class SubsetOrderedBookResource(BaseBookResource):
+    class Meta:
+        fields = ("price", "id", "name", "published")
+        import_order = ("name",)
+        export_order = ("published",)
 from core.models import Author, Book, Category
 from core.tests.resources import BookResource
 from core.tests.utils import ignore_widget_deprecation_warning
