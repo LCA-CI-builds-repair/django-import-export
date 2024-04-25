@@ -589,18 +589,18 @@ class Resource(metaclass=DeclarativeMetaclass):
         Override to add additional logic. Does nothing by default.
 
         :param instance: A new or existing model instance.
-
-        :param row: A ``dict`` containing key / value data for the row to be imported.
-
-        :param \**kwargs:
-            See :meth:`import_row`
-        """
-        pass
-
-    def delete_instance(self, instance, row, **kwargs):
-        r"""
-        Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
-        If ``use_bulk`` then instances are appended to a list for bulk import.
+        def delete_instance(self, instance, row, **kwargs):
+            """
+            Deletes the specified instance if 'dry_run' is not set.
+            
+            Parameters:
+            - instance: The instance to be deleted.
+            - row: A dictionary containing key/value data for the row to be imported.
+            - **kwargs: Additional keyword arguments to be passed to the method.
+            
+            Calls the 'delete' method of the instance if 'dry_run' is not set.
+            If 'use_bulk' is enabled, instances are appended to a list for bulk import.
+            """
 
         :param instance: A new or existing model instance.
 
@@ -1569,17 +1569,26 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         if not dry_run and any(
             r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
         ):
+            # Get the database connection name
             db_connection = self.get_db_connection_name()
+            
+            # Retrieve the database connection
             connection = connections[db_connection]
+            
+            # Generate SQL to reset sequences for the model
             sequence_sql = connection.ops.sequence_reset_sql(
                 no_style(), [self._meta.model]
             )
+            
+            # Execute sequence reset SQL if available
             if sequence_sql:
                 cursor = connection.cursor()
                 try:
+                    # Execute each SQL statement in the sequence
                     for line in sequence_sql:
                         cursor.execute(line)
                 finally:
+                    # Ensure the cursor is closed after execution
                     cursor.close()
 
     @classmethod
