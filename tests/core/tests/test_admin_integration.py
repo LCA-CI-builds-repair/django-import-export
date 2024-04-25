@@ -687,7 +687,8 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
-            'attachment; filename="Book-{}.csv"'.format(date_str),
+            'attachment; filename="Book-{}.csv"'.format(date_str)
+        )
         )
         self.assertEqual(
             b"id,name,author,author_email,imported,published,"
@@ -701,7 +702,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertContains(response, "Export/Import only book names")
 
         data = {
-            "file_format": "0",
             "resource": 1,
         }
         date_str = datetime.now().strftime("%Y-%m-%d")
@@ -711,8 +711,9 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
-            'attachment; filename="Book-{}.csv"'.format(date_str),
+            'attachment; filename="Book-{}.csv"'.format(date_str)
         )
+        self.assertEqual(b"id,name\r\n", response.content)
         self.assertEqual(b"id,name\r\n", response.content)
 
     def test_export_legacy_resource(self):
@@ -746,16 +747,16 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
-        data = {"file_format": str(xlsx_index)}
         response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.has_header("Content-Disposition"))
         self.assertEqual(
             response["Content-Type"],
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
     @override_settings(IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT=True)
+    @patch("import_export.mixins.logger")
     @patch("import_export.mixins.logger")
     def test_export_escape_formulae(self, mock_logger):
         Book.objects.create(id=1, name="=SUM(1+1)")
@@ -764,16 +765,16 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
-        data = {"file_format": str(xlsx_index)}
         response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
         content = response.content
         # #1698 temporary catch for deprecation warning in openpyxl
-        # this catch block must be removed when openpyxl updated
+        # this catch block must be removed when openpyxl is updated
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
             wb = load_workbook(filename=BytesIO(content))
         self.assertEqual("<script>alert(1)</script>", wb.active["B2"].value)
+        self.assertEqual("SUM(1+1)", wb.active["B3"].value)
         self.assertEqual("SUM(1+1)", wb.active["B3"].value)
 
         mock_logger.debug.assert_called_once_with(
