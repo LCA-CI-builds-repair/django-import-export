@@ -1318,7 +1318,7 @@ class Resource(metaclass=DeclarativeMetaclass):
     def _is_dry_run(self, kwargs):
         return kwargs.get("dry_run", False)
 
-    def _check_import_id_fields(self, headers):
+    def _check_import_id_fields(self, headers)
         import_id_fields = [self.fields[f] for f in self.get_import_id_fields()]
         missing_fields = list()
         for field in import_id_fields:

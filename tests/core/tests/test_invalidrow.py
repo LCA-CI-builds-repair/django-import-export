@@ -14,7 +14,6 @@ class InvalidRowTest(TestCase):
                 "name": ["Error 4", "Error 5"],
                 "birthday": ["Error 6", "Error 7"],
             }
-        )
         combined_error_dict = self.non_field_errors.update_error_dict(
             self.field_errors.error_dict.copy()
         )
