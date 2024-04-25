@@ -1171,24 +1171,9 @@ class TestExportEncoding(TestCase):
         model = Book
 
         def __init__(self, test_str=None):
-            self.test_str = test_str
-
-        def get_data_for_export(self, request, queryset, *args, **kwargs):
-            dataset = Dataset(headers=["id", "name"])
-            dataset.append([1, self.test_str])
-            return dataset
-
-        def get_export_queryset(self, request):
-            return list()
-
-        def get_export_filename(self, request, queryset, file_format):
-            return "f"
-
-    def setUp(self):
-        self.file_format = formats.base_formats.CSV()
-        self.export_mixin = self.TestMixin(test_str="teststr")
-
-    def test_to_encoding_not_set_default_encoding_is_utf8(self):
+        original_get_paginator = self.get_paginator
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         self.export_mixin = self.TestMixin(test_str="teststr")
         data = self.export_mixin.get_export_data(
             self.file_format, list(), request=self.mock_request

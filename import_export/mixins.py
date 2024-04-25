@@ -164,16 +164,9 @@ class BaseExportMixin(BaseImportExportMixin):
         return self.get_resource_kwargs(request, *args, **kwargs)
 
     def get_data_for_export(self, request, queryset, *args, **kwargs):
-        export_form = kwargs.get("export_form")
-        export_class = self.choose_export_resource_class(export_form)
-        export_resource_kwargs = self.get_export_resource_kwargs(
-            request, *args, **kwargs
-        )
-        cls = export_class(**export_resource_kwargs)
-        export_data = cls.export(*args, queryset=queryset, **kwargs)
-        return export_data
-
-    def get_export_filename(self, file_format):
+        original_get_paginator = self.get_paginator
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         date_str = now().strftime("%Y-%m-%d")
         filename = "%s-%s.%s" % (
             self.model.__name__,
