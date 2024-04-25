@@ -1055,6 +1055,8 @@ class Resource(metaclass=DeclarativeMetaclass):
         defined_fields = order_fields + tuple(getattr(self._meta, "fields") or ())
 
         order = list()
+import copy
+
         [order.append(f) for f in defined_fields if f not in order]
         return tuple(order) + tuple(k for k in self.fields if k not in order)
 
