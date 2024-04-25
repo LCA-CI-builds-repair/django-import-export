@@ -28,19 +28,19 @@ class ImportExportFormBase(forms.Form):
             resources = args
 
         if resources and len(resources) > 1:
-            resource_choices = []
-            for i, resource in enumerate(resources):
-                resource_choices.append((i, resource.get_display_name()))
+        if resources:
+            resource_choices = [(i, resource.get_display_name()) for i, resource in enumerate(resources)]
             self.fields["resource"].choices = resource_choices
         else:
             del self.fields["resource"]
-
-
 class ImportForm(ImportExportFormBase):
     import_file = forms.FileField(label=_("File to import"))
     input_format = forms.ChoiceField(
         label=_("Format"),
         choices=(),
+    )
+
+    def __init__(self, import_formats, *args, **kwargs):
     )
 
     def __init__(self, import_formats, *args, **kwargs):
@@ -50,9 +50,6 @@ class ImportForm(ImportExportFormBase):
         if len(import_formats) > 1:
             choices.insert(0, ("", "---"))
             self.fields["import_file"].widget.attrs["class"] = "guess_format"
-            self.fields["input_format"].widget.attrs["class"] = "guess_format"
-
-        self.fields["input_format"].choices = choices
 
     @property
     def media(self):
@@ -85,22 +82,14 @@ class ExportForm(ImportExportFormBase):
     )
 
     def __init__(self, formats, *args, **kwargs):
+    )
+
+    def __init__(self, formats, *args, **kwargs):
         resources = kwargs.pop("resources", None)
         super().__init__(*args, resources=resources, **kwargs)
-        choices = []
-        for i, f in enumerate(formats):
-            choices.append(
-                (
-                    str(i),
-                    f().get_title(),
-                )
-            )
+        choices = [(str(i), f().get_title()) for i, f in enumerate(formats)]
         if len(formats) > 1:
             choices.insert(0, ("", "---"))
-
-        self.fields["file_format"].choices = choices
-
-
 def export_action_form_factory(formats):
     """
     Returns an ActionForm subclass containing a ChoiceField populated with

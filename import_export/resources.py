@@ -550,7 +550,8 @@ class Resource(metaclass=DeclarativeMetaclass):
             self.delete_instances.append(instance)
         else:
             if not using_transactions and dry_run:
-                # we don't have transactions and we want to do a dry_run
+                # Handle the case where transactions are not used and a dry run is requested
+                # Add necessary logic here
                 pass
             else:
                 instance.delete()
@@ -1359,7 +1360,6 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         ):
             db_connection = self.get_db_connection_name()
             connection = connections[db_connection]
-            sequence_sql = connection.ops.sequence_reset_sql(
                 no_style(), [self._meta.model]
             )
             if sequence_sql:
@@ -1371,6 +1371,9 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
                     cursor.close()
 
     @classmethod
+    def get_display_name(cls):
+        # Implement the logic for getting the display name of the resource here
+        pass
     def get_display_name(cls):
         if hasattr(cls._meta, "name"):
             return cls._meta.name
