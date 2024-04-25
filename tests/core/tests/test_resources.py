@@ -898,7 +898,8 @@ class ModelResourceTest(TestCase):
         invalid_row = result.invalid_rows[0]
         self.assertEqual(invalid_row.error_count, 1)
         self.assertEqual(
-            invalid_row.field_specific_errors, {"name": ["'123' is not a valid value"]}
+            invalid_row.field_specific_errors,
+            {"name": ["'123' is not a valid value"]}
         )
         # diff_header and invalid_row.values should match too
         self.assertEqual(result.diff_headers, ["id", "name", "birthday"])
