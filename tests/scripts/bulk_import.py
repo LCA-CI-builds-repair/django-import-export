@@ -80,16 +80,20 @@ def do_create():
             force_init_instance = True
 
     print("\ndo_create()")
-    # clearing down existing objects
-    books = Book.objects.all()
-    books._raw_delete(books.db)
+# Import necessary modules
+from tablib import Dataset
+from scripts.resources import _BookResource
+from scripts.helpers import do_import_duration, do_import_mem
 
-    rows = [("", "Some new book", "email@example.com", "10.25")] * NUM_ROWS
-    dataset = tablib.Dataset(*rows, headers=["id", "name", "author_email", "price"])
+# Clearing down existing objects
+Book.objects.all().delete()
 
-    book_resource = _BookResource()
-    do_import_duration(book_resource, dataset)
-    do_import_mem(book_resource, dataset)
+rows = [("", "Some new book", "email@example.com", "10.25")] * NUM_ROWS
+dataset = Dataset(*rows, headers=["id", "name", "author_email", "price"])
+
+book_resource = _BookResource()
+do_import_duration(book_resource, dataset)
+do_import_mem(book_resource, dataset)
 
     # Book objects are created once for the 'duration' run,
     # and once for the 'memory' run
@@ -154,17 +158,25 @@ def do_delete():
     assert NUM_ROWS == Book.objects.count()
 
     all_books = Book.objects.all()
-    rows = [(b.id, b.name, b.author_email, b.price) for b in all_books]
-    dataset = tablib.Dataset(*rows, headers=["id", "name", "author_email", "price"])
+# Import necessary modules
+from tablib import Dataset
+from scripts.resources import _BookResource
+from scripts.helpers import do_import_duration
 
-    book_resource = _BookResource()
-    do_import_duration(book_resource, dataset)
+# Perform import duration
+do_import_duration(book_resource, dataset)
 
-    assert 0 == Book.objects.count()
+# Assert the count of objects
+assert 0 == Book.objects.count()
 
-    # recreate rows which have just been deleted
-    Book.objects.bulk_create(books)
-    assert NUM_ROWS == Book.objects.count()
+# Recreate rows which have just been deleted
+Book.objects.bulk_create(books)
+assert NUM_ROWS == Book.objects.count()
+
+# Retrieve all books and create dataset
+all_books = Book.objects.all()
+rows = [(b.id, b.name, b.author_email, b.price) for b in all_books]
+dataset = Dataset(*rows, headers=["id", "name", "author_email", "price"])
 
     all_books = Book.objects.all()
     rows = [(b.id, b.name, b.author_email, b.price) for b in all_books]

@@ -74,17 +74,19 @@ class ExportViewMixinTest(TestCase):
             mock_get_filterset_class_call_count = 0
 
             def __init__(self):
-                self.model = MagicMock()
-                self.request = MagicMock(spec=HttpRequest)
-                self.model.__name__ = "mockModel"
+class TestMixins:
+    def __init__(self):
+        self.model = MagicMock()
+        self.request = MagicMock(spec=HttpRequest)
+        self.model.__name__ = "mockModel"
 
-            def get_filterset(self, filterset_class):
-                self.mock_get_filterset_call_count += 1
-                return MagicMock()
+    def get_filterset(self, filterset_class):
+        self.mock_get_filterset_call_count += 1
+        return MagicMock()
 
-            def get_filterset_class(self):
-                self.mock_get_filterset_class_call_count += 1
-                return MagicMock()
+    def get_filterset_class(self):
+        self.mock_get_filterset_class_call_count += 1
+        return MagicMock()
 
         m = TestMixin()
         res = m.form_valid(self.form)

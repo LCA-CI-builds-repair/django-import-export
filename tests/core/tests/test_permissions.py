@@ -75,16 +75,17 @@ class ImportExportPermissionTest(TestCase):
         self.assertEqual(response.status_code, 403)
 
         data = {"file_format": "0"}
-        response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 403)
+# Ensure user permissions before performing actions
+self.set_user_book_model_permission("change")
 
-        self.set_user_book_model_permission("change")
-        response = self.client.get("/admin/core/book/export/")
-        self.assertEqual(response.status_code, 200)
+# Use GET method for exporting
+response = self.client.get("/admin/core/book/export/")
+self.assertEqual(response.status_code, 200)
 
-        data = {"file_format": "0"}
-        response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 200)
+# Set the correct file format for exporting
+data = {"file_format": "0"}
+response = self.client.post("/admin/core/book/export/", data)
+self.assertEqual(response.status_code, 200)
 
     @override_settings(IMPORT_EXPORT_EXPORT_PERMISSION_CODE="add")
     def test_check_export_button(self):

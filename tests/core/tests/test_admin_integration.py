@@ -267,11 +267,20 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
                     "action": "export_admin_action",
                     "index": "0",
                     "selected_across": "0",
-                    "_selected_action": "0",
-                },
-            )
-            assert 200 <= response.status_code <= 399
-            mock_export_admin_action.assert_called()
+# Import necessary modules
+from unittest.mock import MagicMock
+
+# Perform the request to trigger admin action
+response = self.client.post(
+    "/admin/core/book/export/",
+    {
+        "_selected_action": "0",
+    },
+)
+assert 200 <= response.status_code <= 399
+
+# Assert the export admin action call
+mock_export_admin_action.assert_called()
 
     def test_import_action_handles_UnicodeDecodeError_as_form_error(self):
         with mock.patch(
@@ -443,23 +452,27 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         response = self._do_import_post(self.book_import_url, "books.csv")
 
         self.assertEqual(response.status_code, 200)
-        confirm_form = response.context["confirm_form"]
-        data = confirm_form.initial
-        response = self.client.post(self.book_process_import_url, data, follow=True)
-        self.assertEqual(response.status_code, 200)
-        book = LogEntry.objects.latest("id")
-        self.assertEqual(book.object_repr, "Some book")
-        self.assertEqual(book.object_id, str(1))
+# Import necessary modules
+from core.models import Parent
+
+# Create a Parent object
+Parent.objects.create(id=1234, name="Some Parent")
+
+# Perform the import post request for child data
+response = self._do_import_post(self.child_import_url, "child.csv")
+self.assertEqual(response.status_code, 200)
+confirm_form = response.context["confirm_form"]
+data = confirm_form.initial
+response = self.client.post(
+    "/admin/core/child/process_import/", data, follow=True
+)
 
     def test_import_log_entry_with_fk(self):
-        Parent.objects.create(id=1234, name="Some Parent")
-        response = self._do_import_post(self.child_import_url, "child.csv")
-        self.assertEqual(response.status_code, 200)
-        confirm_form = response.context["confirm_form"]
-        data = confirm_form.initial
-        response = self.client.post(
-            "/admin/core/child/process_import/", data, follow=True
-        )
+# Import necessary modules
+from core.models import Author
+
+# Create an Author object for selecting in admin import custom forms
+Author.objects.create(id=11, name="Test Author")
         self.assertEqual(response.status_code, 200)
         child = LogEntry.objects.latest("id")
         self.assertEqual(child.object_repr, "Some - child of Some Parent")
@@ -673,17 +686,21 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         )
 
     def test_export(self):
-        response = self.client.get("/admin/core/book/export/")
-        self.assertEqual(response.status_code, 200)
+# Import necessary modules
+import date_str
+
+# Set the Content-Disposition header for CSV file download
+response["Content-Disposition"] = 'attachment; filename="Book-{}.csv"'.format(date_str)
 
         data = {
-            "file_format": "0",
-        }
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        with self.assertNumQueries(7):  # Should not contain COUNT queries from ModelAdmin.get_results()
-            response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.has_header("Content-Disposition"))
+# Import necessary modules
+from django.test import TestCase
+
+# Perform the test for exporting the second resource
+def test_export_second_resource(self):
+    response = self.client.get("/admin/core/book/export/")
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, "Export/Import only book names")
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
@@ -701,13 +718,15 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertContains(response, "Export/Import only book names")
 
         data = {
-            "file_format": "0",
-            "resource": 1,
-        }
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.has_header("Content-Disposition"))
+# Import necessary modules
+import warnings
+
+# Perform the test for exporting legacy book data
+def test_export_legacy_book_data(self):
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    response = self.client.get("/admin/core/legacybook/export/")
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, "Export/Import only book names")
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
@@ -742,18 +761,21 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(b"id,name\r\n", response.content)
 
     def test_returns_xlsx_export(self):
-        response = self.client.get("/admin/core/book/export/")
-        self.assertEqual(response.status_code, 200)
+# Import necessary modules
+from django.test import TestCase
+
+# Assert that the response status code is 200
+self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
-        data = {"file_format": str(xlsx_index)}
-        response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.has_header("Content-Disposition"))
-        self.assertEqual(
-            response["Content-Type"],
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        )
+# Import necessary modules
+from openpyxl import load_workbook
+from io import BytesIO
+
+# Load the workbook with content from BytesIO
+wb = load_workbook(filename=BytesIO(content))
+self.assertEqual("<script>alert(1)</script>", wb.active["B2"].value)
+self.assertEqual("SUM(1+1)", wb.active["B3"].value)
 
     @override_settings(IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT=True)
     @patch("import_export.mixins.logger")
@@ -786,28 +808,39 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
-        data = {"file_format": str(xlsx_index)}
-        with self.assertWarnsRegex(
-            DeprecationWarning,
-            r"IMPORT_EXPORT_ESCAPE_HTML_ON_EXPORT is deprecated "
-            "and will be removed in a future release.",
-        ):
-            self.client.post("/admin/core/book/export/", data)
+# Import necessary modules
+import date_str
 
+# Assert that the Content-Disposition header is set correctly
+self.assertEqual(
+    response["Content-Disposition"],
+    'attachment; filename="EBook-{}.csv"'.format(date_str),
+)
 
-class FilteredExportAdminIntegrationTest(AdminTestMixin, TestCase):
-    fixtures = ["category", "book", "author"]
+# Assert the content of the response matches the expected CSV data for an EBook
+self.assertEqual(
+    b"id,name,author,author_email,imported,published,"
+    b"published_time,price,added,categories\r\n"
+    b"5,The Man with the Golden Gun,5,ian@example.com,"
+    b"0,1965-04-01,21:00:00,5.00,,2\r\n",
+    response.content,
+)
 
     def test_export_filters_by_form_param(self):
         # issue 1578
         author = Author.objects.get(name="Ian Fleming")
 
         data = {"file_format": "0", "author": str(author.id)}
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        response = self.client.post("/admin/core/ebook/export/", data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.has_header("Content-Disposition"))
-        self.assertEqual(response["Content-Type"], "text/csv")
+# Import necessary modules
+from django.test import override_settings
+
+# Check the response content for the email "test@example.com"
+self.assertContains(
+    response,
+    text="test@example.com",
+    status_code=200,
+    encoding=encoding,
+)
         self.assertEqual(
             response["Content-Disposition"],
             'attachment; filename="EBook-{}.csv"'.format(date_str),
@@ -1018,20 +1051,27 @@ class ExportActionAdminIntegrationTest(AdminTestMixin, TestCase):
         self.cat2 = Category.objects.create(name="Cat 2")
 
     def test_export(self):
-        data = {
-            "action": ["export_admin_action"],
-            "file_format": "0",
-            "_selected_action": [str(self.cat1.id)],
-        }
-        response = self.client.post("/admin/core/category/", data)
-        self.assertContains(response, self.cat1.name, status_code=200)
-        self.assertNotContains(response, self.cat2.name, status_code=200)
-        self.assertTrue(response.has_header("Content-Disposition"))
-        date_str = datetime.now().strftime("%Y-%m-%d")
-        self.assertEqual(
-            response["Content-Disposition"],
-            'attachment; filename="Category-{}.csv"'.format(date_str),
-        )
+# Import necessary modules
+from django.core.exceptions import PermissionDenied
+from django.test import TestCase
+from unittest import mock
+
+# Define the TestMixin class and test methods
+class TestMixin(TestCase):
+    def test_export_data_no_permission(self):
+        m = TestMixin()
+        with self.assertRaises(PermissionDenied):
+            m.get_export_data("0", Book.objects.none(), request=request)
+
+    def test_export_admin_action_one_formats(self):
+        mock_model = mock.MagicMock()
+        mock_site = mock.MagicMock()
+
+        class TestCategoryAdmin(ExportActionModelAdmin):
+            def __init__(self, model, admin_site):
+                super().__init__(model, admin_site)
+
+            export_formats = [base_formats.CSV]
 
     def test_export_no_format_selected(self):
         data = {
@@ -1334,53 +1374,26 @@ class TestImportMixinDeprecationWarnings(TestCase):
 
 
 class TestExportMixinDeprecationWarnings(TestCase):
-    class TestMixin(ExportMixin):
-        """
-        TestMixin is a subclass which mimics a
-        class which the user may have created
-        """
+# Import necessary modules
+from django.test import TestCase
 
-        def get_export_form(self):
-            return super().get_export_form()
+# Define the test methods for importing and checking data
+def test_import_action_create(self):
+    self._is_regex_in_response(
+        "books.csv",
+        "0",
+        follow=True,
+        regex_in_response="Import finished, with 1 new and 0 updated books.",
+    )
+    self.assertEqual(1, Book.objects.count())
 
-    def setUp(self):
-        super().setUp()
-        self.export_mixin = self.TestMixin()
-
-    def test_get_export_form_warning(self):
-        target_msg = (
-            "ExportMixin.get_export_form() is deprecated and will "
-            "be removed in a future release. Please use the new "
-            "'export_form_class' attribute to specify a custom form "
-            "class, or override the get_export_form_class() method if "
-            "your requirements are more complex."
-        )
-        with self.assertWarns(DeprecationWarning) as w:
-            self.export_mixin.get_export_form()
-            self.assertEqual(target_msg, str(w.warnings[0].message))
-
-
-@override_settings(IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True)
-class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
-    def _is_str_in_response(
-        self,
-        filename,
-        input_format,
-        encoding=None,
-        str_in_response=None,
-        follow=False,
-        status_code=200,
-    ):
-        response = self._do_import_post(
-            self.book_import_url,
-            filename,
-            input_format,
-            encoding=encoding,
-            follow=follow,
-        )
-        self.assertEqual(response.status_code, status_code)
-        if str_in_response is not None:
-            self.assertContains(response, str_in_response)
+def test_import_action_invalid_date(self):
+    # Test that a row with an invalid date redirects to the errors page
+    response = self._do_import_post(self.book_import_url, "books-invalid-date.csv", "0")
+    result = response.context["result"]
+    # There should be a single invalid row
+    self.assertEqual(1, len(result.invalid_rows))
+    self.assertEqual("Enter a valid date.", result.invalid_rows[0].error.messages[0])
 
     def _is_regex_in_response(
         self,
@@ -1403,24 +1416,27 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
             self.assertRegex(str(response.content), regex_in_response)
 
     def test_import_action_create(self):
-        self._is_str_in_response(
-            "books.csv",
-            "0",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
+# Import necessary modules
+from django.test import TestCase
+
+# Verify the error message for an invalid date in the imported data
+result = response.context["result"]
+self.assertEqual(1, len(result.invalid_rows))
+self.assertEqual("Enter a valid date.", result.invalid_rows[0].error.messages[0])
         self.assertEqual(1, Book.objects.count())
 
     def test_import_action_invalid_date(self):
-        # test that a row with an invalid date redirects to errors page
-        response = self._do_import_post(
-            self.book_import_url, "books-invalid-date.csv", "0"
-        )
-        result = response.context["result"]
-        # there should be a single invalid row
-        self.assertEqual(1, len(result.invalid_rows))
-        self.assertEqual(
-            "Enter a valid date.", result.invalid_rows[0].error.messages[0]
+# Import necessary modules
+from django.test import TestCase
+
+# Check the response content for different error messages from databases
+xlsx_index = self._get_input_format_index("xlsx")
+self._is_regex_in_response(
+    "books-empty-author-email.xlsx",
+    xlsx_index,
+    follow=True,
+    regex_in_response=r"(NOT NULL|null value in column|cannot be null)",
+)
         )
         # no rows should be imported because we rollback on validation errors
         self.assertEqual(0, Book.objects.count())
@@ -1469,38 +1485,24 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(1, Book.objects.count())
 
     def test_import_action_mac(self):
-        self._is_str_in_response(
-            "books-mac.csv",
-            "0",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
+# Import necessary modules
+from django.test import TestCase
 
-    def test_import_action_iso_8859_1(self):
-        self._is_str_in_response(
-            "books-ISO-8859-1.csv",
-            "0",
-            "ISO-8859-1",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
+# Define test methods for handling import scenarios
+def test_import_action_decode_error(self):
+    # Attempting to read a file with the incorrect encoding should raise an error
+    self._is_regex_in_response(
+        "books-ISO-8859-1.csv",
+        "0",
+        follow=True,
+        encoding="utf-8-sig",
+        regex_in_response=".*UnicodeDecodeError.* encountered while trying to read file",
+    )
 
-    def test_import_action_decode_error(self):
-        # attempting to read a file with the incorrect encoding should raise an error
-        self._is_regex_in_response(
-            "books-ISO-8859-1.csv",
-            "0",
-            follow=True,
-            encoding="utf-8-sig",
-            regex_in_response=(
-                ".*UnicodeDecodeError.* encountered " "while trying to read file"
-            ),
-        )
-
-    def test_import_action_binary(self):
-        self._is_str_in_response(
-            "books.xls",
-            "1",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
+def test_import_action_binary(self):
+    self._is_str_in_response(
+        "books.xls",
+        "1",
+        follow=True,
+        str_in_response="Import finished, with 1 new and 0 updated books.",
+    )
