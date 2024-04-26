@@ -215,6 +215,16 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                     RowResult.IMPORT_TYPE_UPDATE: CHANGE,
                     RowResult.IMPORT_TYPE_DELETE: DELETION,
                 }
+                # Add imported objects to LogEntry based on import types
+                for import_type, action_flag in logentry_map.items():
+                    LogEntry.objects.log_action(
+                        user_id=request.user.pk,
+                        content_type_id=ContentType.objects.get_for_model(result.model).pk,
+                        object_id=result.object_id,
+                        object_repr=str(result.object_repr),
+                        action_flag=action_flag,
+                        change_message=str(result),
+                    )
                 content_type_id = ContentType.objects.get_for_model(self.model).pk
                 for row in result:
                     if (
@@ -496,9 +506,9 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                         dry_run=True,
                         raise_errors=False,
                         file_name=import_file.name,
-                        user=request.user,
-                        **imp_kwargs,
-                    )
+        else:
+            res_kwargs = self.get_import_resource_kwargs(
+                request, form=import_form, **kwargs)
 
                     context["result"] = result
 

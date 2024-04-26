@@ -119,7 +119,6 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         return Diff
 
-    @classmethod
     def get_db_connection_name(self):
         if self._meta.using_db is None:
             return router.db_for_write(self._meta.model)
@@ -289,7 +288,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         to be created, or an existing object to be updated.
 
         :param row: A dict representing the import row.
-
+        :param row: A dict representing the import row.
         :param \**kwargs:
             See :meth:`import_row
         """
@@ -362,9 +361,9 @@ class Resource(metaclass=DeclarativeMetaclass):
             if not self._is_using_transactions(kwargs) and self._is_dry_run(kwargs):
                 # we don't have transactions and we want to do a dry_run
                 pass
+                pass
             else:
                 instance.delete()
-        self.after_delete_instance(instance, row, **kwargs)
 
     def before_delete_instance(self, instance, row, **kwargs):
         r"""
@@ -807,9 +806,9 @@ class Resource(metaclass=DeclarativeMetaclass):
             if using_transactions and (
                 dry_run
                 or result.has_errors()
+                or result.has_errors()
                 or (rollback_on_validation_errors and result.has_validation_errors())
             ):
-                set_rollback(True, using=db_connection)
             return result
 
     def import_data_inner(
@@ -1168,9 +1167,8 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
                     pass
 
             if isinstance(f, ArrayField):
+            if isinstance(f, ArrayField):
                 return widgets.SimpleArrayWidget
-
-        return result
 
     @classmethod
     def widget_kwargs_for_field(cls, field_name, django_field):
@@ -1219,6 +1217,7 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         return self._meta.model()
 
     def after_import(self, dataset, result, **kwargs):
+    def after_import(self, dataset, result, **kwargs):
         """
         Reset the SQL sequences after new objects are imported
         """
@@ -1227,8 +1226,6 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         if not dry_run and any(
             r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
         ):
-            db_connection = self.get_db_connection_name()
-            connection = connections[db_connection]
             sequence_sql = connection.ops.sequence_reset_sql(
                 no_style(), [self._meta.model]
             )
