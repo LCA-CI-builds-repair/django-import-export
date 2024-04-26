@@ -14,15 +14,15 @@ class InvalidRowTest(TestCase):
                 "name": ["Error 4", "Error 5"],
                 "birthday": ["Error 6", "Error 7"],
             }
-        )
-        combined_error_dict = self.non_field_errors.update_error_dict(
-            self.field_errors.error_dict.copy()
-        )
-        e = ValidationError(combined_error_dict)
-        # Create an InvalidRow instance to use in tests
-        self.obj = InvalidRow(number=1, validation_error=e, values=["ABC", "123"])
+    )
+    combined_error_dict = self.non_field_errors.update_error_dict(
+        self.field_errors.error_dict.copy()
+    )
+    e = ValidationError(combined_error_dict)
+    # Create an InvalidRow instance to use in tests
+    self.obj = InvalidRow(number=1, validation_error=e, values=["ABC", "123"])
 
-    def test_error_count(self):
+def test_error_count(self):
         self.assertEqual(self.obj.error_count, 7)
 
     def test_non_field_specific_errors(self):

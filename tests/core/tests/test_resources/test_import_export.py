@@ -138,15 +138,17 @@ class ImportExportFieldOrderTest(TestCase):
         self.assertEqual(target, data.csv)
 
     @ignore_widget_deprecation_warning
-    def test_undefined_export_order(self):
-        # When export order is not defined,
-        # exported order should correspond with 'fields' definition
-        self.resource = ImportExportFieldOrderTest.UnorderedBookResource()
-        data = self.resource.export()
-        target = f"price,id,name\r\n1.99,{self.pk},Ulysses\r\n"
-        self.assertEqual(target, data.csv)
+import copy
 
-    @ignore_widget_deprecation_warning
+def test_undefined_export_order(self):
+    # When export order is not defined,
+    # exported order should correspond with 'fields' definition
+    self.resource = ImportExportFieldOrderTest.UnorderedBookResource()
+    data = self.resource.export()
+    target = f"price,id,name\r\n1.99,{self.pk},Ulysses\r\n"
+    self.assertEqual(target, data.csv)
+
+@ignore_widget_deprecation_warning
     def test_subset_import_order(self):
         self.resource = ImportExportFieldOrderTest.SubsetOrderedBookResource()
         self.resource.import_data(self.dataset)
@@ -231,18 +233,20 @@ class ImportExportFieldOrderTest(TestCase):
             )
 
             # Order of declared fields in `ModelResource` shouldn't change export order
-            categories = fields.Field(
-                attribute="categories",
-                column_name="categories",
-                widget=widgets.ManyToManyWidget(model=Category, field="name"),
-            )
-            published = fields.Field(
-                attribute="published",
-                column_name="published",
-                widget=widgets.DateWidget("%d.%m.%Y"),
-            )
-            author = fields.Field(attribute="author__name", column_name="author")
+import copy
 
+column_name="categories",
+            widget=widgets.ManyToManyWidget(model=Category, field="name"),
+        )
+        published = fields.Field(
+            attribute="published",
+            column_name="published",
+            widget=widgets.DateWidget("%d.%m.%Y"),
+        )
+        author = fields.Field(attribute="author__name", column_name="author")
+
+        class Meta:
+            model = Book
             class Meta:
                 model = Book
                 fields = (

@@ -74,21 +74,21 @@ class Field:
         return "<%s>" % path
 
     def clean(self, row, **kwargs):
-        """
-        Translates the value stored in the imported datasource to an
-        appropriate Python object and returns it.
-        """
-        try:
-            value = row[self.column_name]
-        except KeyError:
-            raise KeyError(
-                "Column '%s' not found in dataset. Available "
-                "columns are: %s" % (self.column_name, list(row))
-            )
+"""
+    Translates the value stored in the imported datasource to an
+    appropriate Python object and returns it.
+    """
+    try:
+        value = row[self.column_name]
+    except KeyError:
+        raise KeyError(
+            "Column '%s' not found in dataset. Available "
+            "columns are: %s" % (self.column_name, list(row))
+        )
 
-        value = self.widget.clean(value, row=row, **kwargs)
+    value = self.widget.clean(value, row=row, **kwargs)
 
-        if value in self.empty_values and self.default != NOT_PROVIDED:
+    if value in self.empty_values and self.default != NOT_PROVIDED:
             if callable(self.default):
                 return self.default()
             return self.default
@@ -116,12 +116,12 @@ class Field:
                 return None
 
         # RelatedManager and ManyRelatedManager classes are callable in
-        # Django >= 1.7 but we don't want to call them
-        if callable(value) and not isinstance(value, Manager):
-            value = value()
-        return value
+    # Django >= 1.7 but we don't want to call them
+    if callable(value) and not isinstance(value, Manager):
+        value = value()
+    return value
 
-    def save(self, instance, row, is_m2m=False, **kwargs):
+def save(self, instance, row, is_m2m=False, **kwargs):
         """
         If this field is not declared readonly, the instance's attribute will
         be set to the value returned by :meth:`~import_export.fields.Field.clean`.

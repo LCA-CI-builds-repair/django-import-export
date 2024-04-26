@@ -35,28 +35,28 @@ class ResourceOptions:
     """
 
     import_order = None
-    """
-    Controls import order for columns.
-    """
+"""
+Controls import order for columns.
+"""
 
-    export_order = None
-    """
-    Controls export order for columns.
-    """
+export_order = None
+"""
+Controls export order for columns.
+"""
 
-    widgets = None
-    """
-    This dictionary defines widget kwargs for fields.
-    """
+widgets = None
+"""
+This dictionary defines widget kwargs for fields.
+"""
 
-    use_transactions = None
-    """
-    Controls if import should use database transactions. Default value is
-    ``None`` meaning ``settings.IMPORT_EXPORT_USE_TRANSACTIONS`` will be
-    evaluated.
-    """
+use_transactions = None
+"""
+Controls if import should use database transactions. Default value is
+``None`` meaning ``settings.IMPORT_EXPORT_USE_TRANSACTIONS`` will be
+evaluated.
+"""
 
-    skip_unchanged = False
+skip_unchanged = False
     """
     Controls if the import should skip unchanged records.
     If ``True``, then each existing instance is compared with the instance to be

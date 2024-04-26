@@ -113,20 +113,20 @@ class Resource(metaclass=DeclarativeMetaclass):
         return Error
 
     @classmethod
-    def get_diff_class(self):
-        """
-        Returns the class used to display the diff for an imported instance.
-        """
-        return Diff
+def get_diff_class(self):
+    """
+    Returns the class used to display the diff for an imported instance.
+    """
+    return Diff
 
-    @classmethod
-    def get_db_connection_name(self):
-        if self._meta.using_db is None:
-            return router.db_for_write(self._meta.model)
-        else:
-            return self._meta.using_db
+@classmethod
+def get_db_connection_name(self):
+    if self._meta.using_db is None:
+        return router.db_for_write(self._meta.model)
+    else:
+        return self._meta.using_db
 
-    def get_use_transactions(self):
+def get_use_transactions(self):
         if self._meta.use_transactions is None:
             return getattr(settings, "IMPORT_EXPORT_USE_TRANSACTIONS", True)
         else:
@@ -179,18 +179,18 @@ class Resource(metaclass=DeclarativeMetaclass):
         return self.init_instance(row), True
 
     def get_import_id_fields(self):
-        """ """
-        return self._meta.import_id_fields
+    """ """
+    return self._meta.import_id_fields
 
-    def get_bulk_update_fields(self):
-        """
-        Returns the fields to be included in calls to bulk_update().
-        ``import_id_fields`` are removed because `id` fields cannot be supplied to
-        bulk_update().
-        """
-        return [f for f in self.fields if f not in self._meta.import_id_fields]
+def get_bulk_update_fields(self):
+    """
+    Returns the fields to be included in calls to bulk_update().
+    ``import_id_fields`` are removed because `id` fields cannot be supplied to
+    bulk_update().
+    """
+    return [f for f in self.fields if f not in self._meta.import_id_fields]
 
-    def bulk_create(
+def bulk_create(
         self, using_transactions, dry_run, raise_errors, batch_size=None, result=None
     ):
         """
@@ -1055,16 +1055,16 @@ class Resource(metaclass=DeclarativeMetaclass):
         defined_fields = order_fields + tuple(getattr(self._meta, "fields") or ())
 
         order = list()
-        [order.append(f) for f in defined_fields if f not in order]
-        return tuple(order) + tuple(k for k in self.fields if k not in order)
+    [order.append(f) for f in defined_fields if f not in order]
+    return tuple(order) + tuple(k for k in self.fields if k not in order)
 
-    def _is_using_transactions(self, kwargs):
-        return kwargs.get("using_transactions", False)
+def _is_using_transactions(self, kwargs):
+    return kwargs.get("using_transactions", False)
 
-    def _is_dry_run(self, kwargs):
-        return kwargs.get("dry_run", False)
+def _is_dry_run(self, kwargs):
+    return kwargs.get("dry_run", False)
 
-    def _check_import_id_fields(self, headers):
+def _check_import_id_fields(self, headers):
         import_id_fields = [self.fields[f] for f in self.get_import_id_fields()]
         missing_fields = list()
         for field in import_id_fields:
@@ -1219,18 +1219,18 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         return self._meta.model()
 
     def after_import(self, dataset, result, **kwargs):
-        """
-        Reset the SQL sequences after new objects are imported
-        """
-        # Adapted from django's loaddata
-        dry_run = self._is_dry_run(kwargs)
-        if not dry_run and any(
-            r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
-        ):
-            db_connection = self.get_db_connection_name()
-            connection = connections[db_connection]
-            sequence_sql = connection.ops.sequence_reset_sql(
-                no_style(), [self._meta.model]
+"""
+Reset the SQL sequences after new objects are imported
+"""
+# Adapted from django's loaddata
+dry_run = self._is_dry_run(kwargs)
+if not dry_run and any(
+    r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
+):
+    db_connection = self.get_db_connection_name()
+    connection = connections[db_connection]
+    sequence_sql = connection.ops.sequence_reset_sql(
+        no_style(), [self._meta.model]
             )
             if sequence_sql:
                 cursor = connection.cursor()
