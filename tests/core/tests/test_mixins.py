@@ -147,7 +147,6 @@ class MixinModelAdminTest(TestCase):
     """
 
     request = MagicMock(spec=HttpRequest)
-
     class BaseImportModelAdminTest(mixins.BaseImportMixin):
         call_count = 0
 

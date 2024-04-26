@@ -206,7 +206,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
 
     def generate_log_entries(self, result, request):
         if not self.get_skip_admin_log():
-            # Add imported objects to LogEntry
+            # Check if admin log should be skipped
+            # Add imported objects to LogEntry based on Django version
             if django.VERSION >= (6, 0):
                 self._log_actions(result, request)
             else:

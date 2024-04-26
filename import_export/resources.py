@@ -2,20 +2,20 @@ import functools
 import logging
 import traceback
 from collections import OrderedDict
-from copy import deepcopy
-from html import escape
+from copy import deepcopy  # Importing deepcopy for creating deep copies of objects
+from html import escape  # Importing escape to escape special characters in HTML content
 
 import tablib
-from diff_match_patch import diff_match_patch
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured, ValidationError
-from django.core.management.color import no_style
-from django.core.paginator import Paginator
-from django.db import connections, router
-from django.db.models import fields
-from django.db.models.query import QuerySet
-from django.db.transaction import TransactionManagementError, set_rollback
-from django.utils.encoding import force_str
+from diff_match_patch import diff_match_patch  # Importing for text diffing functionality
+from django.conf import settings  # Importing Django settings module
+from django.core.exceptions import ImproperlyConfigured, ValidationError  # Importing exceptions for error handling
+from django.core.management.color import no_style  # Importing styles for management commands
+from django.core.paginator import Paginator  # Importing Paginator for pagination
+from django.db import connections, router  # Importing database connections and router
+from django.db.models import fields  # Importing fields for database models
+from django.db.models.query import QuerySet  # Importing QuerySet for database queries
+from django.db.transaction import TransactionManagementError, set_rollback  # Importing for database transaction management
+from django.utils.encoding import force_str  # Importing utility for encoding
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 
@@ -120,7 +120,10 @@ class Resource(metaclass=DeclarativeMetaclass):
         return Diff
 
     @classmethod
-    def get_db_connection_name(self):
+    def get_db_connection_name(cls, self):
+        """
+        Returns the database connection name based on the model meta information.
+        """
         if self._meta.using_db is None:
             return router.db_for_write(self._meta.model)
         else:

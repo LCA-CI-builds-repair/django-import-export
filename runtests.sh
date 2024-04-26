@@ -23,12 +23,11 @@ echo "running tests (sqlite)"
 tox
 
 echo "running tests (mysql)"
-export IMPORT_EXPORT_TEST_TYPE=mysql-innodb
-tox
+# Run tests for MySQL using tox
+export IMPORT_EXPORT_TEST_TYPE=mysql-innodb && tox
 
-echo "running tests (postgres)"
-export IMPORT_EXPORT_TEST_TYPE=postgres
-tox
+# Run tests for PostgreSQL using tox
+export IMPORT_EXPORT_TEST_TYPE=postgres && tox
 
 echo "removing local database instances"
 docker compose -f tests/docker-compose.yml down -v

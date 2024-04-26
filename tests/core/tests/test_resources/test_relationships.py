@@ -130,12 +130,14 @@ class ManyToManyWidgetDiffTest(TestCase):
 
     @ignore_widget_deprecation_warning
     def test_many_to_many_widget_update(self):
-        # the book is associated with 1 category ('Category 2')
-        # when we import a book with category 1, the book
+        # Test updating a many-to-many relationship widget
+        # The book is associated with 1 category ('Category 2')
+        # When we import a book with category 1, the book
         # should be updated, not skipped, so that Category 2 is replaced by Category 1
         book = Book.objects.first()
         dataset_headers = ["id", "name", "categories"]
         dataset_row = [book.id, book.name, "1"]
+        
         dataset = tablib.Dataset(headers=dataset_headers)
         dataset.append(dataset_row)
 
@@ -151,14 +153,14 @@ class ManyToManyWidgetDiffTest(TestCase):
         self.assertEqual(Category.objects.first(), book.categories.first())
 
     @ignore_widget_deprecation_warning
-    def test_many_to_many_widget_no_changes(self):
-        # the book is associated with 1 category ('Category 2')
-        # when we import a row with a book with category 1, the book
-        # should be skipped, because there is no change
+        # Test skipping a row with no changes for a book with category 1
+        # The book should be skipped as there is no change
         book = Book.objects.first()
         dataset_headers = ["id", "name", "categories"]
         dataset_row = [book.id, book.name, book.categories.first().id]
+        
         dataset = tablib.Dataset(headers=dataset_headers)
+        dataset.append(dataset_row)
         dataset.append(dataset_row)
 
         book_resource = BookResource()
@@ -227,14 +229,14 @@ class ManyToManyWidgetDiffTest(TestCase):
         self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_SKIP)
 
     @ignore_widget_deprecation_warning
-    def test_skip_row_no_m2m_data_supplied(self):
-        # issue #1437
-        # test skip_row() when the model defines a m2m field
+        # Test skip_row() when the model defines a many-to-many field
         # but it is not present in the dataset
         book = Book.objects.first()
         dataset_headers = ["id", "name"]
         dataset_row = [book.id, book.name]
+        
         dataset = tablib.Dataset(headers=dataset_headers)
+        dataset.append(dataset_row)
         dataset.append(dataset_row)
 
         book_resource = BookResource()

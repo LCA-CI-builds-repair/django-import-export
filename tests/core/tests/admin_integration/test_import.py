@@ -8,12 +8,12 @@ from core.admin import AuthorAdmin, BookAdmin, CustomBookAdmin, ImportMixin
 from core.models import Author, Book, EBook, Parent
 from core.tests.admin_integration.mixins import AdminTestMixin
 from core.tests.utils import ignore_widget_deprecation_warning
+# Import necessary modules for testing admin integration
 from django.contrib.admin.models import DELETION, LogEntry
 from django.http import HttpRequest
 from django.test.testcases import TestCase, TransactionTestCase
 from django.test.utils import override_settings
 from django.utils.translation import gettext_lazy as _
-
 from import_export.admin import ExportMixin
 from import_export.formats import base_formats
 from import_export.formats.base_formats import XLSX
@@ -140,7 +140,7 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
                 "Import finished: {} new, {} updated, {} deleted and {} skipped {}."
             ).format(0, 1, 0, 0, Book._meta.verbose_name_plural),
         )
-        # Check, that we really use second resource - author_email didn't get imported
+        # Verify that the author_email field of the Book model is empty after import
         self.assertEqual(Book.objects.get(id=1).author_email, "")
 
     def test_import_action_handles_UnicodeDecodeError_as_form_error(self):

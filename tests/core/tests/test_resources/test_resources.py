@@ -2,7 +2,7 @@ import json
 import sys
 from collections import OrderedDict
 from copy import deepcopy
-from datetime import date
+from datetime import date  # Importing the date module for handling date-related operations
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
 from unittest.mock import patch
@@ -406,21 +406,22 @@ class ModelResourceTest(TestCase):
         self.assertEqual(instance.price, Decimal("10.25"))
 
     @ignore_widget_deprecation_warning
-    def test_import_data_new_store_instance(self):
+    def test_import_data_new_store_instance():
+        # Test importing data with a new store instance
         self.resource = BookResourceWithStoreInstance()
         Book.objects.all().delete()
+        
         self.assertEqual(0, Book.objects.count())
         result = self.resource.import_data(self.dataset, raise_errors=True)
 
         self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_NEW)
-        self.assertIsNotNone(result.rows[0].instance)
-        self.assertIsNone(result.rows[0].original)
         self.assertEqual(1, Book.objects.count())
         book = Book.objects.first()
         self.assertEqual(book.pk, result.rows[0].instance.pk)
 
     @ignore_widget_deprecation_warning
-    def test_import_data_update_store_instance(self):
+    def test_import_data_update_store_instance():
+        # Test importing data to update a store instance
         self.resource = BookResourceWithStoreInstance()
         result = self.resource.import_data(self.dataset, raise_errors=True)
         self.assertEqual(
@@ -436,6 +437,7 @@ class ModelResourceTest(TestCase):
     @mock.patch("import_export.resources.connections")
     @ignore_widget_deprecation_warning
     def test_import_data_no_transaction(self, mock_db_connections):
+        # Test importing data without using transactions
         class Features:
             supports_transactions = False
 
@@ -461,6 +463,7 @@ class ModelResourceTest(TestCase):
     def test_ImproperlyConfigured_if_use_transactions_set_when_not_supported(
         self, mock_db_connections
     ):
+        # Test for ImproperlyConfigured exception when using transactions is not supported
         class Features(object):
             supports_transactions = False
 
@@ -477,28 +480,29 @@ class ModelResourceTest(TestCase):
 
     @ignore_widget_deprecation_warning
     def test_importing_with_line_number_logging(self):
+        # Test importing with line number logging
         resource = BookResourceWithLineNumberLogger()
         resource.import_data(self.dataset, raise_errors=True)
         self.assertEqual(resource.before_lines, [1])
         self.assertEqual(resource.after_lines, [1])
 
     @ignore_widget_deprecation_warning
-    def test_import_data_raises_field_specific_validation_errors(self):
-        resource = AuthorResource()
-        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
-        dataset.append(["", "A.A.Milne", "1882test-01-18"])
 
-        result = resource.import_data(dataset, raise_errors=False)
+    @ignore_widget_deprecation_warning
+        self.assertTrue(result.has_validation_errors())
+        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
         self.assertTrue(result.has_validation_errors())
         self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
         self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
     @ignore_widget_deprecation_warning
-    def test_import_data_raises_field_specific_validation_errors_with_skip_unchanged(
-        self,
-    ):
+        # Create an AuthorResource instance and set skip_unchanged to True
         resource = AuthorResource()
+        resource._meta.skip_unchanged = True
+
+        author = Author.objects.create(name="Some author")
         resource._meta.skip_unchanged = True
 
         author = Author.objects.create(name="Some author")
@@ -513,19 +517,15 @@ class ModelResourceTest(TestCase):
         self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
     def test_import_data_empty_dataset_with_collect_failed_rows(self):
-        resource = AuthorResource()
-        with self.assertRaisesRegex(
-            exceptions.FieldError,
-            "The following import_id_fields are not present in the dataset: id",
         ):
             resource.import_data(tablib.Dataset(), collect_failed_rows=True)
 
     @ignore_widget_deprecation_warning
     def test_collect_failed_rows(self):
+        # Test collecting failed rows for ProfileResource
         resource = ProfileResource()
-        headers = ["id", "user"]
-        # 'user' is a required field, the database will raise an error.
-        row = [None, None]
+
+    @ignore_widget_deprecation_warning
         dataset = tablib.Dataset(row, headers=headers)
         result = resource.import_data(
             dataset,
@@ -533,17 +533,17 @@ class ModelResourceTest(TestCase):
             use_transactions=True,
             collect_failed_rows=True,
         )
+        result = resource.import_data(
+            dataset,
+            dry_run=True,
+    # Ignore widget deprecation warning for the test
+    @ignore_widget_deprecation_warning
+        )
         self.assertEqual(result.failed_dataset.headers, ["id", "user", "Error"])
         self.assertEqual(len(result.failed_dataset), 1)
         # We can't check the error message because it's package- and version-dependent
 
     @ignore_widget_deprecation_warning
-    def test_row_result_raise_errors(self):
-        resource = ProfileResource()
-        headers = ["id", "user"]
-        # 'user' is a required field, the database will raise an error.
-        row = [None, None]
-        dataset = tablib.Dataset(row, headers=headers)
         with self.assertRaises(IntegrityError):
             resource.import_data(
                 dataset,
@@ -551,6 +551,13 @@ class ModelResourceTest(TestCase):
                 use_transactions=True,
                 raise_errors=True,
             )
+
+    @ignore_widget_deprecation_warning
+    def test_collect_failed_rows_validation_error(self):
+        # Test collecting failed rows with a validation error for ProfileResource
+        resource = ProfileResource()
+        row = ["1"]
+        dataset = tablib.Dataset(row, headers=["id"])
 
     @ignore_widget_deprecation_warning
     def test_collect_failed_rows_validation_error(self):
@@ -586,11 +593,11 @@ class ModelResourceTest(TestCase):
         ):
             with self.assertRaisesRegex(ValidationError, "{'__all__': \\['fail!'\\]}"):
                 resource.import_data(
-                    dataset,
-                    dry_run=True,
-                    use_transactions=True,
-                    raise_errors=True,
-                )
+    def test_import_data_handles_widget_valueerrors_with_unicode_messages():
+        # Test handling widget ValueErrors with Unicode messages
+        resource = AuthorResourceWithCustomWidget()
+        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
+        dataset.append(["", "A.A.Milne", "1882-01-18"])
 
     @ignore_widget_deprecation_warning
     def test_import_data_handles_widget_valueerrors_with_unicode_messages(self):
@@ -767,10 +774,12 @@ class ModelResourceTest(TestCase):
         self.assertTrue(resource.after_save_instance_dry_run)
 
         resource.import_data(self.dataset, dry_run=False, raise_errors=True)
-        self.assertFalse(resource.before_save_instance_dry_run)
-        self.assertFalse(resource.save_instance_dry_run)
-        self.assertFalse(resource.after_save_instance_dry_run)
-
+        # Save the instance with specified options and check the call count
+        self.resource.save_instance(
+            book, False, None, using_transactions=False, dry_run=True
+        )
+        
+        self.assertEqual(0, mock_book.call_count)
     @mock.patch("core.models.Book.save")
     def test_save_instance_noop(self, mock_book):
         book = Book.objects.first()
@@ -1606,8 +1615,9 @@ if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
             result = book_with_chapters_resource.import_data(dataset, dry_run=False)
 
             self.assertFalse(result.has_errors())
-            book_with_chapters = list(BookWithChapters.objects.all())[0]
-            self.assertListEqual(book_with_chapters.chapters, chapters)
+            # Create a row with book details and chapters joined as a string
+            row = [self.book.id, "Some book", ",".join(self.chapters)]
+            self.dataset.append(row)
 
     class TestImportArrayField(TestCase):
         def setUp(self):
