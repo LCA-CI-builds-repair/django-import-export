@@ -845,7 +845,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             response = HttpResponse(export_data, content_type=content_type)
             response["Content-Disposition"] = 'attachment; filename="%s"' % (
                 self.get_export_filename(request, queryset, file_format),
-            )
 
             post_export.send(sender=None, model=self.model)
             return response

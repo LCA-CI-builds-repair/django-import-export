@@ -282,9 +282,10 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
                 "codec", b_arr, 1, 2, "fail!"
             )
             response = self._do_import_post(self.book_import_url, "books.csv")
-        self.assertEqual(response.status_code, 200)
-        target_msg = (
-            "'UnicodeDecodeError' encountered while trying to read file. "
+            self.assertEqual(response.status_code, 200)
+            target_msg = (
+                "'UnicodeDecodeError' encountered while trying to read file. "
+            )
             "Ensure you have chosen the correct format for the file."
         )
         # required for testing via tox
@@ -677,15 +678,15 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         data = {
-            "file_format": "0",
         }
         date_str = datetime.now().strftime("%Y-%m-%d")
         with self.assertNumQueries(7):  # Should not contain COUNT queries from ModelAdmin.get_results()
             response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(response.has_header("Content-Disposition"))
-        self.assertEqual(response["Content-Type"], "text/csv")
-        self.assertEqual(
+            self.assertEqual(response.status_code, 200)
+            self.assertTrue(response.has_header("Content-Disposition"))
+            self.assertEqual(response["Content-Type"], "text/csv")
+            self.assertEqual(
+                response["Content-Disposition"],
             response["Content-Disposition"],
             'attachment; filename="Book-{}.csv"'.format(date_str),
         )
@@ -742,7 +743,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(b"id,name\r\n", response.content)
 
     def test_returns_xlsx_export(self):
-        response = self.client.get("/admin/core/book/export/")
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
@@ -1343,9 +1343,9 @@ class TestExportMixinDeprecationWarnings(TestCase):
         def get_export_form(self):
             return super().get_export_form()
 
-    def setUp(self):
-        super().setUp()
-        self.export_mixin = self.TestMixin()
+        def setUp(self):
+            super().setUp()
+            self.export_mixin = self.TestMixin()
 
     def test_get_export_form_warning(self):
         target_msg = (
