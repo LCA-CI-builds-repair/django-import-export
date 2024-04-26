@@ -747,14 +747,19 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
                 """
                 We override this method because we only call ChangeList.get_queryset()
                 so we don't need anything from this method. The get_results() gets called during
-                ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
-                """
-                pass
+class ExportChangeList(ChangeList):
+    """
+    Custom ChangeList class for exporting data.
+    Inherits from ChangeList.
+    Overrides ChangeList methods to support data export functionality.
+    ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
+    """
+    pass
 
-        cl = ExportChangeList(**changelist_kwargs)
+cl = ExportChangeList(**changelist_kwargs)
 
-        # get_queryset() is already called during initialization, it is enough to get it's results
-        if hasattr(cl, "queryset"):
+# get_queryset() is already called during initialization, it is enough to get its results
+if hasattr(cl, "queryset"):
             return cl.queryset
 
         # Fallback in case the ChangeList doesn't have queryset attribute set

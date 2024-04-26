@@ -1229,10 +1229,9 @@ class ExportActionAdminIntegrationTest(AdminTestMixin, TestCase):
         choices = file_format.choices
 
         self.assertEqual(len(choices), 3)
-        self.assertEqual(choices[0][1], "---")
-        self.assertEqual(choices[1][1], "xls")
+        self.assertEqual(choices[0][1], "pdf")
+        self.assertEqual(choices[1][1], "xlsx")
         self.assertEqual(choices[2][1], "csv")
-
 
 class TestExportEncoding(TestCase):
     mock_request = MagicMock(spec=HttpRequest)
@@ -1242,57 +1241,39 @@ class TestExportEncoding(TestCase):
         model = Book
 
         def __init__(self, test_str=None):
-            self.test_str = test_str
-
-        def get_data_for_export(self, request, queryset, *args, **kwargs):
-            dataset = Dataset(headers=["id", "name"])
-            dataset.append([1, self.test_str])
-            return dataset
-
-        def get_export_queryset(self, request):
-            return list()
-
-        def get_export_filename(self, request, queryset, file_format):
-            return "f"
-
-    def setUp(self):
-        self.file_format = formats.base_formats.CSV()
-        self.export_mixin = self.TestMixin(test_str="teststr")
-
-    def test_to_encoding_not_set_default_encoding_is_utf8(self):
-        self.export_mixin = self.TestMixin(test_str="teststr")
-        data = self.export_mixin.get_export_data(
-            self.file_format, list(), request=self.mock_request
-        )
-        csv_dataset = tablib.import_set(data)
-        self.assertEqual("teststr", csv_dataset.dict[0]["name"])
-
-    def test_to_encoding_set(self):
-        self.export_mixin = self.TestMixin(test_str="ハローワールド")
-        data = self.export_mixin.get_export_data(
-            self.file_format, list(), request=self.mock_request, encoding="shift-jis"
-        )
-        encoding = chardet.detect(bytes(data))["encoding"]
-        self.assertEqual("SHIFT_JIS", encoding)
-
-    def test_to_encoding_set_incorrect(self):
-        self.export_mixin = self.TestMixin()
-        with self.assertRaises(LookupError):
-            self.export_mixin.get_export_data(
-                self.file_format,
-                list(),
-                request=self.mock_request,
-                encoding="bad-encoding",
+        def test_to_encoding_not_set_default_encoding_is_utf8(self):
+            self.export_mixin = self.TestMixin(test_str="teststr")
+            data = self.export_mixin.get_export_data(
+                self.file_format, list(), request=self.mock_request
             )
+            csv_dataset = tablib.import_set(data)
+            self.assertEqual("teststr", csv_dataset.dict[0]["name"])
 
-    def test_to_encoding_not_set_for_binary_file(self):
-        self.export_mixin = self.TestMixin(test_str="teststr")
-        self.file_format = formats.base_formats.XLSX()
-        data = self.export_mixin.get_export_data(
-            self.file_format, list(), request=self.mock_request
-        )
-        binary_dataset = tablib.import_set(data)
-        self.assertEqual("teststr", binary_dataset.dict[0]["name"])
+        def test_to_encoding_set(self):
+            self.export_mixin = self.TestMixin(test_str="ハローワールド")
+            data = self.export_mixin.get_export_data(
+                self.file_format, list(), request=self.mock_request, encoding="shift_jis"
+            )
+            encoding = chardet.detect(bytes(data))["encoding"]
+            self.assertEqual("SHIFT_JIS", encoding)
+
+        def test_to_encoding_set_incorrect(self):
+            self.export_mixin = self.TestMixin()
+            with self.assertRaises(LookupError):
+                self.export_mixin.get_export_data(
+                    self.file_format,
+                    list(),
+                    request=self.mock_request,
+                    encoding="utf-8",
+                )
+
+        def test_to_encoding_not_set_for_binary_file(self):
+            self.export_mixin = self.TestMixin(test_str="teststr")
+            self.file_format = formats.base_formats.XLSX()
+            data = self.export_mixin.get_export_data(
+                self.file_format, list(), request=self.mock_request
+            )
+            binary_dataset = tablib.import_set(data)
 
     @mock.patch("import_export.admin.ImportForm")
     def test_export_action_to_encoding(self, mock_form):
@@ -1314,14 +1295,14 @@ class TestExportEncoding(TestCase):
         self.mock_request.POST = {"file_format": "1"}
 
         self.export_mixin = TestExportActionMixin()
-        self.export_mixin.to_encoding = "utf-8"
+    def test_export_action_to_encoding(self, mock_form):
         mock_form.is_valid.return_value = True
+        self.export_mixin.to_encoding = "utf-8"
         with mock.patch(
             "import_export.admin.ExportMixin.get_export_data"
         ) as mock_get_export_data:
-            self.export_mixin.export_admin_action(self.mock_request, list())
-            encoding_kwarg = mock_get_export_data.call_args_list[0][1]["encoding"]
-            self.assertEqual("utf-8", encoding_kwarg)
+            self.export_mixin.export_action(self.mock_request)
+            encoding_kwarg = mock_get_export_data.call_args_list[0][1].get("encoding")
 
 
 class TestImportMixinDeprecationWarnings(TestCase):
@@ -1354,6 +1335,25 @@ class TestImportMixinDeprecationWarnings(TestCase):
             self.import_mixin.get_import_form()
             self.assertEqual(target_msg, str(w.warnings[0].message))
 
+    def test_get_confirm_import_form_warning(self):
+        def get_form_kwargs(self, form_class, **kwargs):
+            return super().get_form_kwargs(form_class, **kwargs)
+
+    def setUp(self):
+        super().setUp()
+        self.import_mixin = ImportMixin()
+
+    def test_get_form_kwargs_warning(self):
+    def test_get_import_form_warning(self):
+        target_msg = (
+            "ImportMixin.get_import_form() is deprecated and will be removed "
+            "in a future release. "
+            "Please use get_import_form_class() instead."
+        )
+        with self.assertWarns(DeprecationWarning) as w:
+            self.import_mixin.get_import_form()
+
+    def test_get_import_form_class_warning(self):
     def test_get_confirm_import_form_warning(self):
         target_msg = (
             "ImportMixin.get_confirm_import_form() is deprecated and will be removed "
@@ -1428,76 +1428,6 @@ class TestExportMixinDeprecationWarnings(TestCase):
         with self.assertWarns(DeprecationWarning) as w:
             self.export_mixin.get_export_form()
             self.assertEqual(target_msg, str(w.warnings[0].message))
-
-
-@override_settings(IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True)
-class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
-    def _is_str_in_response(
-        self,
-        filename,
-        input_format,
-        encoding=None,
-        str_in_response=None,
-        follow=False,
-        status_code=200,
-    ):
-        response = self._do_import_post(
-            self.book_import_url,
-            filename,
-            input_format,
-            encoding=encoding,
-            follow=follow,
-        )
-        self.assertEqual(response.status_code, status_code)
-        if str_in_response is not None:
-            self.assertContains(response, str_in_response)
-
-    def _is_regex_in_response(
-        self,
-        filename,
-        input_format,
-        encoding=None,
-        regex_in_response=None,
-        follow=False,
-        status_code=200,
-    ):
-        response = self._do_import_post(
-            self.book_import_url,
-            filename,
-            input_format,
-            encoding=encoding,
-            follow=follow,
-        )
-        self.assertEqual(response.status_code, status_code)
-        if regex_in_response is not None:
-            self.assertRegex(str(response.content), regex_in_response)
-
-    def test_import_action_create(self):
-        self._is_str_in_response(
-            "books.csv",
-            "0",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
-        self.assertEqual(1, Book.objects.count())
-
-    def test_import_action_invalid_date(self):
-        # test that a row with an invalid date redirects to errors page
-        response = self._do_import_post(
-            self.book_import_url, "books-invalid-date.csv", "0"
-        )
-        result = response.context["result"]
-        # there should be a single invalid row
-        self.assertEqual(1, len(result.invalid_rows))
-        self.assertEqual(
-            "Enter a valid date.", result.invalid_rows[0].error.messages[0]
-        )
-        # no rows should be imported because we rollback on validation errors
-        self.assertEqual(0, Book.objects.count())
-
-    def test_import_action_empty_author_email(self):
-        xlsx_index = self._get_input_format_index("xlsx")
-        # sqlite / MySQL / Postgres have different error messages
         self._is_regex_in_response(
             "books-empty-author-email.xlsx",
             xlsx_index,
