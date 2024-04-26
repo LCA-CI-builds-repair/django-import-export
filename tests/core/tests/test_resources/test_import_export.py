@@ -138,6 +138,10 @@ class ImportExportFieldOrderTest(TestCase):
         self.assertEqual(target, data.csv)
 
     @ignore_widget_deprecation_warning
+import copy
+
+class TestImportExport(TestCase):
+    
     def test_undefined_export_order(self):
         # When export order is not defined,
         # exported order should correspond with 'fields' definition
@@ -231,18 +235,25 @@ class ImportExportFieldOrderTest(TestCase):
             )
 
             # Order of declared fields in `ModelResource` shouldn't change export order
-            categories = fields.Field(
-                attribute="categories",
-                column_name="categories",
-                widget=widgets.ManyToManyWidget(model=Category, field="name"),
-            )
-            published = fields.Field(
-                attribute="published",
-                column_name="published",
-                widget=widgets.DateWidget("%d.%m.%Y"),
-            )
-            author = fields.Field(attribute="author__name", column_name="author")
+import copy
 
+class TestImportExport(TestCase):
+    
+    class Meta:
+        model = Book
+        fields = (
+            "id",
+            "title",
+            "price",
+            "published",
+            "author",
+        )
+
+        id = fields.Field(attribute="id", column_name="id")
+        title = fields.Field(attribute="title", column_name="title")
+        price = fields.Field(attribute="price", column_name="price")
+        published = fields.Field(attribute="published", column_name="published", widget=widgets.DateWidget("%d.%m.%Y"))
+        author = fields.Field(attribute="author__name", column_name="author")
             class Meta:
                 model = Book
                 fields = (

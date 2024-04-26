@@ -74,6 +74,9 @@ class Field:
         return "<%s>" % path
 
     def clean(self, row, **kwargs):
+class Field:
+    
+    def translate_value(self, row, **kwargs):
         """
         Translates the value stored in the imported datasource to an
         appropriate Python object and returns it.
@@ -116,12 +119,12 @@ class Field:
                 return None
 
         # RelatedManager and ManyRelatedManager classes are callable in
-        # Django >= 1.7 but we don't want to call them
-        if callable(value) and not isinstance(value, Manager):
-            value = value()
-        return value
-
+class Field:
+    
     def save(self, instance, row, is_m2m=False, **kwargs):
+        """
+        If this field is not declared readonly, the instance's attribute will
+        be set to the value returned by :meth:`~import_export.fields.Field.clean`.
         """
         If this field is not declared readonly, the instance's attribute will
         be set to the value returned by :meth:`~import_export.fields.Field.clean`.

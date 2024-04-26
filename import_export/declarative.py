@@ -34,13 +34,18 @@ class DeclarativeMetaclass(type):
         meta = ResourceOptions()
 
         # If this class is subclassing another Resource, add that Resource's
-        # fields. Note that we loop over the bases in *reverse*. This is
-        # necessary in order to preserve the correct order of fields.
+class DeclarativeFieldsMetaclass(type):
+    
+    def __new__(cls, name, bases, attrs):
+        declared_fields = []
+        meta = {}
+        
+        # Loop over the bases in reverse order to preserve the correct order of fields
         for base in bases[::-1]:
             if hasattr(base, "fields"):
                 declared_fields = list(base.fields.items()) + declared_fields
                 # Collect the Meta options
-                # #1363 If there are any parent classes, set those options first
+                # If there are any parent classes, set those options first
                 for parent in base.__bases__:
                     _load_meta_options(parent, meta)
                 _load_meta_options(base, meta)
@@ -83,14 +88,20 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     continue
 
                 if f.name in declared_fields:
-                    # If model field is declared in `ModelResource`,
-                    # remove it from `declared_fields`
-                    # to keep exact order of model fields
-                    field = declared_fields.pop(f.name)
-                else:
-                    field = new_class.field_from_django_field(f.name, f, readonly=False)
+class DeclarativeFieldsMetaclass(type):
+    
+    def __new__(cls, name, bases, attrs):
+        field_list = []
+        
+        for f in attrs.get("fields", []):
+            field = new_class.field_from_django_field(f.name, f, readonly=False)
 
-                field_list.append(
+            field_list.append(
+                (
+                    f.name,
+                    field,
+                )
+            )
                     (
                         f.name,
                         field,

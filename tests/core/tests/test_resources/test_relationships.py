@@ -184,6 +184,9 @@ class ManyToManyWidgetDiffTest(TestCase):
         dataset_headers = ["id", "name", "categories"]
 
         book_resource = BookResource()
+class TestRelationships(TestCase):
+    
+    def test_category_import_order(self):
         book_resource._meta.skip_unchanged = True
 
         # import with natural order
@@ -203,8 +206,6 @@ class ManyToManyWidgetDiffTest(TestCase):
         self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_SKIP)
 
         self.assertEqual(2, book.categories.count())
-
-    @ignore_widget_deprecation_warning
     def test_many_to_many_widget_handles_uuid(self):
         # Test for #1435 - skip_row() handles M2M field when UUID pk used
         class _UUIDBookResource(resources.ModelResource):

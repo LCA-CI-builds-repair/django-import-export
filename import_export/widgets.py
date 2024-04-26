@@ -40,16 +40,8 @@ class Widget:
         self.coerce_to_string = coerce_to_string
 
     def clean(self, value, row=None, **kwargs):
-        """
-        Returns an appropriate python object for an imported value.
-        For example, a date string will be converted to a python datetime instance.
-
-        :param value: The value to be converted to a native type.
-        :param row: A dict containing row key/value pairs.
-        :param **kwargs: Optional kwargs.
-        """
-        return value
-
+class Widget:
+    
     def render(self, value, obj=None):
         """
         Returns an export representation of a python value.
@@ -405,16 +397,18 @@ class SimpleArrayWidget(Widget):
 
 
 class JSONWidget(Widget):
+class Widget:
+    
+    def render(self, value, obj=None):
+        """
+        self._obj_deprecation_warning(obj)
+        if not self.coerce_to_string:
+            return value
+        return self.separator.join(str(v) for v in value)
+
+class JSONWidget(Widget):
     """
     Widget for a JSON object
-    (especially required for jsonb fields in PostgreSQL database.)
-
-    :param value: Defaults to JSON format.
-    The widget covers two cases: Proper JSON string with double quotes, else it
-    tries to use single quotes and then convert it to proper JSON.
-    """
-
-    def clean(self, value, row=None, **kwargs):
         val = super().clean(value)
         if val:
             try:
@@ -432,6 +426,14 @@ class JSONWidget(Widget):
             return json.dumps(value)
         return None
 
+
+class ForeignKeyWidget(Widget):
+class Widget:
+    
+    def render(self, value, obj=None):
+        if value:
+            return json.dumps(value)
+        return None
 
 class ForeignKeyWidget(Widget):
     """
@@ -452,12 +454,6 @@ class ForeignKeyWidget(Widget):
     …using a :class:`~import_export.widgets.ForeignKeyWidget` has the
     advantage that it can not only be used for exporting, but also importing
     data with foreign key relationships.
-
-    Here's an example on how to use
-    :class:`~import_export.widgets.ForeignKeyWidget` to lookup related objects
-    using ``Author.name`` instead of ``Author.pk``::
-
-        from import_export import fields, resources
         from import_export.widgets import ForeignKeyWidget
 
         class BookResource(resources.ModelResource):

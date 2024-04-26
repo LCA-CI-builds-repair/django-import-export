@@ -44,21 +44,15 @@ class RowResult:
         self.diff = None
 
         #: A string identifier which identifies what type of import was performed.
+class RowResult:
+    
+    def __init__(self):
         self.import_type = None
-
-        #: Retain the raw values associated with each imported row.
         self.row_values = {}
-
-        #: The instance id (used in Admin UI)
         self.object_id = None
-
-        #: The object representation (used in Admin UI)
         self.object_repr = None
-
-        #: A reference to the model instance which was created, updated or deleted.
         self.instance = None
-
-        #: A reference to the model instance before updates were applied.
+        self.old_instance = None
         #: This value is only set for updates.
         self.original = None
 
@@ -190,14 +184,11 @@ class Result:
         self.failed_dataset.append(row_values)
 
     def append_invalid_row(self, number, row, validation_error):
+class Result:
+    
+    def append_invalid_row(self, number, row, validation_error):
         # NOTE: value order must match diff_headers order, so that row
         # values and column headers match in the UI when displayed
-        values = tuple(row.get(col, "---") for col in self.diff_headers)
-        self.invalid_rows.append(
-            InvalidRow(number=number, validation_error=validation_error, values=values)
-        )
-
-    def increment_row_result_total(self, row_result):
         if row_result.import_type:
             self.totals[row_result.import_type] += 1
 

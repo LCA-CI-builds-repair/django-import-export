@@ -35,10 +35,8 @@ class ResourceOptions:
     """
 
     import_order = None
-    """
-    Controls import order for columns.
-    """
-
+class ImportExportOptions:
+    
     export_order = None
     """
     Controls export order for columns.
