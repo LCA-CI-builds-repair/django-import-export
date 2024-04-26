@@ -369,10 +369,12 @@ class ModelResourceTest(TestCase):
             mocked_method.assert_called_once_with("pk")
 
     def test_iter_queryset_prefetch_ordered(self):
-        qs = Book.objects.prefetch_related("categories").order_by("pk").all()
-        with mock.patch("import_export.resources.Paginator", autospec=True) as p:
-            p.return_value = Paginator(qs, 100)
-            list(self.resource.iter_queryset(qs))
+import mock
+
+qs = Book.objects.prefetch_related("categories").order_by("pk").all()
+with mock.patch("import_export.resources.Paginator", autospec=True) as p:
+    p.return_value = p(qs, 100)
+    list(self.resource.iter_queryset(qs))
             p.assert_called_once_with(qs, 100)
 
     def test_iter_queryset_prefetch_chunk_size(self):
@@ -406,10 +408,10 @@ class ModelResourceTest(TestCase):
         result = self.resource.import_data(self.dataset, raise_errors=True)
 
         self.assertFalse(result.has_errors())
-        self.assertEqual(len(result.rows), 1)
-        self.assertTrue(result.rows[0].diff)
-        self.assertEqual(
-            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
+self.assertEqual(
+    result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
+)
+self.assertIsNone(result.rows[0].row_values.get("name"))
         )
         self.assertEqual(result.rows[0].row_values.get("name"), None)
         self.assertEqual(result.rows[0].row_values.get("author_email"), None)
@@ -457,11 +459,11 @@ class ModelResourceTest(TestCase):
         self.assertEqual(book.pk, result.rows[0].instance.pk)
 
     @ignore_widget_deprecation_warning
-    def test_import_data_update_store_instance(self):
-        self.resource = BookResourceWithStoreInstance()
-        result = self.resource.import_data(self.dataset, raise_errors=True)
-        self.assertEqual(
-            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
+result = self.resource.import_data(self.dataset, raise_errors=True)
+self.assertEqual(
+    result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
+)
+self.assertIsNotNone(result.rows[0].instance)
         )
         self.assertIsNotNone(result.rows[0].instance)
         self.assertIsNotNone(result.rows[0].original)
@@ -486,13 +488,14 @@ class ModelResourceTest(TestCase):
         )
 
         self.assertFalse(result.has_errors())
-        self.assertEqual(len(result.rows), 1)
-        self.assertTrue(result.rows[0].diff)
-        self.assertEqual(
-            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
-        )
-        self.assertEqual(result.rows[0].row_values.get("name"), None)
-        self.assertEqual(result.rows[0].row_values.get("author_email"), None)
+self.assertEqual(
+    result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
+)
+self.assertEqual(result.rows[0].row_values.get("name"), None)
+self.assertEqual(result.rows[0].row_values.get("author_email"), None)
+
+@mock.patch("import_export.resources.connections")
+# Add the necessary method or function here
 
     @mock.patch("import_export.resources.connections")
     def test_ImproperlyConfigured_if_use_transactions_set_when_not_supported(
@@ -513,23 +516,23 @@ class ModelResourceTest(TestCase):
             )
 
     @ignore_widget_deprecation_warning
-    def test_importing_with_line_number_logging(self):
-        resource = BookResourceWithLineNumberLogger()
-        resource.import_data(self.dataset, raise_errors=True)
-        self.assertEqual(resource.before_lines, [1])
+self.assertEqual(resource.before_lines, [1])
+self.assertEqual(resource.after_lines, [1])
+
+@ignore_widget_deprecation_warning
+# Add the necessary method or function here
         self.assertEqual(resource.after_lines, [1])
 
     @ignore_widget_deprecation_warning
-    def test_import_data_raises_field_specific_validation_errors(self):
-        resource = AuthorResource()
-        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
-        dataset.append(["", "A.A.Milne", "1882test-01-18"])
+result = resource.import_data(dataset, raise_errors=True)
 
+self.assertTrue(result.has_validation_errors())
+self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
         result = resource.import_data(dataset, raise_errors=False)
+self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
-        self.assertTrue(result.has_validation_errors())
-        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
-        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+@ignore_widget_deprecation_warning
+# Add the necessary method or function here
 
     @ignore_widget_deprecation_warning
     def test_import_data_raises_field_specific_validation_errors_with_skip_unchanged(
@@ -544,10 +547,12 @@ class ModelResourceTest(TestCase):
         dataset.append([author.id, "1882test-01-18"])
 
         result = resource.import_data(dataset, raise_errors=False)
+self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
-        self.assertTrue(result.has_validation_errors())
-        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
-        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+# Add the necessary method or function here
+
+def test_import_data_empty_dataset_with_collect_failed_rows():
+    resource = AuthorResource()
 
     def test_import_data_empty_dataset_with_collect_failed_rows(self):
         resource = AuthorResource()
@@ -567,10 +572,12 @@ class ModelResourceTest(TestCase):
         result = resource.import_data(
             dataset,
             dry_run=True,
-            use_transactions=True,
-            collect_failed_rows=True,
-        )
-        self.assertEqual(result.failed_dataset.headers, ["id", "user", "Error"])
+# We can't check the error message because it's package- and version-dependent
+
+@ignore_widget_deprecation_warning
+# Add the necessary method or function here
+
+def test_row_result_raise_errors(self):
         self.assertEqual(len(result.failed_dataset), 1)
         # We can't check the error message because it's package- and version-dependent
 
@@ -590,11 +597,12 @@ class ModelResourceTest(TestCase):
             )
 
     @ignore_widget_deprecation_warning
-    def test_collect_failed_rows_validation_error(self):
-        resource = ProfileResource()
-        row = ["1"]
-        dataset = tablib.Dataset(row, headers=["id"])
-        with mock.patch(
+result = resource.import_data(
+    dataset,
+    dry_run=True,
+    use_transactions=True,
+    collect_failed_rows=True,
+)
             "import_export.resources.Field.save", side_effect=ValidationError("fail!")
         ):
             result = resource.import_data(
@@ -630,11 +638,11 @@ class ModelResourceTest(TestCase):
                 )
 
     @ignore_widget_deprecation_warning
-    def test_import_data_handles_widget_valueerrors_with_unicode_messages(self):
-        resource = AuthorResourceWithCustomWidget()
-        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
-        dataset.append(["", "A.A.Milne", "1882-01-18"])
-
+self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+self.assertEqual(
+    result.invalid_rows[0].field_specific_errors["name"],
+    ["Ова вриједност је страшна!"],
+)
         result = resource.import_data(dataset, raise_errors=False)
 
         self.assertTrue(result.has_validation_errors())

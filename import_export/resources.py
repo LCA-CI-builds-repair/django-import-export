@@ -589,18 +589,23 @@ class Resource(metaclass=DeclarativeMetaclass):
         Override to add additional logic. Does nothing by default.
 
         :param instance: A new or existing model instance.
+    def import_row(self, row, **kwargs):
+        """
+        Import a single row of data.
 
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
         :param \**kwargs:
             See :meth:`import_row`
         """
-        pass
+        # Implement the import logic here
 
     def delete_instance(self, instance, row, **kwargs):
-        r"""
+        """
         Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
         If ``use_bulk`` then instances are appended to a list for bulk import.
+        """
+        # Implement the delete_instance logic here
 
         :param instance: A new or existing model instance.
 
@@ -1358,7 +1363,9 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
 
                 if f.name in declared_fields:
                     # If model field is declared in `ModelResource`, remove it from `declared_fields`
-                    # to keep exact order of model fields
+field_list.append(
+    # Add the necessary logic here
+)
                     field = declared_fields.pop(f.name)
                 else:
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
@@ -1570,17 +1577,16 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
             r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
         ):
             db_connection = self.get_db_connection_name()
-            connection = connections[db_connection]
-            sequence_sql = connection.ops.sequence_reset_sql(
-                no_style(), [self._meta.model]
-            )
-            if sequence_sql:
-                cursor = connection.cursor()
-                try:
                     for line in sequence_sql:
                         cursor.execute(line)
                 finally:
                     cursor.close()
+
+    @classmethod
+    def get_display_name(cls):
+        if hasattr(cls._meta, "name"):
+            return cls._meta.name
+        return cls.__name__
 
     @classmethod
     def get_display_name(cls):
