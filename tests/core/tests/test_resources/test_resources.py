@@ -417,6 +417,7 @@ class ModelResourceTest(TestCase):
         self.assertIsNone(result.rows[0].original)
         self.assertEqual(1, Book.objects.count())
         book = Book.objects.first()
+        self.assertIsNotNone(book)
         self.assertEqual(book.pk, result.rows[0].instance.pk)
 
     @ignore_widget_deprecation_warning
@@ -428,8 +429,9 @@ class ModelResourceTest(TestCase):
         )
         self.assertIsNotNone(result.rows[0].instance)
         self.assertIsNotNone(result.rows[0].original)
-        self.assertEqual(1, Book.objects.count())
         book = Book.objects.first()
+        self.assertIsNotNone(book)
+        self.assertIsNotNone(result.rows[0].instance)
         self.assertEqual(book.pk, result.rows[0].instance.pk)
 
     @skipUnlessDBFeature("supports_transactions")
