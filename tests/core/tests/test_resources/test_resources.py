@@ -15,6 +15,7 @@ from core.models import (
     Entry,
     Profile,
     WithDynamicDefault,
+)
     WithFloatField,
 )
 from core.tests.resources import (
