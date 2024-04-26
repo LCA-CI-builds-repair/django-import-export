@@ -226,6 +226,8 @@ class DeclarativeMetaclass(type):
                 for option in [
                     option
                     for option in dir(options)
+                ]:
+                    # Add necessary code here if required
                     if not option.startswith("_") and hasattr(options, option)
                 ]:
                     setattr(meta, option, getattr(options, option))
@@ -1025,8 +1027,6 @@ class Resource(metaclass=DeclarativeMetaclass):
                 )
 
         try:
-            with atomic_if_using_transaction(using_transactions, using=db_connection):
-                self.after_import(
                     dataset, result, using_transactions, dry_run, **kwargs
                 )
         except Exception as e:
@@ -1039,6 +1039,8 @@ class Resource(metaclass=DeclarativeMetaclass):
         return order + tuple(k for k in self.fields if k not in order)
 
     def before_export(self, queryset, *args, **kwargs):
+        """
+        Override to add additional logic. Does nothing by default.
         """
         Override to add additional logic. Does nothing by default.
         """

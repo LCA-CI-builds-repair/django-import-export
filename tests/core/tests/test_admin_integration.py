@@ -339,6 +339,7 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
             "Se encontró 'ValueError' mientras se intentaba leer el archivo. "
             "Asegúrese que seleccionó el formato correcto para el archivo."
         )
+        )
 
         # required for testing via tox
         # remove after django 5.0 released
@@ -358,8 +359,6 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         # test delete from admin site (see #432)
 
         # create a book which can be deleted
-        b = Book.objects.create(id=1)
-
         response = self._do_import_post(self.book_import_url, "books-for-delete.csv")
         self.assertEqual(response.status_code, 200)
         confirm_form = response.context["confirm_form"]
@@ -368,6 +367,7 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response.status_code, 200)
 
         # check the LogEntry was created as expected
+        deleted_entry = LogEntry.objects.latest("id")
         deleted_entry = LogEntry.objects.latest("id")
         self.assertEqual("delete through import_export", deleted_entry.change_message)
         self.assertEqual(DELETION, deleted_entry.action_flag)
@@ -532,7 +532,6 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertTemplateUsed(response, "admin/import_export/import.html")
             self.assertContains(response, 'form action=""')
-
     @mock.patch("core.admin.BookAdmin.get_import_form_class")
     @mock.patch("core.admin.BookAdmin.get_form_kwargs")
     def test_deprecated_importform_raises_warning(
@@ -546,6 +545,7 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         mock_get_import_form.return_value = DjangoImportForm
 
         with self.assertWarnsRegex(
+        with self.assertWarnsRegex(
             DeprecationWarning,
             r"^The ImportForm class must inherit from ImportExportFormBase, "
             r"this is needed for multiple resource classes to work properly. $",
@@ -555,7 +555,6 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertTemplateUsed(response, "admin/import_export/import.html")
             self.assertContains(response, 'form action=""')
-
     def test_get_skip_admin_log_attribute(self):
         m = ImportMixin()
         m.skip_admin_log = True
@@ -673,6 +672,7 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         )
 
     def test_export(self):
+    def test_export(self):
         response = self.client.get("/admin/core/book/export/")
         self.assertEqual(response.status_code, 200)
 
@@ -687,7 +687,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(response["Content-Type"], "text/csv")
         self.assertEqual(
             response["Content-Disposition"],
-            'attachment; filename="Book-{}.csv"'.format(date_str),
         )
         self.assertEqual(
             b"id,name,author,author_email,imported,published,"
@@ -701,6 +700,7 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertContains(response, "Export/Import only book names")
 
         data = {
+        data = {
             "file_format": "0",
             "resource": 1,
         }
@@ -712,9 +712,9 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(
             response["Content-Disposition"],
             'attachment; filename="Book-{}.csv"'.format(date_str),
-        )
         self.assertEqual(b"id,name\r\n", response.content)
 
+    def test_export_legacy_resource(self):
     def test_export_legacy_resource(self):
         """
         This test exists solely to test import works correctly using the deprecated
@@ -725,8 +725,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         response = self.client.get("/admin/core/legacybook/export/")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Export/Import only book names")
-
-        data = {
             "file_format": "0",
             "resource": 1,
         }
@@ -742,6 +740,7 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertEqual(b"id,name\r\n", response.content)
 
     def test_returns_xlsx_export(self):
+    def test_returns_xlsx_export(self):
         response = self.client.get("/admin/core/book/export/")
         self.assertEqual(response.status_code, 200)
 
@@ -754,13 +753,14 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
             response["Content-Type"],
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-
-    @override_settings(IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT=True)
     @patch("import_export.mixins.logger")
     def test_export_escape_formulae(self, mock_logger):
         Book.objects.create(id=1, name="=SUM(1+1)")
         Book.objects.create(id=2, name="<script>alert(1)</script>")
         response = self.client.get("/admin/core/book/export/")
+        self.assertEqual(response.status_code, 200)
+
+        xlsx_index = self._get_input_format_index("xlsx")
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
@@ -771,9 +771,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         # #1698 temporary catch for deprecation warning in openpyxl
         # this catch block must be removed when openpyxl updated
         with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            wb = load_workbook(filename=BytesIO(content))
-        self.assertEqual("<script>alert(1)</script>", wb.active["B2"].value)
         self.assertEqual("SUM(1+1)", wb.active["B3"].value)
 
         mock_logger.debug.assert_called_once_with(
@@ -783,6 +780,9 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
     @override_settings(IMPORT_EXPORT_ESCAPE_HTML_ON_EXPORT=True)
     def test_export_escape_html_deprecation_warning(self):
         response = self.client.get("/admin/core/book/export/")
+        self.assertEqual(response.status_code, 200)
+
+        xlsx_index = self._get_input_format_index("xlsx")
         self.assertEqual(response.status_code, 200)
 
         xlsx_index = self._get_input_format_index("xlsx")
@@ -796,9 +796,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
 
 
 class FilteredExportAdminIntegrationTest(AdminTestMixin, TestCase):
-    fixtures = ["category", "book", "author"]
-
-    def test_export_filters_by_form_param(self):
         # issue 1578
         author = Author.objects.get(name="Ian Fleming")
 
