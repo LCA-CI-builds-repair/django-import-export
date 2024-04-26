@@ -269,8 +269,8 @@ class DeclarativeMetaclass(type):
         meta = ResourceOptions()
 
         # If this class is subclassing another Resource, add that Resource's
-        # fields. Note that we loop over the bases in *reverse*. This is
-        # necessary in order to preserve the correct order of fields.
+        # fields. Note that we loop over the bases in *reverse*.
+        # This is necessary in order to preserve the correct order of fields.
         for base in bases[::-1]:
             if hasattr(base, "fields"):
                 declared_fields = list(base.fields.items()) + declared_fields
@@ -1318,7 +1318,7 @@ class Resource(metaclass=DeclarativeMetaclass):
     def _is_dry_run(self, kwargs):
         return kwargs.get("dry_run", False)
 
-    def _check_import_id_fields(self, headers):
+    def _check_import_id_fields(self, headers)
         import_id_fields = [self.fields[f] for f in self.get_import_id_fields()]
         missing_fields = list()
         for field in import_id_fields:

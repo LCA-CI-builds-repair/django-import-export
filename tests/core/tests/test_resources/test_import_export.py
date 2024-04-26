@@ -101,7 +101,6 @@ class ImportExportFieldOrderTest(TestCase):
             widget=widgets.DateWidget("%d.%m.%Y"),
         )
         author = fields.Field(attribute="author__name", column_name="author")
-
         class Meta:
             model = Book
 
@@ -138,15 +137,13 @@ class ImportExportFieldOrderTest(TestCase):
         self.assertEqual(target, data.csv)
 
     @ignore_widget_deprecation_warning
+    @ignore_widget_deprecation_warning
     def test_undefined_export_order(self):
-        # When export order is not defined,
-        # exported order should correspond with 'fields' definition
+        # When export order is not defined, exported order should correspond with 'fields' definition
         self.resource = ImportExportFieldOrderTest.UnorderedBookResource()
         data = self.resource.export()
         target = f"price,id,name\r\n1.99,{self.pk},Ulysses\r\n"
         self.assertEqual(target, data.csv)
-
-    @ignore_widget_deprecation_warning
     def test_subset_import_order(self):
         self.resource = ImportExportFieldOrderTest.SubsetOrderedBookResource()
         self.resource.import_data(self.dataset)
@@ -233,6 +230,9 @@ class ImportExportFieldOrderTest(TestCase):
             )
 
             # Order of declared fields in `ModelResource` shouldn't change export order
+            )
+
+            # Order of declared fields in `ModelResource` shouldn't change export order
             categories = fields.Field(
                 attribute="categories",
                 column_name="categories",
@@ -242,9 +242,6 @@ class ImportExportFieldOrderTest(TestCase):
                 attribute="published",
                 column_name="published",
                 widget=widgets.DateWidget("%d.%m.%Y"),
-            )
-            author = fields.Field(attribute="author__name", column_name="author")
-
             class Meta:
                 model = Book
                 fields = (
