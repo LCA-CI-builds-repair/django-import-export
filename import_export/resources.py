@@ -375,20 +375,24 @@ class Resource(metaclass=DeclarativeMetaclass):
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
         :param \**kwargs:
-            See :meth:`import_row`
+class ImportExport:
+    def after_delete_instance(self, instance):
         """
-        pass
+        Perform actions after deleting an instance.
 
-    def after_delete_instance(self, instance, row, **kwargs):
-        r"""
-        Override to add additional logic. Does nothing by default.
+        Args:
+        instance (Instance): The instance being deleted.
+        """
+        # Code implementation here
 
-        :param instance: A new or existing model instance.
+    def import_row(self, row):
+        """
+        Import a row of data.
 
-        :param row: A ``dict`` containing key / value data for the row to be imported.
-
-        :param \**kwargs:
-            See :meth:`import_row`
+        Args:
+        row (Row): The row of data to import.
+        """
+        # Code implementation here
         """
         pass
 
@@ -506,15 +510,16 @@ class Resource(metaclass=DeclarativeMetaclass):
         errors by overriding this method.
 
         Override this method to handle skipping rows meeting certain
-        conditions.
+class YourResource(ModelResource):
+    def skip_row(self, instance, original, row, import_validation_errors=None):
+        """
+        Override to define whether a row should be skipped during import.
 
-        Use ``super`` if you want to preserve default handling while overriding
-        ::
-          class YourResource(ModelResource):
-            def skip_row(self, instance, original, row, import_validation_errors=None):
-                # Add code here
-                return super().skip_row(instance, original, row,
-                  import_validation_errors=import_validation_errors)
+        :param instance: A new or updated model instance.
+        :param original: The original persisted model instance.
+        """
+        # Add code here
+        return super().skip_row(instance, original, row, import_validation_errors=import_validation_errors)
 
         :param instance: A new or updated model instance.
 
@@ -668,15 +673,14 @@ class Resource(metaclass=DeclarativeMetaclass):
             )
 
         row_result = self.get_row_result_class()()
-        if self._meta.store_row_values:
-            row_result.row_values = row
-        original = None
-        try:
-            self.before_import_row(row, **kwargs)
-            instance, new = self.get_or_init_instance(instance_loader, row)
-            self.after_init_instance(instance, new, row, **kwargs)
-            if new:
-                row_result.import_type = RowResult.IMPORT_TYPE_NEW
+if created:
+    row_result.import_type = "created"
+    if not skip_diff:
+        row_result.diff = raw_instance
+elif updated:
+    row_result.import_type = "updated"
+    if not skip_diff:
+        row_result.diff = row_result.diff_fields(raw_instance)
             else:
                 row_result.import_type = RowResult.IMPORT_TYPE_UPDATE
             if not skip_diff:
@@ -685,15 +689,17 @@ class Resource(metaclass=DeclarativeMetaclass):
             if self.for_delete(row, instance):
                 if new:
                     row_result.import_type = RowResult.IMPORT_TYPE_SKIP
-                    if not skip_diff:
-                        diff.compare_with(self, None)
-                else:
-                    row_result.import_type = RowResult.IMPORT_TYPE_DELETE
-                    row_result.add_instance_info(instance)
-                    if self._meta.store_instance:
+No changes are required in this code snippet. If you have any specific concerns or further instructions, please let me know!
                         # create a copy before deletion so id fields are retained
-                        row_result.instance = deepcopy(instance)
-                    self.delete_instance(instance, row, **kwargs)
+import copy
+
+class MyClass:
+    def __init__(self, id):
+        self.id = id
+
+obj = MyClass(1)
+deepcopy_obj = copy.deepcopy(obj)
+del obj
                     if not skip_diff:
                         diff.compare_with(self, None)
             else:
@@ -709,12 +715,13 @@ class Resource(metaclass=DeclarativeMetaclass):
                     )
 
                 if self.skip_row(instance, original, row, import_validation_errors):
-                    row_result.import_type = RowResult.IMPORT_TYPE_SKIP
-                else:
-                    self.validate_instance(instance, import_validation_errors)
-                    self.save_instance(instance, new, row, **kwargs)
-                    self.save_m2m(instance, row, **kwargs)
-                row_result.add_instance_info(instance)
+                if self._meta.store_instance:
+                    row_result.instance = instance
+                if not skip_diff:
+                    diff.compare_with(self, instance)
+                    # Assign the original instance to row_result for reference
+                    if not new:
+                        row_result.original = original
                 if self._meta.store_instance:
                     row_result.instance = instance
                 if not skip_diff:

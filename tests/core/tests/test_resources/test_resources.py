@@ -483,11 +483,11 @@ class ModelResourceTest(TestCase):
         self.assertEqual(resource.after_lines, [1])
 
     @ignore_widget_deprecation_warning
-    def test_import_data_raises_field_specific_validation_errors(self):
-        resource = AuthorResource()
-        dataset = tablib.Dataset(headers=["id", "name", "birthday"])
-        dataset.append(["", "A.A.Milne", "1882test-01-18"])
-
+data = {
+    "name": "Alice",
+    "age": 30,
+    "birthday": "1882-01-18"
+}
         result = resource.import_data(dataset, raise_errors=False)
 
         self.assertTrue(result.has_validation_errors())

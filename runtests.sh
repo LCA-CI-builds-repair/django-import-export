@@ -11,24 +11,44 @@ export IMPORT_EXPORT_POSTGRESQL_USER=pguser
 export IMPORT_EXPORT_POSTGRESQL_PASSWORD=pguserpass
 
 export IMPORT_EXPORT_MYSQL_USER=mysqluser
-export IMPORT_EXPORT_MYSQL_PASSWORD=mysqluserpass
+export DB=sqlite
+export DB_DATABASE=mydatabase
+export DB_USERNAME=myuser
+export DB_PASSWORD=mypassword
 
-echo "starting local database instances"
-docker compose -f tests/docker-compose.yml up -d
+docker-compose up -d
 
-echo "waiting for db initialization"
-sleep 45
+while ! docker exec db_container sqlite3 --header --column /path/to/sqlite.db ".tables"; do
+    sleep 1
+done
 
-echo "running tests (sqlite)"
-tox
+npm test
 
-echo "running tests (mysql)"
-export IMPORT_EXPORT_TEST_TYPE=mysql-innodb
-tox
+export DB=mysql
+export DB_DATABASE=mydatabase
+export DB_USERNAME=myuser
+export DB_PASSWORD=mypassword
 
-echo "running tests (postgres)"
-export IMPORT_EXPORT_TEST_TYPE=postgres
-tox
+docker-compose up -d
+
+while ! docker exec db_container mysql -u myuser -pmypassword -e "SHOW TABLES;" mydatabase; do
+    sleep 1
+done
+
+npm test
+
+export DB=postgresql
+export DB_DATABASE=mydatabase
+export DB_USERNAME=myuser
+export DB_PASSWORD=mypassword
+
+docker-compose up -d
+
+while ! docker exec db_container psql -U myuser -d mydatabase -c '\dt'; do
+    sleep 1
+done
+
+npm test
 
 echo "removing local database instances"
 docker compose -f tests/docker-compose.yml down -v

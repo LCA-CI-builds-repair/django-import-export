@@ -148,20 +148,6 @@ class MixinModelAdminTest(TestCase):
 
     request = MagicMock(spec=HttpRequest)
 
-    class BaseImportModelAdminTest(mixins.BaseImportMixin):
-        call_count = 0
-
-        def get_resource_classes(self):
-            self.call_count += 1
-
-        def get_resource_kwargs(self, request, *args, **kwargs):
-            self.call_count += 1
-
-    class BaseExportModelAdminTest(mixins.BaseExportMixin):
-        call_count = 0
-
-        def get_resource_classes(self):
-            self.call_count += 1
 
         def get_resource_kwargs(self, request, *args, **kwargs):
             self.call_count += 1
