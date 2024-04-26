@@ -1325,6 +1325,7 @@ class TestImportMixinDeprecationWarnings(TestCase):
             "Please use the new 'confirm_form_class' attribute to specify a custom "
             "form class, "
             "or override the get_confirm_form_class() method if your requirements "
+        """
             "are more complex."
         )
         with self.assertWarns(DeprecationWarning) as w:
@@ -1468,7 +1469,6 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(1, Book.objects.count())
 
     def test_import_action_mac(self):
-        self._is_str_in_response(
             "books-mac.csv",
             "0",
             follow=True,

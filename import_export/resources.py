@@ -123,6 +123,7 @@ class ResourceOptions:
     Controls the chunk_size argument of Queryset.iterator or,
     if prefetch_related is used, the per_page attribute of Paginator.
     """
+    """
 
     skip_diff = False
     """
