@@ -76,6 +76,7 @@ class ImportExportPermissionTest(TestCase):
 
         data = {"file_format": "0"}
         response = self.client.post("/admin/core/book/export/", data)
+        response = self.client.get("/admin/core/book/export/")
         self.assertEqual(response.status_code, 403)
 
         self.set_user_book_model_permission("change")
