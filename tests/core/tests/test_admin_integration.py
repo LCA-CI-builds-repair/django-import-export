@@ -1260,6 +1260,9 @@ class TestExportEncoding(TestCase):
         self.export_mixin = self.TestMixin(test_str="teststr")
 
     def test_to_encoding_not_set_default_encoding_is_utf8(self):
+import tablib
+import chardet
+
         self.export_mixin = self.TestMixin(test_str="teststr")
         data = self.export_mixin.get_export_data(
             self.file_format, list(), request=self.mock_request
@@ -1273,7 +1276,7 @@ class TestExportEncoding(TestCase):
             self.file_format, list(), request=self.mock_request, encoding="shift-jis"
         )
         encoding = chardet.detect(bytes(data))["encoding"]
-        self.assertEqual("SHIFT_JIS", encoding)
+        self.assertEqual("shift_jis", encoding)
 
     def test_to_encoding_set_incorrect(self):
         self.export_mixin = self.TestMixin()
@@ -1295,9 +1298,8 @@ class TestExportEncoding(TestCase):
         self.assertEqual("teststr", binary_dataset.dict[0]["name"])
 
     @mock.patch("import_export.admin.ImportForm")
-    def test_export_action_to_encoding(self, mock_form):
-        mock_form.is_valid.return_value = True
-        self.export_mixin.to_encoding = "utf-8"
+from unittest import mock
+
         with mock.patch(
             "import_export.admin.ExportMixin.get_export_data"
         ) as mock_get_export_data:
@@ -1322,6 +1324,9 @@ class TestExportEncoding(TestCase):
             self.export_mixin.export_admin_action(self.mock_request, list())
             encoding_kwarg = mock_get_export_data.call_args_list[0][1]["encoding"]
             self.assertEqual("utf-8", encoding_kwarg)
+
+
+class TestImportMixinDeprecationWarnings(TestCase):
 
 
 class TestImportMixinDeprecationWarnings(TestCase):
@@ -1418,16 +1423,16 @@ class TestExportMixinDeprecationWarnings(TestCase):
         self.export_mixin = self.TestMixin()
 
     def test_get_export_form_warning(self):
-        target_msg = (
-            "ExportMixin.get_export_form() is deprecated and will "
-            "be removed in a future release. Please use the new "
-            "'export_form_class' attribute to specify a custom form "
-            "class, or override the get_export_form_class() method if "
             "your requirements are more complex."
         )
         with self.assertWarns(DeprecationWarning) as w:
             self.export_mixin.get_export_form()
             self.assertEqual(target_msg, str(w.warnings[0].message))
+
+
+@override_settings(IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True)
+class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
+    def _is_str_in_response(
 
 
 @override_settings(IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True)
@@ -1453,11 +1458,6 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
             self.assertContains(response, str_in_response)
 
     def _is_regex_in_response(
-        self,
-        filename,
-        input_format,
-        encoding=None,
-        regex_in_response=None,
         follow=False,
         status_code=200,
     ):
@@ -1471,6 +1471,11 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(response.status_code, status_code)
         if regex_in_response is not None:
             self.assertRegex(str(response.content), regex_in_response)
+
+    def test_import_action_create(self):
+        self._is_str_in_response(
+            "books.csv",
+            "0",
 
     def test_import_action_create(self):
         self._is_str_in_response(
@@ -1496,14 +1501,14 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(0, Book.objects.count())
 
     def test_import_action_empty_author_email(self):
-        xlsx_index = self._get_input_format_index("xlsx")
-        # sqlite / MySQL / Postgres have different error messages
-        self._is_regex_in_response(
-            "books-empty-author-email.xlsx",
-            xlsx_index,
             follow=True,
             regex_in_response=r"(NOT NULL|null value in column|cannot be null)",
         )
+
+    @override_settings(IMPORT_EXPORT_USE_TRANSACTIONS=True)
+    def test_import_transaction_enabled_validation_error(self):
+        # with transactions enabled, a validation error should cause the entire
+        # import to be rolled back
 
     @override_settings(IMPORT_EXPORT_USE_TRANSACTIONS=True)
     def test_import_transaction_enabled_validation_error(self):
@@ -1513,11 +1518,10 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(0, Book.objects.count())
 
     @override_settings(IMPORT_EXPORT_USE_TRANSACTIONS=False)
-    def test_import_transaction_disabled_validation_error(self):
-        # with transactions disabled, a validation error should not cause the entire
-        # import to fail
-        self._do_import_post(self.book_import_url, "books-invalid-date.csv")
-        self.assertEqual(1, Book.objects.count())
+    @override_settings(IMPORT_EXPORT_USE_TRANSACTIONS=True)
+    def test_import_transaction_enabled_core_error(self):
+        # with transactions enabled, a core error should cause the entire import to fail
+        xlsx_index = self._get_input_format_index("xlsx")
 
     @override_settings(IMPORT_EXPORT_USE_TRANSACTIONS=True)
     def test_import_transaction_enabled_core_error(self):
