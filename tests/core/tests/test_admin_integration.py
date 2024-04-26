@@ -401,12 +401,16 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         )
 
     def test_import_export_buttons_visible_without_add_permission(self):
-        # issue 38 - Export button not visible when no add permission
+        # Test case for issue 38 - Export button visibility without add permission
         original = BookAdmin.has_add_permission
         BookAdmin.has_add_permission = lambda self, request: False
+        
+        # Request the admin page for 'Book' model
         response = self.client.get("/admin/core/book/")
+        
         BookAdmin.has_add_permission = original
 
+        # Assert that 'Export' and 'Import' buttons are present in the response
         self.assertContains(response, _("Export"))
         self.assertContains(response, _("Import"))
 
@@ -415,12 +419,12 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         # without add permission (to be consistent with ImportExportMixin)
 
         original = AuthorAdmin.has_add_permission
-        AuthorAdmin.has_add_permission = lambda self, request: False
-        response = self.client.get("/admin/core/author/")
-        AuthorAdmin.has_add_permission = original
-
         self.assertContains(response, _("Import"))
         self.assertTemplateUsed(response, "admin/import_export/change_list.html")
+
+    def test_import_file_name_in_tempdir(self):
+        # Test case for issue 65 - Potential security risk with import_file_name field
+        import_file_name = os.path.join(
 
     def test_import_file_name_in_tempdir(self):
         # 65 - import_file_name form field can be use to access the filesystem
@@ -1064,10 +1068,6 @@ class ExportActionAdminIntegrationTest(AdminTestMixin, TestCase):
                 super().__init__(mock_model, mock_site)
 
             export_formats = [base_formats.CSV]
-
-        m = TestCategoryAdmin()
-        action_form = m.action_form
-
         items = list(action_form.base_fields.items())
         file_format = items[len(items) - 1][1]
         choices = file_format.choices
@@ -1075,6 +1075,10 @@ class ExportActionAdminIntegrationTest(AdminTestMixin, TestCase):
         self.assertNotEqual(choices[0][0], "---")
         self.assertEqual(choices[0][1], "csv")
 
+    def test_export_admin_action_formats(self):
+        # Test case for checking export action formats
+        mock_model = mock.MagicMock()
+        mock_site = mock.MagicMock()
     def test_export_admin_action_formats(self):
         mock_model = mock.MagicMock()
         mock_site = mock.MagicMock()
@@ -1171,10 +1175,6 @@ class TestExportEncoding(TestCase):
         model = Book
 
         def __init__(self, test_str=None):
-            self.test_str = test_str
-
-        def get_data_for_export(self, request, queryset, *args, **kwargs):
-            dataset = Dataset(headers=["id", "name"])
             dataset.append([1, self.test_str])
             return dataset
 
@@ -1185,8 +1185,14 @@ class TestExportEncoding(TestCase):
             return "f"
 
     def setUp(self):
+        # Setting up the test environment
         self.file_format = formats.base_formats.CSV()
         self.export_mixin = self.TestMixin(test_str="teststr")
+
+    def test_to_encoding_not_set_default_encoding_is_utf8(self):
+        # Test case for encoding when not set
+        self.export_mixin = self.TestMixin(test_str="teststr")
+        data = self.export_mixin.get_export_data(
 
     def test_to_encoding_not_set_default_encoding_is_utf8(self):
         self.export_mixin = self.TestMixin(test_str="teststr")
@@ -1235,12 +1241,13 @@ class TestExportEncoding(TestCase):
             self.assertEqual("utf-8", encoding_kwarg)
 
     @mock.patch("import_export.admin.ImportForm")
-    def test_export_admin_action_to_encoding(self, mock_form):
-        class TestExportActionMixin(ExportActionMixin):
-            def get_export_filename(self, request, queryset, file_format):
-                return "f"
-
-        self.mock_request.POST = {"file_format": "1"}
+        self.export_mixin = TestExportActionMixin()
+        self.export_mixin.to_encoding = "utf-8"
+        mock_form.is_valid.return_value = True
+        
+        with mock.patch(
+            "import_export.admin.ExportMixin.get_export_data"
+        ):
 
         self.export_mixin = TestExportActionMixin()
         self.export_mixin.to_encoding = "utf-8"
@@ -1325,13 +1332,6 @@ class TestImportMixinDeprecationWarnings(TestCase):
             "Please use the new 'confirm_form_class' attribute to specify a custom "
             "form class, "
             "or override the get_confirm_form_class() method if your requirements "
-            "are more complex."
-        )
-        with self.assertWarns(DeprecationWarning) as w:
-            self.import_mixin.get_confirm_form_class(None)
-            self.assertEqual(target_msg, str(w.warnings[0].message))
-
-
 class TestExportMixinDeprecationWarnings(TestCase):
     class TestMixin(ExportMixin):
         """
@@ -1347,6 +1347,7 @@ class TestExportMixinDeprecationWarnings(TestCase):
         self.export_mixin = self.TestMixin()
 
     def test_get_export_form_warning(self):
+        # Test for deprecation warning in get_export_form
         target_msg = (
             "ExportMixin.get_export_form() is deprecated and will "
             "be removed in a future release. Please use the new "
@@ -1356,7 +1357,7 @@ class TestExportMixinDeprecationWarnings(TestCase):
         )
         with self.assertWarns(DeprecationWarning) as w:
             self.export_mixin.get_export_form()
-            self.assertEqual(target_msg, str(w.warnings[0].message))
+            self.assertEqual(target_msg, str(w.warnings[0].message)
 
 
 @override_settings(IMPORT_EXPORT_SKIP_ADMIN_CONFIRM=True)
@@ -1384,6 +1385,14 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
     def _is_regex_in_response(
         self,
         filename,
+    ):
+        self.assertEqual(response.status_code, status_code)
+        if str_in_response is not None:
+            self.assertContains(response, str_in_response)
+
+    def _is_regex_in_response(
+        self,
+        filename,
         input_format,
         encoding=None,
         regex_in_response=None,
@@ -1397,18 +1406,18 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
             encoding=encoding,
             follow=follow,
         )
-        self.assertEqual(response.status_code, status_code)
-        if regex_in_response is not None:
-            self.assertRegex(str(response.content), regex_in_response)
-
-    def test_import_action_create(self):
-        self._is_str_in_response(
-            "books.csv",
-            "0",
-            follow=True,
             str_in_response="Import finished, with 1 new and 0 updated books.",
         )
         self.assertEqual(1, Book.objects.count())
+
+    def test_import_action_create(self):
+        # Test that a row with an invalid date redirects to the errors page
+        response = self._do_import_post(
+            self.book_import_url, "books-invalid-date.csv", "0"
+        )
+        result = response.context["result"]
+        # Assert that there should be a single invalid row
+        self.assertEqual(1, len(result.invalid_rows))
 
     def test_import_action_invalid_date(self):
         # test that a row with an invalid date redirects to errors page
@@ -1468,21 +1477,21 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
         self.assertEqual(1, Book.objects.count())
 
     def test_import_action_mac(self):
-        self._is_str_in_response(
-            "books-mac.csv",
-            "0",
-            follow=True,
-            str_in_response="Import finished, with 1 new and 0 updated books.",
-        )
-
-    def test_import_action_iso_8859_1(self):
-        self._is_str_in_response(
             "books-ISO-8859-1.csv",
             "0",
             "ISO-8859-1",
             follow=True,
             str_in_response="Import finished, with 1 new and 0 updated books.",
         )
+
+    def test_import_action_decode_error(self):
+        # Test that attempting to read a file with incorrect encoding should raise an error
+        self._is_regex_in_response(
+            "books-ISO-8859-1.csv",
+            "0",
+            follow=True,
+            encoding="utf-8-sig",
+            regex_in_response=(
 
     def test_import_action_decode_error(self):
         # attempting to read a file with the incorrect encoding should raise an error

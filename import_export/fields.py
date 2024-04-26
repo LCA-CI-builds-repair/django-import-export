@@ -52,12 +52,12 @@ class Field:
         self.default = default
         self.column_name = column_name
         if not widget:
-            widget = widgets.Widget()
+        widget = widgets.Widget()
         self.widget = widget
-        self.readonly = readonly
-        self.saves_null_values = saves_null_values
-        self.dehydrate_method = dehydrate_method
-        self.m2m_add = m2m_add
+        self.readonly = readonly  # Assigning the readonly attribute
+        self.saves_null_values = saves_null_values  # Assigning the saves_null_values attribute
+        self.dehydrate_method = dehydrate_method  # Assigning the dehydrate_method attribute
+        self.m2m_add = m2m_add  # Assigning the m2m_add attribute
 
     def __repr__(self):
         """

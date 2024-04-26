@@ -727,13 +727,13 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         changelist_kwargs = {
             "request": request,
             "model": self.model,
-            "list_display": list_display,
-            "list_display_links": list_display_links,
-            "list_filter": list_filter,
-            "date_hierarchy": self.date_hierarchy,
-            "search_fields": search_fields,
-            "list_select_related": list_select_related,
-            "list_per_page": self.list_per_page,
+            "list_display": list_display,  # Assigning the list_display attribute
+            "list_display_links": list_display_links,  # Assigning the list_display_links attribute
+            "list_filter": list_filter,  # Assigning the list_filter attribute
+            "date_hierarchy": self.date_hierarchy,  # Assigning the date_hierarchy attribute
+            "search_fields": search_fields,  # Assigning the search_fields attribute
+            "list_select_related": list_select_related,  # Assigning the list_select_related attribute
+            "list_per_page": self.list_per_page,  # Assigning the list_per_page attribute
             "list_max_show_all": self.list_max_show_all,
             "list_editable": self.list_editable,
             "model_admin": self,
@@ -747,9 +747,12 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
         class FakePaginator:
             count = 0
+
         original_get_paginator = self.get_paginator
         self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+
         cl = ChangeList(**changelist_kwargs)
+
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
 
@@ -760,6 +763,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         Returns file_format representation for given queryset.
         """
         request = kwargs.pop("request")
+
         if not self.has_export_permission(request):
             raise PermissionDenied
 
@@ -857,10 +861,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         return TemplateResponse(request, [self.export_template_name], context)
 
     def changelist_view(self, request, extra_context=None):
-        if extra_context is None:
-            extra_context = {}
-        extra_context["has_export_permission"] = self.has_export_permission(request)
-        return super().changelist_view(request, extra_context)
 
     def get_export_filename(self, request, queryset, file_format):
         return super().get_export_filename(file_format)
@@ -869,6 +869,10 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 class ImportExportMixin(ImportMixin, ExportMixin):
     """
     Import and export mixin.
+    """
+
+    #: template for change_list view
+    import_export_change_list_template = (
     """
 
     #: template for change_list view
@@ -921,14 +925,14 @@ class ExportActionMixin(ExportMixin):
             file_format = formats[int(export_format)]()
 
             export_data = self.get_export_data(
-                file_format, queryset, request=request, encoding=self.to_encoding
-            )
-            content_type = file_format.get_content_type()
-            response = HttpResponse(export_data, content_type=content_type)
             response["Content-Disposition"] = 'attachment; filename="%s"' % (
                 self.get_export_filename(request, queryset, file_format),
             )
             return response
+
+    def get_actions(self, request):
+        """
+        Adds the export action to the list of available actions.
 
     def get_actions(self, request):
         """

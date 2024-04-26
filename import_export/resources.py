@@ -700,8 +700,9 @@ class Resource(metaclass=DeclarativeMetaclass):
     def after_import(self, dataset, result, using_transactions, dry_run, **kwargs):
         """
         Override to add additional logic. Does nothing by default.
+        Add your custom logic here.
         """
-        pass
+        # Add your custom logic here
 
     def before_import_row(self, row, row_number=None, **kwargs):
         """
@@ -1025,16 +1026,23 @@ class Resource(metaclass=DeclarativeMetaclass):
                 )
 
         try:
-            with atomic_if_using_transaction(using_transactions, using=db_connection):
-                self.after_import(
-                    dataset, result, using_transactions, dry_run, **kwargs
-                )
+    def after_import(self, dataset, result, using_transactions, dry_run, **kwargs):
+        """
+        Handle actions after importing data.
+        """
+        try:
+            self.after_import(
+                dataset, result, using_transactions, dry_run, **kwargs
+            )
         except Exception as e:
             self.handle_import_error(result, e, raise_errors)
 
         return result
 
     def get_export_order(self):
+        """
+        Define the export order for fields in the resource.
+        """
         order = tuple(self._meta.export_order or ())
         return order + tuple(k for k in self.fields if k not in order)
 

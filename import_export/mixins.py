@@ -164,6 +164,10 @@ class BaseExportMixin(BaseImportExportMixin):
         return self.get_resource_kwargs(request, *args, **kwargs)
 
     def get_data_for_export(self, request, queryset, *args, **kwargs):
+    def export_data(self, request, queryset, *args, **kwargs):
+        """
+        Export data for the given queryset in the specified file format.
+        """
         export_form = kwargs.get("export_form")
         export_class = self.choose_export_resource_class(export_form)
         export_resource_kwargs = self.get_export_resource_kwargs(
@@ -174,6 +178,9 @@ class BaseExportMixin(BaseImportExportMixin):
         return export_data
 
     def get_export_filename(self, file_format):
+        """
+        Generate an export filename based on the model name and current date.
+        """
         date_str = now().strftime("%Y-%m-%d")
         filename = "%s-%s.%s" % (
             self.model.__name__,
@@ -188,13 +195,16 @@ class ExportViewMixin(BaseExportMixin):
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):
         """
-        Returns file_format representation for given queryset.
+        Returns the data in the specified file format for the given queryset.
         """
         data = self.get_data_for_export(self.request, queryset, *args, **kwargs)
         export_data = file_format.export_data(data)
         return export_data
 
     def get_context_data(self, **kwargs):
+        """
+        Get context data for the view.
+        """
         context = super().get_context_data(**kwargs)
         return context
 
