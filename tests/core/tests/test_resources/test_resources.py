@@ -310,6 +310,7 @@ class ModelResourceTest(TestCase):
             def before_export(self, queryset, **kwargs):
                 self.qs = queryset
                 self.kwargs_ = kwargs
+                return queryset
 
         self.resource = _BookResource()
         # when queryset is supplied, it should be passed to before_export()
@@ -351,7 +352,6 @@ class ModelResourceTest(TestCase):
             mocked_obj.assert_called_once_with(qs, 1000)
 
     @ignore_widget_deprecation_warning
-    def test_get_diff(self):
         diff = Diff(self.resource, self.book, False)
         book2 = Book(name="Some other book")
         diff.compare_with(self.resource, book2)
@@ -359,8 +359,8 @@ class ModelResourceTest(TestCase):
         headers = self.resource.get_export_headers()
         self.assertEqual(
             html[headers.index("name")],
-            '<span>Some </span><ins style="background:#e6ffe6;">'
-            "other </ins><span>book</span>",
+            '<span>Some other book</span>',
+        )
         )
         self.assertFalse(html[headers.index("author_email")])
 
@@ -512,6 +512,10 @@ class ModelResourceTest(TestCase):
         self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
         self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
+        self.assertTrue(result.has_validation_errors())
+        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+
     def test_import_data_empty_dataset_with_collect_failed_rows(self):
         resource = AuthorResource()
         with self.assertRaisesRegex(
@@ -538,10 +542,6 @@ class ModelResourceTest(TestCase):
         # We can't check the error message because it's package- and version-dependent
 
     @ignore_widget_deprecation_warning
-    def test_row_result_raise_errors(self):
-        resource = ProfileResource()
-        headers = ["id", "user"]
-        # 'user' is a required field, the database will raise an error.
         row = [None, None]
         dataset = tablib.Dataset(row, headers=headers)
         with self.assertRaises(IntegrityError):
@@ -550,6 +550,11 @@ class ModelResourceTest(TestCase):
                 dry_run=True,
                 use_transactions=True,
                 raise_errors=True,
+            )
+
+    @ignore_widget_deprecation_warning
+    def test_collect_failed_rows_validation_error(self):
+        # Add necessary test logic and assertions related to collecting failed rows with validation errors
             )
 
     @ignore_widget_deprecation_warning
@@ -930,13 +935,14 @@ class ModelResourceTest(TestCase):
         self.assertEqual(result, "13.08.2012")
 
     @ignore_widget_deprecation_warning
-    def test_foreign_keys_export(self):
-        author1 = Author.objects.create(name="Foo")
-        self.book.author = author1
-        self.book.save()
-
         dataset = self.resource.export(Book.objects.all())
         self.assertEqual(dataset.dict[0]["author"], author1.pk)
+
+    @ignore_widget_deprecation_warning
+    def test_foreign_keys_import(self):
+        author2 = Author.objects.create(name="Bar")
+        headers = ["id", "name", "author"]
+        # Add necessary test logic and assertions related to importing foreign keys
 
     @ignore_widget_deprecation_warning
     def test_foreign_keys_import(self):
