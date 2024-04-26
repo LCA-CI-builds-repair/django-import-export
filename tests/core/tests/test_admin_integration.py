@@ -1334,15 +1334,16 @@ class TestImportMixinDeprecationWarnings(TestCase):
 
 
 class TestExportMixinDeprecationWarnings(TestCase):
-    class TestMixin(ExportMixin):
+    from path.to.ExportMixin import ExportMixin
+
+    class TestExportMixin:
         """
-        TestMixin is a subclass which mimics a
+        TestExportMixin is a subclass which mimics a
         class which the user may have created
         """
 
         def get_export_form(self):
-            return super().get_export_form()
-
+            return super().get_export_form(self)
     def setUp(self):
         super().setUp()
         self.export_mixin = self.TestMixin()
