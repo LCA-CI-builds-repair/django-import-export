@@ -406,6 +406,8 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         BookAdmin.has_add_permission = lambda self, request: False
         response = self.client.get("/admin/core/book/")
         BookAdmin.has_add_permission = original
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
 
         self.assertContains(response, _("Export"))
         self.assertContains(response, _("Import"))
@@ -415,14 +417,16 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         # without add permission (to be consistent with ImportExportMixin)
 
         original = AuthorAdmin.has_add_permission
-        AuthorAdmin.has_add_permission = lambda self, request: False
-        response = self.client.get("/admin/core/author/")
         AuthorAdmin.has_add_permission = original
 
         self.assertContains(response, _("Import"))
         self.assertTemplateUsed(response, "admin/import_export/change_list.html")
 
     def test_import_file_name_in_tempdir(self):
+        # 65 - import_file_name form field can be use to access the filesystem
+        import_file_name = os.path.join(
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         # 65 - import_file_name form field can be use to access the filesystem
         import_file_name = os.path.join(
             os.path.dirname(__file__), os.path.pardir, "exports", "books.csv"
@@ -1171,10 +1175,6 @@ class TestExportEncoding(TestCase):
         model = Book
 
         def __init__(self, test_str=None):
-            self.test_str = test_str
-
-        def get_data_for_export(self, request, queryset, *args, **kwargs):
-            dataset = Dataset(headers=["id", "name"])
             dataset.append([1, self.test_str])
             return dataset
 
@@ -1187,8 +1187,14 @@ class TestExportEncoding(TestCase):
     def setUp(self):
         self.file_format = formats.base_formats.CSV()
         self.export_mixin = self.TestMixin(test_str="teststr")
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
 
     def test_to_encoding_not_set_default_encoding_is_utf8(self):
+        self.export_mixin = self.TestMixin(test_str="teststr")
+        data = self.export_mixin.get_export_data(
+            self.file_format, list(), request=self.mock_request
+        )
         self.export_mixin = self.TestMixin(test_str="teststr")
         data = self.export_mixin.get_export_data(
             self.file_format, list(), request=self.mock_request
@@ -1235,14 +1241,15 @@ class TestExportEncoding(TestCase):
             self.assertEqual("utf-8", encoding_kwarg)
 
     @mock.patch("import_export.admin.ImportForm")
-    def test_export_admin_action_to_encoding(self, mock_form):
-        class TestExportActionMixin(ExportActionMixin):
-            def get_export_filename(self, request, queryset, file_format):
-                return "f"
-
-        self.mock_request.POST = {"file_format": "1"}
-
         self.export_mixin = TestExportActionMixin()
+        self.export_mixin.to_encoding = "utf-8"
+        mock_form.is_valid.return_value = True
+        with mock.patch(
+            "import_export.admin.ExportMixin.get_export_data"
+        ) as mock_get_export_data:
+            self.export_mixin.export_admin_action(self.mock_request, list())
+            self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+            cl = ChangeList(**changelist_kwargs)
         self.export_mixin.to_encoding = "utf-8"
         mock_form.is_valid.return_value = True
         with mock.patch(

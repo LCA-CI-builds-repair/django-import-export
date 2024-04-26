@@ -220,6 +220,8 @@ class XLSX(TablibFormat):
         return dataset
 
     def export_data(self, dataset, **kwargs):
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         # #1698 temporary catch for deprecation warning in openpyxl
         # this catch block must be removed when openpyxl updated
         with warnings.catch_warnings():

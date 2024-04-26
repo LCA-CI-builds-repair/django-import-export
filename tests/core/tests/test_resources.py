@@ -578,7 +578,9 @@ class ModelResourceTest(TestCase):
                 self.qs = queryset
                 self.args_ = args
                 self.kwargs_ = kwargs
-
+                self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+                cl = ChangeList(**changelist_kwargs)
+        
         self.resource = _BookResource()
         # when queryset is supplied, it should be passed to before_export()
         self.resource.export(1, 2, 3, queryset=Book.objects.all(), **{"a": 1})
@@ -1999,8 +2001,6 @@ class ManyToManyWidgetDiffTest(TestCase):
         dataset_headers = ["id", "name", "categories"]
 
         book_resource = BookResource()
-        book_resource._meta.skip_unchanged = True
-
         # import with natural order
         dataset_row = [book.id, book.name, f"{cat1.id}, {cat2.id}"]
         dataset = tablib.Dataset(headers=dataset_headers)
@@ -2018,8 +2018,12 @@ class ManyToManyWidgetDiffTest(TestCase):
         self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_SKIP)
 
         self.assertEqual(2, book.categories.count())
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
 
     def test_many_to_many_widget_handles_uuid(self):
+        # Test for #1435 - skip_row() handles M2M field when UUID pk used
+        class _UUIDBookResource(resources.ModelResource):
         # Test for #1435 - skip_row() handles M2M field when UUID pk used
         class _UUIDBookResource(resources.ModelResource):
             class Meta:

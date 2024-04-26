@@ -642,6 +642,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             resources = [
                 resource_class(**res_kwargs) for resource_class in resource_classes
             ]
+            self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+            cl = ChangeList(**changelist_kwargs)
 
         context.update(self.admin_site.each_context(request))
 
@@ -743,8 +745,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             changelist_kwargs["search_help_text"] = self.search_help_text
 
         original_show_full_result_count = self.show_full_result_count
-        self.show_full_result_count = False
-
         class FakePaginator:
             count = 0
         original_get_paginator = self.get_paginator
@@ -756,6 +756,10 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         return cl.get_queryset(request)
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):
+        """
+        Returns file_format representation for given queryset.
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         """
         Returns file_format representation for given queryset.
         """
@@ -820,10 +824,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             file_format = formats[int(form.cleaned_data["file_format"])]()
 
             queryset = self.get_export_queryset(request)
-            export_data = self.get_export_data(
-                file_format,
-                queryset,
-                request=request,
                 encoding=self.to_encoding,
                 export_form=form,
             )
@@ -832,6 +832,11 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             response["Content-Disposition"] = 'attachment; filename="%s"' % (
                 self.get_export_filename(request, queryset, file_format),
             )
+            self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+            cl = ChangeList(**changelist_kwargs)
+
+            post_export.send(sender=None, model=self.model)
+            return response
 
             post_export.send(sender=None, model=self.model)
             return response
@@ -841,11 +846,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         context.update(self.admin_site.each_context(request))
 
         context["title"] = _("Export")
-        context["form"] = form
-        context["opts"] = self.model._meta
-        context["fields_list"] = [
-            (
-                res.get_display_name(),
                 [
                     field.column_name
                     for field in res(model=self.model).get_user_visible_fields()
@@ -854,6 +854,8 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             for res in self.get_export_resource_classes()
         ]
         request.current_app = self.admin_site.name
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         return TemplateResponse(request, [self.export_template_name], context)
 
     def changelist_view(self, request, extra_context=None):
@@ -861,17 +863,22 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             extra_context = {}
         extra_context["has_export_permission"] = self.has_export_permission(request)
         return super().changelist_view(request, extra_context)
-
-    def get_export_filename(self, request, queryset, file_format):
-        return super().get_export_filename(file_format)
-
-
+    def changelist_view(self, request, extra_context=None):
 class ImportExportMixin(ImportMixin, ExportMixin):
     """
     Import and export mixin.
     """
 
     #: template for change_list view
+    import_export_change_list_template = (
+        "admin/import_export/change_list_import_export.html"
+    )
+    self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+    cl = ChangeList(**changelist_kwargs)
+
+
+class ImportExportModelAdmin(ImportExportMixin, admin.ModelAdmin):
+    """
     import_export_change_list_template = (
         "admin/import_export/change_list_import_export.html"
     )
@@ -921,16 +928,18 @@ class ExportActionMixin(ExportMixin):
             file_format = formats[int(export_format)]()
 
             export_data = self.get_export_data(
-                file_format, queryset, request=request, encoding=self.to_encoding
-            )
-            content_type = file_format.get_content_type()
-            response = HttpResponse(export_data, content_type=content_type)
-            response["Content-Disposition"] = 'attachment; filename="%s"' % (
-                self.get_export_filename(request, queryset, file_format),
-            )
             return response
 
     def get_actions(self, request):
+        """
+        Adds the export action to the list of available actions.
+        """
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
+
+        actions = super().get_actions(request)
+        actions.update(
+            export_admin_action=(
         """
         Adds the export action to the list of available actions.
         """

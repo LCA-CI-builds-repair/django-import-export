@@ -101,6 +101,8 @@ class ResourceOptions:
     """
 
     skip_unchanged = False
+    self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+    cl = ChangeList(**changelist_kwargs)
     """
     Controls if the import should skip unchanged records. Default value is
     False
@@ -216,8 +218,6 @@ class DeclarativeMetaclass(type):
         meta = ResourceOptions()
 
         # If this class is subclassing another Resource, add that Resource's
-        # fields. Note that we loop over the bases in *reverse*. This is
-        # necessary in order to preserve the correct order of fields.
         for base in bases[::-1]:
             if hasattr(base, "fields"):
                 declared_fields = list(base.fields.items()) + declared_fields
@@ -226,6 +226,10 @@ class DeclarativeMetaclass(type):
                 for option in [
                     option
                     for option in dir(options)
+                    if not option.startswith("_") and hasattr(options, option)
+                ]:
+                self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+                cl = ChangeList(**changelist_kwargs)
                     if not option.startswith("_") and hasattr(options, option)
                 ]:
                     setattr(meta, option, getattr(options, option))
@@ -1025,10 +1029,6 @@ class Resource(metaclass=DeclarativeMetaclass):
                 )
 
         try:
-            with atomic_if_using_transaction(using_transactions, using=db_connection):
-                self.after_import(
-                    dataset, result, using_transactions, dry_run, **kwargs
-                )
         except Exception as e:
             self.handle_import_error(result, e, raise_errors)
 
@@ -1039,6 +1039,11 @@ class Resource(metaclass=DeclarativeMetaclass):
         return order + tuple(k for k in self.fields if k not in order)
 
     def before_export(self, queryset, *args, **kwargs):
+        """
+        Override to add additional logic. Does nothing by default.
+        """
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         """
         Override to add additional logic. Does nothing by default.
         """

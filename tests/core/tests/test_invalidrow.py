@@ -21,8 +21,8 @@ class InvalidRowTest(TestCase):
         e = ValidationError(combined_error_dict)
         # Create an InvalidRow instance to use in tests
         self.obj = InvalidRow(number=1, validation_error=e, values=["ABC", "123"])
-
-    def test_error_count(self):
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         self.assertEqual(self.obj.error_count, 7)
 
     def test_non_field_specific_errors(self):

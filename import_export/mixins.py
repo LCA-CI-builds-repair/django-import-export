@@ -174,6 +174,8 @@ class BaseExportMixin(BaseImportExportMixin):
         return export_data
 
     def get_export_filename(self, file_format):
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(request, self.model, self.list_display, self.list_display_links, self.list_filter, self.date_hierarchy, self.search_fields, self.list_select_related, self.list_per_page, self.list_max_show_all, self.list_editable, self, self.sortable_by, self.list_select_related, self.list_per_page, self.list_max_show_all, self.list_editable, self, self.sortable_by)
         date_str = now().strftime("%Y-%m-%d")
         filename = "%s-%s.%s" % (
             self.model.__name__,
@@ -184,8 +186,6 @@ class BaseExportMixin(BaseImportExportMixin):
 
 
 class ExportViewMixin(BaseExportMixin):
-    form_class = ExportForm
-
     def get_export_data(self, file_format, queryset, *args, **kwargs):
         """
         Returns file_format representation for given queryset.
@@ -199,6 +199,10 @@ class ExportViewMixin(BaseExportMixin):
         return context
 
     def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["formats"] = self.get_export_formats()
+        self.get_paginator = lambda request, queryset, per_page: FakePaginator()
+        cl = ChangeList(**changelist_kwargs)
         kwargs = super().get_form_kwargs()
         kwargs["formats"] = self.get_export_formats()
         return kwargs
