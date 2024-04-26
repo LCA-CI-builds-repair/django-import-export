@@ -34,8 +34,6 @@ class ImportExportFormBase(forms.Form):
             self.fields["resource"].choices = resource_choices
         else:
             del self.fields["resource"]
-
-
 class ImportForm(ImportExportFormBase):
     import_file = forms.FileField(label=_("File to import"))
     input_format = forms.ChoiceField(
@@ -44,6 +42,7 @@ class ImportForm(ImportExportFormBase):
     )
 
     def __init__(self, import_formats, *args, **kwargs):
+    def __init__(self, import_formats, *args, **kwargs):
         resources = kwargs.pop("resources", None)
         super().__init__(*args, resources=resources, **kwargs)
         choices = [(str(i), f().get_title()) for i, f in enumerate(import_formats)]
@@ -51,8 +50,6 @@ class ImportForm(ImportExportFormBase):
             choices.insert(0, ("", "---"))
             self.fields["import_file"].widget.attrs["class"] = "guess_format"
             self.fields["input_format"].widget.attrs["class"] = "guess_format"
-
-        self.fields["input_format"].choices = choices
 
     @property
     def media(self):
@@ -85,6 +82,9 @@ class ExportForm(ImportExportFormBase):
     )
 
     def __init__(self, formats, *args, **kwargs):
+    )
+
+    def __init__(self, formats, *args, **kwargs):
         resources = kwargs.pop("resources", None)
         super().__init__(*args, resources=resources, **kwargs)
         choices = []
@@ -97,10 +97,6 @@ class ExportForm(ImportExportFormBase):
             )
         if len(formats) > 1:
             choices.insert(0, ("", "---"))
-
-        self.fields["file_format"].choices = choices
-
-
 def export_action_form_factory(formats):
     """
     Returns an ActionForm subclass containing a ChoiceField populated with
