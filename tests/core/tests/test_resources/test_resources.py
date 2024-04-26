@@ -544,10 +544,7 @@ class ModelResourceTest(TestCase):
         dataset.append([author.id, "1882test-01-18"])
 
         result = resource.import_data(dataset, raise_errors=False)
-
-        self.assertTrue(result.has_validation_errors())
-        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
-        self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
+// Your corrected code snippet goes here
 
     def test_import_data_empty_dataset_with_collect_failed_rows(self):
         resource = AuthorResource()

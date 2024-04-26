@@ -589,8 +589,9 @@ class Resource(metaclass=DeclarativeMetaclass):
         Override to add additional logic. Does nothing by default.
 
         :param instance: A new or existing model instance.
-
-        :param row: A ``dict`` containing key / value data for the row to be imported.
+/**
+ * @param {string} name - The name of the person.
+ */
 
         :param \**kwargs:
             See :meth:`import_row`
