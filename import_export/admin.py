@@ -734,6 +734,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             "search_fields": search_fields,
             "list_select_related": list_select_related,
             "list_per_page": self.list_per_page,
+        }
             "list_max_show_all": self.list_max_show_all,
             "list_editable": self.list_editable,
             "model_admin": self,
@@ -743,8 +744,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             changelist_kwargs["search_help_text"] = self.search_help_text
 
         original_show_full_result_count = self.show_full_result_count
-        self.show_full_result_count = False
-
         class FakePaginator:
             count = 0
         original_get_paginator = self.get_paginator
@@ -753,6 +752,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
 
+        return cl.get_queryset(request)
         return cl.get_queryset(request)
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):
