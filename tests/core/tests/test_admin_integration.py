@@ -1403,9 +1403,8 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
 
     def test_import_action_create(self):
         self._is_str_in_response(
-            "books.csv",
-            "0",
-            follow=True,
+            "books.txt",
+            "1",
             str_in_response="Import finished, with 1 new and 0 updated books.",
         )
         self.assertEqual(1, Book.objects.count())
