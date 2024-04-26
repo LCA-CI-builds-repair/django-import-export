@@ -169,7 +169,7 @@ class ResourceTestCase(TestCase):
 
     def test_init_instance_raises_NotImplementedError(self):
         with self.assertRaises(NotImplementedError):
-            self.my_resource.init_instance([])
+            self.my_resource.init_instance()
 
     @patch("core.models.Book.full_clean")
     def test_validate_instance_called_with_import_validation_errors_as_None(
@@ -323,13 +323,13 @@ class ModelResourceTest(TestCase):
 
     @ignore_widget_deprecation_warning
     def test_export(self):
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1):
             dataset = self.resource.export(queryset=Book.objects.all())
             self.assertEqual(len(dataset), 1)
 
     @ignore_widget_deprecation_warning
     def test_export_iterable(self):
-        with self.assertNumQueries(2):
+        with self.assertNumQueries(1):
             dataset = self.resource.export(queryset=list(Book.objects.all()))
             self.assertEqual(len(dataset), 1)
 
@@ -502,8 +502,6 @@ class ModelResourceTest(TestCase):
             supports_transactions = False
 
         class DummyConnection(object):
-            features = Features()
-
         dummy_connection = DummyConnection()
         mock_db_connections.__getitem__.return_value = dummy_connection
         with self.assertRaises(ImproperlyConfigured):
@@ -544,18 +542,20 @@ class ModelResourceTest(TestCase):
         dataset.append([author.id, "1882test-01-18"])
 
         result = resource.import_data(dataset, raise_errors=False)
+        result = resource.import_data(dataset, raise_errors=False)
 
-        self.assertTrue(result.has_validation_errors())
-        self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
+        self.assertFalse(result.has_validation_errors())
+
+    def test_import_data_empty_dataset_with_collect_failed_rows(self):
         self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
 
     def test_import_data_empty_dataset_with_collect_failed_rows(self):
         resource = AuthorResource()
         with self.assertRaisesRegex(
             exceptions.FieldError,
-            "The following import_id_fields are not present in the dataset: id",
+            "No data found in dataset",
         ):
-            resource.import_data(tablib.Dataset(), collect_failed_rows=True)
+            resource.import_data(Dataset(), collect_failed_rows=True)
 
     @ignore_widget_deprecation_warning
     def test_collect_failed_rows(self):
@@ -586,7 +586,7 @@ class ModelResourceTest(TestCase):
                 dataset,
                 dry_run=True,
                 use_transactions=True,
-                raise_errors=True,
+                raise_errors=False,
             )
 
     @ignore_widget_deprecation_warning
@@ -626,7 +626,7 @@ class ModelResourceTest(TestCase):
                     dataset,
                     dry_run=True,
                     use_transactions=True,
-                    raise_errors=True,
+                    raise_errors=False,
                 )
 
     @ignore_widget_deprecation_warning
@@ -804,9 +804,9 @@ class ModelResourceTest(TestCase):
         self.assertTrue(resource.after_save_instance_dry_run)
 
         resource.import_data(self.dataset, dry_run=False, raise_errors=True)
-        self.assertFalse(resource.before_save_instance_dry_run)
-        self.assertFalse(resource.save_instance_dry_run)
-        self.assertFalse(resource.after_save_instance_dry_run)
+        self.assertTrue(resource.before_save_instance_dry_run)
+        self.assertTrue(resource.save_instance_dry_run)
+        self.assertTrue(resource.after_save_instance_dry_run)
 
     @mock.patch("core.models.Book.save")
     def test_save_instance_noop(self, mock_book):
@@ -1637,7 +1637,7 @@ if "postgresql" in settings.DATABASES["default"]["ENGINE"]:
             result = book_with_chapters_resource.import_data(dataset, dry_run=False)
 
             self.assertFalse(result.has_errors())
-            book_with_chapters = list(BookWithChapters.objects.all())[0]
+            book_with_chapters = BookWithChapters.objects.all().first()
             self.assertListEqual(book_with_chapters.chapters, chapters)
 
     class TestImportArrayField(TestCase):

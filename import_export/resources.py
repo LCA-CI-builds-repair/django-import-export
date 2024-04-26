@@ -589,16 +589,28 @@ class Resource(metaclass=DeclarativeMetaclass):
         Override to add additional logic. Does nothing by default.
 
         :param instance: A new or existing model instance.
+    def import_row(self, row, **kwargs):
+        r"""
+        Import a row
 
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
         :param \**kwargs:
             See :meth:`import_row`
         """
-        pass
+        # Add import logic based on the row data
 
     def delete_instance(self, instance, row, **kwargs):
         r"""
+        Delete an instance
+
+        :param instance: The instance to be deleted.
+        :param row: A ``dict`` containing key / value data for the row to be imported.
+
+        :param \**kwargs:
+            See :meth:`delete_instance`
+        """
+        # Add deletion logic based on the row data
         Calls :meth:`instance.delete` as long as ``dry_run`` is not set.
         If ``use_bulk`` then instances are appended to a list for bulk import.
 
@@ -1147,18 +1159,6 @@ class Resource(metaclass=DeclarativeMetaclass):
                         )
 
             result.increment_row_result_total(row_result)
-
-            if row_result.errors:
-                if collect_failed_rows:
-                    result.append_failed_row(row, row_result.errors[0])
-                if raise_errors:
-                    raise row_result.errors[-1].error
-            elif row_result.validation_error:
-                result.append_invalid_row(i, row, row_result.validation_error)
-                if collect_failed_rows:
-                    result.append_failed_row(row, row_result.validation_error)
-                if raise_errors:
-                    raise row_result.validation_error
             if (
                 row_result.import_type != RowResult.IMPORT_TYPE_SKIP
                 or self._meta.report_skipped
@@ -1168,15 +1168,37 @@ class Resource(metaclass=DeclarativeMetaclass):
         if self._meta.use_bulk:
             # bulk persist any instances which are still pending
             with atomic_if_using_transaction(using_transactions, using=db_connection):
-                self.bulk_create(
-                    using_transactions, dry_run, raise_errors, result=result
-                )
-                self.bulk_update(
-                    using_transactions, dry_run, raise_errors, result=result
-                )
-                self.bulk_delete(
-                    using_transactions, dry_run, raise_errors, result=result
-                )
+                try:
+                    self.bulk_create(
+                        using_transactions, dry_run, raise_errors, result=result
+                    )
+                except Exception as e:
+                    self.handle_import_error(result, e, raise_errors)
+
+                try:
+                    self.bulk_update(
+                        using_transactions, dry_run, raise_errors, result=result
+                    )
+                except Exception as e:
+                    self.handle_import_error(result, e, raise_errors)
+
+                try:
+                    self.bulk_delete(
+                        using_transactions, dry_run, raise_errors, result=result
+                    )
+                except Exception as e:
+                    self.handle_import_error(result, e, raise_errors)
+
+        try:
+            with atomic_if_using_transaction(using_transactions, using=db_connection):
+                self.after_import(dataset, result, **kwargs)
+        except Exception as e:
+            self.handle_import_error(result, e, raise_errors)
+
+        return result
+
+    def get_import_order(self):
+        return self._get_ordered_field_names("import_order")
 
         try:
             with atomic_if_using_transaction(using_transactions, using=db_connection):
@@ -1358,21 +1380,22 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
 
                 if f.name in declared_fields:
                     # If model field is declared in `ModelResource`, remove it from `declared_fields`
-                    # to keep exact order of model fields
-                    field = declared_fields.pop(f.name)
-                else:
-                    field = new_class.field_from_django_field(f.name, f, readonly=False)
+                        continue
 
-                field_list.append(
-                    (
-                        f.name,
-                        field,
-                    )
-                )
+                    model = opts.model
+                    attrs = field_name.split("__")
+                    for i, attr in enumerate(attrs):
+                        verbose_path = ".".join(
+                            [opts.model.__name__] + attrs[0 : i + 1]
+                        )
 
-            # Order as model fields first then declared fields by default
-            new_class.fields = OrderedDict([*field_list, *new_class.fields.items()])
-
+                        try:
+                            f = model._meta.get_field(attr)
+                        except FieldDoesNotExist as e:
+                            logger.debug(e, exc_info=e)
+                            raise FieldDoesNotExist(
+                                "%s: %s has no field named '%s'" % (verbose_path, model.__name__, attr)
+                            )
             # add fields that follow relationships
             if opts.fields is not None:
                 field_list = []
@@ -1569,18 +1592,18 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         if not dry_run and any(
             r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
         ):
-            db_connection = self.get_db_connection_name()
-            connection = connections[db_connection]
-            sequence_sql = connection.ops.sequence_reset_sql(
-                no_style(), [self._meta.model]
-            )
-            if sequence_sql:
-                cursor = connection.cursor()
-                try:
-                    for line in sequence_sql:
-                        cursor.execute(line)
-                finally:
-                    cursor.close()
+    """
+    attrs = {"model": model}
+    Meta = type(str("Meta"), (object,), attrs)
+
+    class_name = model.__name__ + str("Resource")
+
+    class_attrs = {
+        "Meta": Meta,
+    }
+
+    metaclass = ModelDeclarativeMetaclass
+    return metaclass(class_name, (resource_class,), class_attrs)
 
     @classmethod
     def get_display_name(cls):

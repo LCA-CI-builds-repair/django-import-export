@@ -44,12 +44,14 @@ class ExportActionAdminIntegrationTest(AdminTestMixin, TestCase):
         self._check_export_response(response)
 
     @ignore_widget_deprecation_warning
-    def test_export_displays_ui_select_page(self):
-        data = {
-            "action": ["export_admin_action"],
-            "_selected_action": [str(self.cat1.id)],
-        }
-        response = self.client.post("/admin/core/category/", data)
+def test_export_action_displays_ui_select_page_with_selected_category(self):
+    data = {
+        "action": ["export_admin_action"],
+        "_selected_action": [str(self.cat1.id)],
+    }
+    response = self.client.post("/admin/core/category/", data)
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, "UI Select Page Content")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("form", response.context)
@@ -142,14 +144,10 @@ class TestExportButtonOnChangeForm(AdminTestMixin, TestCase):
         )
 
     def test_export_button_on_change_form(self):
-        response = self.client.get(self.change_url)
-        self.assertIn(
-            self.target_str,
-            str(response.content),
-        )
-        response = self.client.post(
-            self.change_url, data={"_export-item": "Export", "name": self.cat1.name}
-        )
+self.assertIn("Export 1 selected item", str(response.content))
+# Add assertions to validate the response status code and content
+self.assertEqual(response.status_code, 200)
+self.assertContains(response, "Export 1 selected item")
         self.assertIn("Export 1 selected item", str(response.content))
 
     def test_export_button_on_change_form_disabled(self):
