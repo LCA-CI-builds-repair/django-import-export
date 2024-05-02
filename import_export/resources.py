@@ -1358,18 +1358,17 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
             r.import_type == RowResult.IMPORT_TYPE_NEW for r in result.rows
         ):
             db_connection = self.get_db_connection_name()
-            connection = connections[db_connection]
-            sequence_sql = connection.ops.sequence_reset_sql(
-                no_style(), [self._meta.model]
-            )
-            if sequence_sql:
-                cursor = connection.cursor()
-                try:
-                    for line in sequence_sql:
-                        cursor.execute(line)
-                finally:
-                    cursor.close()
-
+connection = connections[db_connection]
+sequence_sql = connection.ops.sequence_reset_sql(
+    no_style(), [self._meta.model]
+)
+if sequence_sql:
+    cursor = connection.cursor()
+    try:
+        for line in sequence_sql:
+            cursor.execute(line)
+    finally:
+        cursor.close()
     @classmethod
     def get_display_name(cls):
         if hasattr(cls._meta, "name"):

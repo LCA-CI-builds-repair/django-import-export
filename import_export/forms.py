@@ -27,14 +27,13 @@ class ImportExportFormBase(forms.Form):
             )
             resources = args
 
-        if resources and len(resources) > 1:
-            resource_choices = []
-            for i, resource in enumerate(resources):
-                resource_choices.append((i, resource.get_display_name()))
-            self.fields["resource"].choices = resource_choices
-        else:
-            del self.fields["resource"]
-
+if resources and len(resources) > 1:
+    resource_choices = []
+    for i, resource in enumerate(resources):
+        resource_choices.append((i, resource.get_display_name()))
+    self.fields["resource"].choices = resource_choices
+else:
+    del self.fields["resource"]
 
 class ImportForm(ImportExportFormBase):
     import_file = forms.FileField(label=_("File to import"))
