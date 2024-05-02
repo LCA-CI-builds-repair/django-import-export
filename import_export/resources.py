@@ -1023,13 +1023,13 @@ class Resource(metaclass=DeclarativeMetaclass):
                 self.bulk_delete(
                     using_transactions, dry_run, raise_errors, result=result
                 )
-
-        try:
-            with atomic_if_using_transaction(using_transactions, using=db_connection):
-                self.after_import(
-                    dataset, result, using_transactions, dry_run, **kwargs
-                )
-        except Exception as e:
+    try:
+        with atomic_if_using_transaction(using_transactions, using=db_connection):
+            self.after_import(
+                dataset, result, using_transactions, dry_run, **kwargs
+            )
+    except Exception as e:
+            self.handle_import_error(result, e, raise_errors)
             self.handle_import_error(result, e, raise_errors)
 
         return result
@@ -1041,15 +1041,11 @@ class Resource(metaclass=DeclarativeMetaclass):
     def before_export(self, queryset, *args, **kwargs):
         """
         Override to add additional logic. Does nothing by default.
-        """
         pass
-
     def after_export(self, queryset, data, *args, **kwargs):
         """
         Override to add additional logic. Does nothing by default.
         """
-        pass
-
     def filter_export(self, queryset, *args, **kwargs):
         """
         Override to filter an export queryset.
