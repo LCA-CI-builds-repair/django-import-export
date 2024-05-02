@@ -493,14 +493,10 @@ class ModelResourceTest(TestCase):
         self.assertTrue(result.has_validation_errors())
         self.assertIs(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_INVALID)
         self.assertIn("birthday", result.invalid_rows[0].field_specific_errors)
-
-    @ignore_widget_deprecation_warning
-    def test_import_data_raises_field_specific_validation_errors_with_skip_unchanged(
-        self,
-    ):
-        resource = AuthorResource()
-        resource._meta.skip_unchanged = True
-
+@ignore_widget_deprecation_warning
+def test_import_data_raises_field_specific_validation_errors_with_skip_unchanged(self):
+    resource = AuthorResource()
+    resource._meta.skip_unchanged = True
         author = Author.objects.create(name="Some author")
 
         dataset = tablib.Dataset(headers=["id", "birthday"])
