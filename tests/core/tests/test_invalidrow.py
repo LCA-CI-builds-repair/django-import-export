@@ -21,7 +21,6 @@ class InvalidRowTest(TestCase):
         e = ValidationError(combined_error_dict)
         # Create an InvalidRow instance to use in tests
         self.obj = InvalidRow(number=1, validation_error=e, values=["ABC", "123"])
-
     def test_error_count(self):
         self.assertEqual(self.obj.error_count, 7)
 
