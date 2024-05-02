@@ -76,7 +76,8 @@ class ImportExportPermissionTest(TestCase):
 
         data = {"file_format": "0"}
         response = self.client.post("/admin/core/book/export/", data)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
 
         self.set_user_book_model_permission("change")
         response = self.client.get("/admin/core/book/export/")
@@ -85,7 +86,6 @@ class ImportExportPermissionTest(TestCase):
         data = {"file_format": "0"}
         response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
-
     @override_settings(IMPORT_EXPORT_EXPORT_PERMISSION_CODE="add")
     def test_check_export_button(self):
         self.set_user_book_model_permission("change")

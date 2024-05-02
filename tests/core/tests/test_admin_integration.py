@@ -754,7 +754,6 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
             response["Content-Type"],
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         )
-
     @override_settings(IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT=True)
     @patch("import_export.mixins.logger")
     def test_export_escape_formulae(self, mock_logger):
@@ -767,12 +766,12 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         data = {"file_format": str(xlsx_index)}
         response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.has_header("Content-Disposition"))
         content = response.content
         # #1698 temporary catch for deprecation warning in openpyxl
         # this catch block must be removed when openpyxl updated
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=DeprecationWarning)
-            wb = load_workbook(filename=BytesIO(content))
         self.assertEqual("<script>alert(1)</script>", wb.active["B2"].value)
         self.assertEqual("SUM(1+1)", wb.active["B3"].value)
 
