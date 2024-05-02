@@ -768,20 +768,23 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
         response = self.client.post("/admin/core/book/export/", data)
         self.assertEqual(response.status_code, 200)
         content = response.content
-        # #1698 temporary catch for deprecation warning in openpyxl
-        # this catch block must be removed when openpyxl updated
-        with warnings.catch_warnings():
-            warnings.filterwarnings("ignore", category=DeprecationWarning)
-            wb = load_workbook(filename=BytesIO(content))
-        self.assertEqual("<script>alert(1)</script>", wb.active["B2"].value)
-        self.assertEqual("SUM(1+1)", wb.active["B3"].value)
+import warnings
+from openpyxl import load_workbook
 
-        mock_logger.debug.assert_called_once_with(
-            "IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT is enabled"
-        )
+# #1698 temporary catch for deprecation warning in openpyxl
+# this catch block must be removed when openpyxl updated
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+    wb = load_workbook(filename=BytesIO(content))
+self.assertEqual(wb.active["B2"].value, "<script>alert(1)</script>")
+self.assertEqual(wb.active["B3"].value, "SUM(1+1)")
 
-    @override_settings(IMPORT_EXPORT_ESCAPE_HTML_ON_EXPORT=True)
-    def test_export_escape_html_deprecation_warning(self):
+mock_logger.debug.assert_called_once_with(
+    "IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT is enabled"
+)
+
+@override_settings(IMPORT_EXPORT_ESCAPE_HTML_ON_EXPORT=True)
+def test_export_escape_html_deprecation_warning(self):
         response = self.client.get("/admin/core/book/export/")
         self.assertEqual(response.status_code, 200)
 
