@@ -14,7 +14,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./docker/db/init-postgres-db.sh/:/docker-entrypoint-initdb.d/init-postgres-db.sh
+      - ./docker/db/init-postgres-db.sh:/docker-entrypoint-initdb.d/init-postgres-db.sh
       - postgres-db-data:/var/lib/postgresql/data
   mysqldb:
     container_name: importexport_mysqldb

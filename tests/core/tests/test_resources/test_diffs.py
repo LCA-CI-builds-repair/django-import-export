@@ -5,14 +5,13 @@ from core.models import Book
 from django.test import TestCase
 
 from import_export import resources
-
+from unittest import mock
+from django.test import TestCase
 
 @mock.patch("import_export.resources.Diff", spec=True)
 class SkipDiffTest(TestCase):
     """
     Tests that the meta attribute 'skip_diff' means that no diff operations are called.
-    'copy.deepcopy' cannot be patched at class level because it causes interferes with
-    ``resources.Resource.__init__()``.
     """
 
     def setUp(self):

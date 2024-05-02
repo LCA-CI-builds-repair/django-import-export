@@ -167,12 +167,12 @@ class MixinModelAdminTest(TestCase):
             self.call_count += 1
 
     def test_get_import_resource_class_calls_self_get_resource_class(self):
-        admin = self.BaseImportModelAdminTest()
+        admin = BaseImportModelAdminTest()
         admin.get_import_resource_classes()
         self.assertEqual(1, admin.call_count)
 
     def test_get_import_resource_kwargs_calls_self_get_resource_kwargs(self):
-        admin = self.BaseImportModelAdminTest()
+        admin = BaseImportModelAdminTest()
         admin.get_import_resource_kwargs(self.request)
         self.assertEqual(1, admin.call_count)
 
