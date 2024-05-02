@@ -806,6 +806,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
     def get_export_form_class(self):
         """
         Get the form class used to read the export format.
+    )
         """
         return self.export_form_class
 
@@ -869,19 +870,16 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
     def get_export_filename(self, request, queryset, file_format):
         return super().get_export_filename(file_format)
-
-
 class ImportExportMixin(ImportMixin, ExportMixin):
     """
     Import and export mixin.
     """
 
     #: template for change_list view
+    #: template for change_list view
     import_export_change_list_template = (
         "admin/import_export/change_list_import_export.html"
     )
-
-
 class ImportExportModelAdmin(ImportExportMixin, admin.ModelAdmin):
     """
     Subclass of ModelAdmin with import/export functionality.
@@ -911,6 +909,7 @@ class ExportActionMixin(ExportMixin):
             choices.insert(0, ("", "---"))
 
         self.action_form = export_action_form_factory(choices)
+        self.action_form = export_action_form_factory(choices)
         super().__init__(*args, **kwargs)
 
     def export_admin_action(self, request, queryset):
@@ -920,8 +919,6 @@ class ExportActionMixin(ExportMixin):
         export_format = request.POST.get("file_format")
 
         if not export_format:
-            messages.warning(request, _("You must select an export format."))
-        else:
             formats = self.get_export_formats()
             file_format = formats[int(export_format)]()
 
@@ -930,8 +927,11 @@ class ExportActionMixin(ExportMixin):
             )
             content_type = file_format.get_content_type()
             response = HttpResponse(export_data, content_type=content_type)
+            )
+            content_type = file_format.get_content_type()
+            response = HttpResponse(export_data, content_type=content_type)
             response["Content-Disposition"] = 'attachment; filename="%s"' % (
-                self.get_export_filename(request, queryset, file_format),
+                (self.get_export_filename(request, queryset, file_format),
             )
             return response
 
@@ -943,9 +943,6 @@ class ExportActionMixin(ExportMixin):
         actions = super().get_actions(request)
         actions.update(
             export_admin_action=(
-                type(self).export_admin_action,
-                "export_admin_action",
-                _("Export selected %(verbose_name_plural)s"),
             )
         )
         return actions
