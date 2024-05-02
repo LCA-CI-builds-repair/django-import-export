@@ -1182,12 +1182,11 @@ class TestExportEncoding(TestCase):
             return list()
 
         def get_export_filename(self, request, queryset, file_format):
-            return "f"
+            return f"export_{file_format.extension}"
 
     def setUp(self):
         self.file_format = formats.base_formats.CSV()
         self.export_mixin = self.TestMixin(test_str="teststr")
-
     def test_to_encoding_not_set_default_encoding_is_utf8(self):
         self.export_mixin = self.TestMixin(test_str="teststr")
         data = self.export_mixin.get_export_data(

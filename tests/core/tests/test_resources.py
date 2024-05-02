@@ -2007,8 +2007,7 @@ class ManyToManyWidgetDiffTest(TestCase):
         dataset.append(dataset_row)
 
         result = book_resource.import_data(dataset, dry_run=False)
-        self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_SKIP)
-
+        self.assertEqual(result.import_type, results.RowResult.IMPORT_TYPE_SKIP)
         # import with reverse order
         dataset_row = [book.id, book.name, f"{cat2.id}, {cat1.id}"]
         dataset = tablib.Dataset(headers=dataset_headers)

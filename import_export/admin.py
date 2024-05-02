@@ -754,7 +754,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         self.get_paginator = original_get_paginator
 
         return cl.get_queryset(request)
-
     def get_export_data(self, file_format, queryset, *args, **kwargs):
         """
         Returns file_format representation for given queryset.

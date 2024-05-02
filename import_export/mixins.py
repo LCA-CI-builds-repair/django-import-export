@@ -171,8 +171,9 @@ class BaseExportMixin(BaseImportExportMixin):
         )
         cls = export_class(**export_resource_kwargs)
         export_data = cls.export(*args, queryset=queryset, **kwargs)
+        original_get_paginator = self.get_paginator
+        cl = ChangeList(**changelist_kwargs)
         return export_data
-
     def get_export_filename(self, file_format):
         date_str = now().strftime("%Y-%m-%d")
         filename = "%s-%s.%s" % (
