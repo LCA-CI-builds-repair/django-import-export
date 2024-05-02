@@ -3,6 +3,8 @@
 # run tests against all supported databases using tox
 # postgres / mysql run via docker
 # sqlite (default) runs against local database file (database.db)
+# runtests.sh
+
 # use pyenv or similar to install multiple python instances
 
 export DJANGO_SETTINGS_MODULE=settings

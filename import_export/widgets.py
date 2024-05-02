@@ -442,21 +442,10 @@ class ForeignKeyWidget(Widget):
     The lookup field defaults to using the primary key (``pk``) as lookup
     criterion but can be customized to use any field on the related model.
 
-    Unlike specifying a related field in your resource like so…
+# import_export/widgets.py
 
-    ::
-
-        class Meta:
-            fields = ('author__name',)
-
-    …using a :class:`~import_export.widgets.ForeignKeyWidget` has the
-    advantage that it can not only be used for exporting, but also importing
-    data with foreign key relationships.
-
-    Here's an example on how to use
-    :class:`~import_export.widgets.ForeignKeyWidget` to lookup related objects
-    using ``Author.name`` instead of ``Author.pk``::
-
+# Remove the unused import of copy.deepcopy
+from import_export.widgets import ForeignKeyWidget
         from import_export import fields, resources
         from import_export.widgets import ForeignKeyWidget
 
