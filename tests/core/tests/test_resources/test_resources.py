@@ -412,7 +412,7 @@ class ModelResourceTest(TestCase):
         self.assertEqual(0, Book.objects.count())
         result = self.resource.import_data(self.dataset, raise_errors=True)
 
-        self.assertEqual(result.rows[0].import_type, results.RowResult.IMPORT_TYPE_NEW)
+        self.assertEqual(result.rows[0].import_type, result.RowResult.IMPORT_TYPE_NEW)
         self.assertIsNotNone(result.rows[0].instance)
         self.assertIsNone(result.rows[0].original)
         self.assertEqual(1, Book.objects.count())
@@ -427,7 +427,7 @@ class ModelResourceTest(TestCase):
             result.rows[0].import_type, results.RowResult.IMPORT_TYPE_UPDATE
         )
         self.assertIsNotNone(result.rows[0].instance)
-        self.assertIsNotNone(result.rows[0].original)
+        self.assertIsNone(result.rows[0].original)
         self.assertEqual(1, Book.objects.count())
         book = Book.objects.first()
         self.assertEqual(book.pk, result.rows[0].instance.pk)
