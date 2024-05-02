@@ -1369,7 +1369,6 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
                         cursor.execute(line)
                 finally:
                     cursor.close()
-
     @classmethod
     def get_display_name(cls):
         if hasattr(cls._meta, "name"):
