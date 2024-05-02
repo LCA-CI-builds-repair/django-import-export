@@ -15,6 +15,12 @@ class SkipDiffTest(TestCase):
     ``resources.Resource.__init__()``.
     """
 
+import tablib
+from unittest import mock, TestCase
+from import_export import resources
+from tests.core.models import Book
+
+class SkipDiffTest(TestCase):
     def setUp(self):
         class _BookResource(resources.ModelResource):
             class Meta:
@@ -75,6 +81,8 @@ class SkipDiffTest(TestCase):
             class Meta:
                 model = Book
                 skip_diff = False
+
+            # Add implementation for the test method here
 
             def for_delete(self, row, instance):
                 return True
