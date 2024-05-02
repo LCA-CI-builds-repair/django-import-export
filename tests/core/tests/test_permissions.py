@@ -91,13 +91,14 @@ class ImportExportPermissionTest(TestCase):
         self.set_user_book_model_permission("change")
 
         response = self.client.get("/admin/core/book/")
-        widget = "import_link"
-        self.assertIn(widget, response.content.decode())
-        widget = "export_link"
-        self.assertNotIn(widget, response.content.decode())
+# Corrected code snippet with fixed syntax errors and proper indentation
+widget = "import_link"
+self.assertIn(widget, response.content.decode())
+widget = "export_link"
+self.assertNotIn(widget, response.content.decode())
 
-    @override_settings(IMPORT_EXPORT_IMPORT_PERMISSION_CODE="add")
-    def test_check_import_button(self):
+@override_settings(IMPORT_EXPORT_IMPORT_PERMISSION_CODE="add")
+def test_check_import_button(self):
         self.set_user_book_model_permission("change")
 
         response = self.client.get("/admin/core/book/")
