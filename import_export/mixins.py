@@ -163,15 +163,6 @@ class BaseExportMixin(BaseImportExportMixin):
     def get_export_resource_kwargs(self, request, *args, **kwargs):
         return self.get_resource_kwargs(request, *args, **kwargs)
 
-    def get_data_for_export(self, request, queryset, *args, **kwargs):
-        export_form = kwargs.get("export_form")
-        export_class = self.choose_export_resource_class(export_form)
-        export_resource_kwargs = self.get_export_resource_kwargs(
-            request, *args, **kwargs
-        )
-        cls = export_class(**export_resource_kwargs)
-        export_data = cls.export(*args, queryset=queryset, **kwargs)
-        return export_data
 
     def get_export_filename(self, file_format):
         date_str = now().strftime("%Y-%m-%d")
