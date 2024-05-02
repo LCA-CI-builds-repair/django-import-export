@@ -11,7 +11,7 @@ from import_export import resources
 class SkipDiffTest(TestCase):
     """
     Tests that the meta attribute 'skip_diff' means that no diff operations are called.
-    'copy.deepcopy' cannot be patched at class level because it causes interferes with
+    'copy.deepcopy' cannot be patched at class level because it interferes with
     ``resources.Resource.__init__()``.
     """
 
