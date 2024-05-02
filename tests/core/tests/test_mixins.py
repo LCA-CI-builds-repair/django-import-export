@@ -159,7 +159,8 @@ class MixinModelAdminTest(TestCase):
 
     class BaseExportModelAdminTest(mixins.BaseExportMixin):
         call_count = 0
-
+        # Simulate function calls and increment call_count
+        call_count += 1
         def get_resource_classes(self):
             self.call_count += 1
 

@@ -117,7 +117,7 @@ class Field:
 
         # RelatedManager and ManyRelatedManager classes are callable in
         # Django >= 1.7 but we don't want to call them
-        if callable(value) and not isinstance(value, Manager):
+        if callable(value) and not isinstance(value, (RelatedManager, ManyRelatedManager)):
             value = value()
         return value
 
