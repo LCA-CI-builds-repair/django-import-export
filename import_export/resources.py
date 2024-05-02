@@ -1357,7 +1357,7 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     continue
 
                 if f.name in declared_fields:
-                    # If model field is declared in `ModelResource`, remove it from `declared_fields`
+# If a model field is declared in `ModelResource`, remove it from `declared_fields`
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
                 else:
