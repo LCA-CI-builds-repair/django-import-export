@@ -1369,7 +1369,6 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                         field,
                     )
                 )
-
             # Order as model fields first then declared fields by default
             new_class.fields = OrderedDict([*field_list, *new_class.fields.items()])
 

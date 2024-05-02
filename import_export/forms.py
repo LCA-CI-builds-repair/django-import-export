@@ -81,6 +81,7 @@ class ExportForm(ImportExportFormBase):
         resources = kwargs.pop("resources", None)
         super().__init__(*args, resources=resources, **kwargs)
         choices = []
+        choices = []
         for i, f in enumerate(formats):
             choices.append(
                 (
@@ -89,7 +90,6 @@ class ExportForm(ImportExportFormBase):
                 )
             )
         if len(formats) > 1:
-            choices.insert(0, ("", "---"))
         elif len(formats) == 1:
             field = self.fields["file_format"]
             field.value = formats[0]().get_title()

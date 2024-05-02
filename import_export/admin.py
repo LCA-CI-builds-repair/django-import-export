@@ -563,15 +563,13 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
 
     def _create_log_entry(self, user_pk, rows, import_type, action_flag):
         if len(rows) > 0:
-            LogEntry.objects.log_actions(
+            LogEntry.objects.log_action(
                 user_pk,
                 rows,
                 action_flag,
                 change_message=_("%s through import_export" % import_type),
                 single_object=len(rows) == 1,
             )
-
-
 class ExportMixin(BaseExportMixin, ImportExportMixinBase):
     """
     Export mixin.
