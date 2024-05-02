@@ -1574,6 +1574,7 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
             sequence_sql = connection.ops.sequence_reset_sql(
                 no_style(), [self._meta.model]
             )
+            )
             if sequence_sql:
                 cursor = connection.cursor()
                 try:
