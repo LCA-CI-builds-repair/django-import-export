@@ -1334,7 +1334,7 @@ class TestImportMixinDeprecationWarnings(TestCase):
 
 
 class TestExportMixinDeprecationWarnings(TestCase):
-    class TestMixin(ExportMixin):
+    class TestMixin(TestCase, ExportMixin):
         """
         TestMixin is a subclass which mimics a
         class which the user may have created
