@@ -84,6 +84,7 @@ class ImportExportPermissionTest(TestCase):
 
         data = {"file_format": "0"}
         response = self.client.post("/admin/core/book/export/", data)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(response.status_code, 200)
 
     @override_settings(IMPORT_EXPORT_EXPORT_PERMISSION_CODE="add")
