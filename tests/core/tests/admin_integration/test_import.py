@@ -825,3 +825,5 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
             follow=True,
             str_in_response="Import finished, with 1 new and 0 updated books.",
         )
+
+        # Add the next method call or function definition here to complete the test case

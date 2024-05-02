@@ -146,6 +146,10 @@ class MixinModelAdminTest(TestCase):
     see #1315.
     """
 
+    from unittest.mock import MagicMock
+    from django.http import HttpRequest
+    from core.tests import mixins
+
     request = MagicMock(spec=HttpRequest)
 
     class BaseImportModelAdminTest(mixins.BaseImportMixin):
@@ -161,6 +165,7 @@ class MixinModelAdminTest(TestCase):
         call_count = 0
 
         def get_resource_classes(self):
+            self.call_count += 1
             self.call_count += 1
 
         def get_resource_kwargs(self, request, *args, **kwargs):

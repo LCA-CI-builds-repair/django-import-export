@@ -1595,7 +1595,6 @@ def modelresource_factory(model, resource_class=ModelResource):
     """
     attrs = {"model": model}
     Meta = type(str("Meta"), (object,), attrs)
-
     class_name = model.__name__ + str("Resource")
 
     class_attrs = {

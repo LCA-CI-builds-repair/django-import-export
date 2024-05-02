@@ -442,7 +442,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                 # rollback_on_validation_errors is set to True so that we rollback on
                 # validation errors. If this is not done validation errors would be
                 # silently skipped.
-                data = bytes()
+                data = bytearray()
                 for chunk in import_file.chunks():
                     data += chunk
                 try:
