@@ -1368,6 +1368,7 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
                     for line in sequence_sql:
                         cursor.execute(line)
                 finally:
+                    pass
                     cursor.close()
 
     @classmethod
