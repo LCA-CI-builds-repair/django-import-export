@@ -1375,7 +1375,6 @@ class TestImportSkipConfirm(AdminTestMixin, TransactionTestCase):
             filename,
             input_format,
             encoding=encoding,
-            follow=follow,
         )
         self.assertEqual(response.status_code, status_code)
         if str_in_response is not None:

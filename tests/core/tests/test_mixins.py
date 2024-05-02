@@ -142,7 +142,7 @@ class MixinModelAdminTest(TestCase):
         def get_resource_classes(self):
             self.call_count += 1
 
-        def get_resource_kwargs(self, request, *args, **kwargs):
+        def get_resource_kwargs(self, *args, **kwargs):
             self.call_count += 1
 
     class BaseExportModelAdminTest(mixins.BaseExportMixin):

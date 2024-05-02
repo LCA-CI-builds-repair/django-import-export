@@ -735,7 +735,6 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             "list_select_related": list_select_related,
             "list_per_page": self.list_per_page,
             "list_max_show_all": self.list_max_show_all,
-            "list_editable": self.list_editable,
             "model_admin": self,
         }
         changelist_kwargs["sortable_by"] = self.sortable_by
@@ -750,13 +749,12 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         original_get_paginator = self.get_paginator
         self.get_paginator = lambda request, queryset, per_page: FakePaginator()
         cl = ChangeList(**changelist_kwargs)
+        cl = ChangeList(**changelist_kwargs)
         self.show_full_result_count = original_show_full_result_count
         self.get_paginator = original_get_paginator
 
-        return cl.get_queryset(request)
-
-    def get_export_data(self, file_format, queryset, *args, **kwargs):
-        """
+        def get_export_data(self, file_format, queryset, *args, **kwargs):
+            return cl.get_queryset(request)
         Returns file_format representation for given queryset.
         """
         request = kwargs.pop("request")

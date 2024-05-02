@@ -1133,7 +1133,6 @@ class Resource(metaclass=DeclarativeMetaclass):
             data.append(self.export_resource(obj))
 
         self.after_export(queryset, data, *args, **kwargs)
-
         return data
 
 
