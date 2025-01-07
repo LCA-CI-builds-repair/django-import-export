@@ -93,6 +93,20 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         else:
             return self.skip_admin_log
 
+    def get_max_attempts(self):
+        MAX_ATTEMPTS = getattr(settings, "IMPORT_EXPORT_MAX_ATTEMPTS", 3)
+        return MAX_ATTEMPTS
+
+    def process_import(self, request, *args, **kwargs):
+        if not self.has_import_permission(request):
+            raise PermissionDenied
+
+        attempt = 0
+        max_attempts = self.get_max_attempts()
+        while attempt < max_attempts:
+            result = super().process_import(request, *args, **kwargs)
+            attempt += 1
+        return result
     def get_tmp_storage_class(self):
         if self.tmp_storage_class is None:
             tmp_storage_class = getattr(
