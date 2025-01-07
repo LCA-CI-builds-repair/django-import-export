@@ -663,13 +663,28 @@ class Resource(metaclass=DeclarativeMetaclass):
             See :meth:`import_row`
         """
         if not field.attribute:
-            logger.debug(f"skipping field '{field}' - field attribute is not defined")
+            logger.debug(
+                f"skipping field '{field}' - field attribute is not defined"
+            )
             return
         if field.column_name not in row:
-            logger.debug(
-                f"skipping field '{field}' "
-                f"- column name '{field.column_name}' is not present in row"
+            raise ValueError(
+                f"Column '{field.column_name}' is missing from the import data"
             )
+
+        max_attempts = 3
+        attempts = 0
+        while attempts < max_attempts:
+            try:
+                field.save(instance, row, is_m2m, **kwargs)
+                break
+            except ValueError as e:
+                attempts += 1
+                if attempts == max_attempts:
+                    raise e
+                logger.debug(f"Error importing field '{field}': {e}. Retrying.")
+                continue
+
             return
         field.save(instance, row, is_m2m, **kwargs)
 
