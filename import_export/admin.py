@@ -185,6 +185,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         confirm_form,
         request,
         *args,
+        retries_left=3,
         rollback_on_validation_errors=False,
         **kwargs,
     ):
@@ -196,67 +197,93 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             request, *args, form=confirm_form, **kwargs
         )
 
-        return resource.import_data(
-            dataset,
-            dry_run=False,
-            file_name=confirm_form.cleaned_data.get("original_file_name"),
-            user=request.user,
-            rollback_on_validation_errors=True,
-            **imp_kwargs,
-        )
+        try:
+            return resource.import_data(
+                dataset,
+                dry_run=False,
+                file_name=confirm_form.cleaned_data.get("original_file_name"),
+                user=request.user,
+                rollback_on_validation_errors=True,
+                **imp_kwargs,
+            )
+        except Exception as e:
+            if retries_left > 0:
+                return self.process_dataset(
+                    dataset,
+                    confirm_form,
+                    request,
+                    *args,
+                    retries_left=retries_left - 1,
+                    rollback_on_validation_errors=rollback_on_validation_errors,
+                    **kwargs,
+                )
+            else:
+                raise e
 
     def process_result(self, result, request):
         self.generate_log_entries(result, request)
         self.add_success_message(result, request)
         post_import.send(sender=None, model=self.model)
 
-        url = reverse(
-            "admin:%s_%s_changelist" % self.get_model_info(),
-            current_app=self.admin_site.name,
-        )
-        return HttpResponseRedirect(url)
+        try:
+            url = reverse(
+                "admin:%s_%s_changelist" % self.get_model_info(),
+                current_app=self.admin_site.name,
+            )
+            return HttpResponseRedirect(url)
+        except NoReverseMatch:
+            return HttpResponseRedirect("/admin/")
 
     def generate_log_entries(self, result, request):
         if not self.get_skip_admin_log():
             # Add imported objects to LogEntry
-            logentry_map = {
-                RowResult.IMPORT_TYPE_NEW: ADDITION,
-                RowResult.IMPORT_TYPE_UPDATE: CHANGE,
-                RowResult.IMPORT_TYPE_DELETE: DELETION,
-            }
-            content_type_id = ContentType.objects.get_for_model(self.model).pk
-            for row in result:
-                if (
-                    row.import_type != row.IMPORT_TYPE_ERROR
-                    and row.import_type != row.IMPORT_TYPE_SKIP
-                ):
-                    with warnings.catch_warnings():
-                        warnings.filterwarnings(
-                            "ignore", category=PendingDeprecationWarning
-                        )
-                        LogEntry.objects.log_action(
-                            user_id=request.user.pk,
-                            content_type_id=content_type_id,
-                            object_id=row.object_id,
-                            object_repr=row.object_repr,
-                            action_flag=logentry_map[row.import_type],
-                            change_message=_(
-                                "%s through import_export" % row.import_type
-                            ),
-                        )
+            try:
+                logentry_map = {
+                    RowResult.IMPORT_TYPE_NEW: ADDITION,
+                    RowResult.IMPORT_TYPE_UPDATE: CHANGE,
+                    RowResult.IMPORT_TYPE_DELETE: DELETION,
+                }
+                content_type_id = ContentType.objects.get_for_model(self.model).pk
+                for row in result:
+                    if (
+                        row.import_type != row.IMPORT_TYPE_ERROR
+                        and row.import_type != row.IMPORT_TYPE_SKIP
+                    ):
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings(
+                                "ignore", category=PendingDeprecationWarning
+                            )
+                            LogEntry.objects.log_action(
+                                user_id=request.user.pk,
+                                content_type_id=content_type_id,
+                                object_id=row.object_id,
+                                object_repr=row.object_repr,
+                                action_flag=logentry_map[row.import_type],
+                                change_message=_(
+                                    "%s through import_export" % row.import_type
+                                ),
+                            )
+            except NoReverseMatch:
+                pass
 
     def add_success_message(self, result, request):
         opts = self.model._meta
 
+        new_count = result.totals[RowResult.IMPORT_TYPE_NEW]
+        updated_count = result.totals[RowResult.IMPORT_TYPE_UPDATE]
+
         success_message = _(
-            "Import finished, with {} new and " "{} updated {}."
+            "Import finished, with %d new and %d updated %s."
         ).format(
-            result.totals[RowResult.IMPORT_TYPE_NEW],
-            result.totals[RowResult.IMPORT_TYPE_UPDATE],
+            new_count,
+            updated_count,
             opts.verbose_name_plural,
         )
 
-        messages.success(request, success_message)
+        if new_count > 0 or updated_count > 0:
+            messages.success(request, success_message)
+        else:
+            messages.info(request, _("No new or updated objects were imported."))
 
     def get_import_context_data(self, **kwargs):
         return self.get_context_data(**kwargs)
