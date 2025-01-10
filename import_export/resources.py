@@ -796,6 +796,7 @@ class Resource(metaclass=DeclarativeMetaclass):
                 # have not been written to the 'instance' at this point
                 instance_values = list(field.clean(row))
                 original_values = (
+
                     list()
                     if original.pk is None
                     else list(field.get_value(original).all())
