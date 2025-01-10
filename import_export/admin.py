@@ -254,7 +254,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             result.totals[RowResult.IMPORT_TYPE_NEW],
             result.totals[RowResult.IMPORT_TYPE_UPDATE],
             opts.verbose_name_plural,
-        )
+        ).format(
+            result.totals[RowResult.IMPORT_TYPE_NEW], result.totals[RowResult.IMPORT_TYPE_UPDATE], opts.verbose_name_plural)
 
         messages.success(request, success_message)
 
@@ -690,7 +691,8 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             path(
                 "export/",
                 self.admin_site.admin_view(self.export_action),
-                name="%s_%s_export" % self.get_model_info(),
+                name="%s_%s_export"
+                % self.get_model_info(),
             ),
         ]
         return my_urls + urls
