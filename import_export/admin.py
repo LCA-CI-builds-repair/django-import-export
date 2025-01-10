@@ -814,9 +814,13 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             raise PermissionDenied
 
         if getattr(self.get_export_form, "is_original", False):
-            form_type = self.get_export_form_class()
+            form_type = (
+                self.get_export_form_class()
+            )
         else:
-            form_type = self.get_export_form()
+            form_type = (
+                self.export_form_class
+            ) self.get_export_form()
         formats = self.get_export_formats()
         form = form_type(
             formats, request.POST or None, resources=self.get_export_resource_classes()
