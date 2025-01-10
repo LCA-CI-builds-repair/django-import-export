@@ -776,8 +776,8 @@ class Resource(metaclass=DeclarativeMetaclass):
 
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
-        :param import_validation_errors: A ``dict`` containing key / value data for any
-          identified validation errors.
+        :param import_validation_errors: A ``dict`` containing key / value data
+          for any identified validation errors.
         """
         if (
             not self._meta.skip_unchanged
