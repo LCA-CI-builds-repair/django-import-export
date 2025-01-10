@@ -222,9 +222,11 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             logentry_map = {
                 RowResult.IMPORT_TYPE_NEW: ADDITION,
                 RowResult.IMPORT_TYPE_UPDATE: CHANGE,
-                RowResult.IMPORT_TYPE_DELETE: DELETION,
+                RowResult.IMPORT_TYPE_DELETE: DELETION
             }
             content_type_id = ContentType.objects.get_for_model(self.model).pk
+            import_type_msg = _("through import_export")
+
             for row in result:
                 if (
                     row.import_type != row.IMPORT_TYPE_ERROR
@@ -240,9 +242,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                             object_id=row.object_id,
                             object_repr=row.object_repr,
                             action_flag=logentry_map[row.import_type],
-                            change_message=_(
-                                "%s through import_export" % row.import_type
-                            ),
+                            change_message=f"{row.import_type} {import_type_msg}",
                         )
 
     def add_success_message(self, result, request):
@@ -810,7 +810,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         return self.export_form_class
 
     def export_action(self, request, *args, **kwargs):
-        if not self.has_export_permission(request):
+         if not self.has_export_permission(request):
             raise PermissionDenied
 
         if getattr(self.get_export_form, "is_original", False):
