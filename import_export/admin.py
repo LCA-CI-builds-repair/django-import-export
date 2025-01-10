@@ -210,6 +210,9 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         self.add_success_message(result, request)
         post_import.send(sender=None, model=self.model)
 
+        if getattr(result, 'has_errors', lambda: False)():
+            return self.import_action(request, *args, **kwargs)
+
         url = reverse(
             "admin:%s_%s_changelist" % self.get_model_info(),
             current_app=self.admin_site.name,
