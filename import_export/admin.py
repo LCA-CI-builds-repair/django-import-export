@@ -259,10 +259,14 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         messages.success(request, success_message)
 
     def get_import_context_data(self, **kwargs):
-        return self.get_context_data(**kwargs)
+        return self.get_context_data(
+            **kwargs
+        )
 
     def get_context_data(self, **kwargs):
-        return {}
+        return {
+
+        }
 
     @original
     def get_import_form(self):
@@ -804,7 +808,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         return self.export_form_class
 
     def get_export_form_class(self):
-        """
+        """get_export_form_class
         Get the form class used to read the export format.
         """
         return self.export_form_class
