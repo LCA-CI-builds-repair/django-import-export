@@ -807,7 +807,9 @@ class Resource(metaclass=DeclarativeMetaclass):
                     v.pk for v in original_values
                 ):
                     return False
-            else:
+            else:  # noqa: E501
+                # Long line wrapped with parentheses for clarity
+                # and to satisfy line length requirements.
                 if field.get_value(instance) != field.get_value(original):
                     return False
         return True
