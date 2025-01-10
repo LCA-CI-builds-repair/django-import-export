@@ -772,6 +772,23 @@ class ModelResourceTest(TestCase):
         self.assertFalse(resource.after_save_instance_dry_run)
 
     @mock.patch("core.models.Book.save")
+    def test_save_instance_error_handling(self, mock_save):
+        # Simulate an error when saving the instance
+        mock_save.side_effect = ValueError("Error saving instance")
+        # Try to import data with the mocked save method
+        result = self.resource.import_data(self.dataset, raise_errors=False)
+
+        # Verify that the import has errors
+        self.assertTrue(result.has_errors())
+        self.assertEqual(len(result.rows), 1)
+        self.assertEqual(
+            result.rows[0].errors[0].error,
+            ValueError("Error saving instance"),
+        )
+        self.assertEqual(
+            result.rows[0].import_type, results.RowResult.IMPORT_TYPE_ERROR
+        )
+
     def test_save_instance_noop(self, mock_book):
         book = Book.objects.first()
         self.resource.save_instance(
