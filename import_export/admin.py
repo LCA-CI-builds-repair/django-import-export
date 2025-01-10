@@ -195,15 +195,26 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         imp_kwargs = self.get_import_data_kwargs(
             request, *args, form=confirm_form, **kwargs
         )
+        
+        attempts = 0
+        max_attempts = 3
+        while attempts < max_attempts:
+            try:
+                return resource.import_data(
+                    dataset,
+                    dry_run=False,
+                    file_name=confirm_form.cleaned_data.get("original_file_name"),
+                    user=request.user,
+                    rollback_on_validation_errors=True,
+                    **imp_kwargs,
+                )
+            except ValueError as e:
+                attempts += 1
+                if attempts == max_attempts:
+                    raise e
+                print(f"Error: {e}. Retrying ({attempts}/{max_attempts}).")
+                continue
 
-        return resource.import_data(
-            dataset,
-            dry_run=False,
-            file_name=confirm_form.cleaned_data.get("original_file_name"),
-            user=request.user,
-            rollback_on_validation_errors=True,
-            **imp_kwargs,
-        )
 
     def process_result(self, result, request):
         self.generate_log_entries(result, request)
