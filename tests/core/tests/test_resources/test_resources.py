@@ -51,6 +51,15 @@ from import_export.resources import Diff
 
 
 class ResourceTestCase(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # Disable the deprecation warning for copy.deepcopy
+        # This is needed because the test_resources.py file
+        # is using copy.deepcopy, which is generating a warning.
+        cls.deepcopy_warning_patcher = ignore_widget_deprecation_warning()
+        cls.deepcopy_warning_patcher.start()
+
     def setUp(self):
         self.my_resource = MyResource()
 
