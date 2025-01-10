@@ -43,7 +43,8 @@ class ImportExportMixinBase:
         # customize the change list object tools. This treats the cases where
         # `self.change_list_template` is `None` (the default in `ModelAdmin`) or
         # where `self.import_export_change_list_template` is `None` as falling
-        # back on the default templates.
+        # back on the default templates
+        self.base_change_list_template = None
         if getattr(self, "change_list_template", None):
             self.base_change_list_template = self.change_list_template
         else:
