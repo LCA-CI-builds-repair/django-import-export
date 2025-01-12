@@ -194,7 +194,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         )
 
     def process_result(self, result, request):
-        self.generate_log_entries(result, request)
+        if not self.get_skip_admin_log():
+            self.generate_log_entries(result, request)
         self.add_success_message(result, request)
         post_import.send(sender=None, model=self.model)
 
