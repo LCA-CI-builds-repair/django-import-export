@@ -580,7 +580,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             else:
                 # first always write the uploaded file to disk as it may be a
                 # memory file or else based on settings upload handlers
-                tmp_storage = self.write_to_tmp_storage(import_file, input_format)
+                tmp_storage = self.write_to_tmp_storage(
+                    import_file, input_format)
                 # allows get_confirm_form_initial() to include both the
                 # original and saved file names from form.cleaned_data
                 import_file.tmp_storage_name = tmp_storage.name
