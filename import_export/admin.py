@@ -153,7 +153,17 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         if getattr(self.get_confirm_import_form, "is_original", False):
             confirm_form = self.create_confirm_form(request)
         else:
-            form_type = self.get_confirm_import_form()
+            form_type = (
+                form_type
+                if issubclass(form_type, ExportForm)
+                else export_action_form_factory(form_type)
+            )
+
+            warnings.warn(
+                "ExportMixin.get_export_form() is deprecated and will be "
+                "removed in a future release. Please use the new "
+                "'export_form_class' attribute."
+            ) self.get_confirm_import_form()
             confirm_form = form_type(request.POST)
 
         if confirm_form.is_valid():
