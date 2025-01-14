@@ -153,7 +153,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         if getattr(self.get_confirm_import_form, "is_original", False):
             confirm_form = self.create_confirm_form(request)
         else:
-            form_type = self.get_confirm_import_form()
+            form_type = self.export_form_class self.get_confirm_import_form()
             confirm_form = form_type(request.POST)
 
         if confirm_form.is_valid():
@@ -745,9 +745,9 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         class ExportChangeList(ChangeList):
             def get_results(self, request):
                 """
-                We override this method because we only call ChangeList.get_queryset()
-                so we don't need anything from this method. The get_results() gets called during
-                ChangeList.__init__() and we do want to avoid unnecessary COUNT queries.
+                Override to avoid the COUNT query when not needed.
+                The get_results() method gets called during ChangeList.__init__(),
+                so we can avoid the unnecessary query.
                 """
                 pass
 
