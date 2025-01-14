@@ -808,15 +808,26 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         if not self.has_export_permission(request):
             raise PermissionDenied
 
-        if getattr(self.get_export_form, "is_original", False):
-            form_type = self.get_export_form_class()
-        else:
-            form_type = self.get_export_form()
         formats = self.get_export_formats()
-        form = form_type(
-            formats, request.POST or None, resources=self.get_export_resource_classes()
-        )
-        if form.is_valid():
+        if getattr(self.get_export_form, "is_original", False):
+            # Use new API
+            form_type = self.get_export_form_class()
+            form = form_type(formats,
+                request.POST or None,
+                resources=self.get_export_resource_classes(),
+            )
+        else:
+            warnings.warn(
+                "ExportMixin.get_export_form() is deprecated and will "
+                "be removed in a future release. Please use the new "
+                "'export_form_class' attribute or override the "
+                "get_export_form_class() method instead.",
+                category=DeprecationWarning,
+            )
+            form_type = self.get_export_form()
+            form = form_type(formats, request.POST or None)
+        
+        context = self.get_export_context_data()if form.is_valid():
             file_format = formats[int(form.cleaned_data["file_format"])]()
 
             queryset = self.get_export_queryset(request)
