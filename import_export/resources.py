@@ -768,7 +768,8 @@ class Resource(metaclass=DeclarativeMetaclass):
             def skip_row(self, instance, original, row, import_validation_errors=None):
                 # Add code here
                 return super().skip_row(instance, original, row,
-                  import_validation_errors=import_validation_errors)
+                  import_validation_errors=import_validation_errors
+            )
 
         :param instance: A new or updated model instance.
 
