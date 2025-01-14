@@ -153,7 +153,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         if getattr(self.get_confirm_import_form, "is_original", False):
             confirm_form = self.create_confirm_form(request)
         else:
-            form_type = self.get_confirm_import_form()
+            form_type = self.get_export_form() self.get_confirm_import_form()
             confirm_form = form_type(request.POST)
 
         if confirm_form.is_valid():
