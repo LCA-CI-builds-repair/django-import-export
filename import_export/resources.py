@@ -858,10 +858,11 @@ class Resource(metaclass=DeclarativeMetaclass):
         r"""
         Override to add additional logic. Does nothing by default.
 
+
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
-        :param row_result: A ``RowResult`` instance.
-          References the persisted ``instance`` as an attribute.
+        :param row_result: A ``RowResult`` instance that references the persisted
+          object.instance`` as an attribute.
 
         :param \**kwargs:
             See :meth:`import_row`
