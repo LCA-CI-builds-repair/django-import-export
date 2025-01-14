@@ -1,7 +1,6 @@
 import json
 import sys
 from collections import OrderedDict
-from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
@@ -45,7 +44,7 @@ from django.utils.encoding import force_str
 from django.utils.html import strip_tags
 
 from import_export import exceptions, fields, resources, results, widgets
-from import_export.instance_loaders import ModelInstanceLoader
+from import_export.instance_loaders import ModelInstanceLoader  # unused import
 from import_export.options import ResourceOptions
 from import_export.resources import Diff
 

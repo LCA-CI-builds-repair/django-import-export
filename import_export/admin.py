@@ -141,7 +141,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
     @method_decorator(require_POST)
     def process_import(self, request, *args, **kwargs):
         """
-        Perform the actual import action (after the user has confirmed the import)
+        Perform the actual import action (after the user has confirmed)
         """
         if not self.has_import_permission(request):
             raise PermissionDenied
