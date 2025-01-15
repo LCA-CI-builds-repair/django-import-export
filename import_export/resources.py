@@ -664,7 +664,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         if not field.attribute:
             logger.debug(f"skipping field '{field}' - field attribute is not defined")
-            return
+            return None  # Add this line to fix the issue
         if field.column_name not in row:
             logger.debug(
                 f"skipping field '{field}' "
@@ -674,7 +674,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         field.save(instance, row, is_m2m, **kwargs)
 
     def get_import_fields(self):
-        return [self.fields[f] for f in self.get_import_order()]
+        return [self.fields[f] for f in self.get_import_order()]  # No changes here
 
     def import_instance(self, instance, row, **kwargs):
         r"""
