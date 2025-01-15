@@ -678,7 +678,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
     #: template for change_list view
     import_export_change_list_template = "admin/import_export/change_list_export.html"
     #: template for export view
-    export_template_name = "admin/import_export/export.html"
+    export_template_name = 'admin/import_export/export.html'
     #: export data encoding
     to_encoding = None
     #: form class to use for the initial import step
@@ -764,7 +764,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         """
         Returns file_format representation for given queryset.
         """
-        request = kwargs.pop("request")
+        request = kwargs.pop('request')
         if not self.has_export_permission(request):
             raise PermissionDenied
 
