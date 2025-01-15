@@ -171,7 +171,7 @@ class ModelResourcePostgresModuleLoadTest(TestCase):
         super().tearDown()
         sys.modules[self.pg_module_name] = self.pg_modules
 
-    def test_widget_from_django_field_cannot_import_postgres(self):
+    def test_widget_from_django_field_cannot_import_postgres_with_mocked_import_error(self):
         # test that default widget is returned if postgres extensions
         # are not present
         sys.meta_path.insert(0, self.ImportRaiser())
@@ -711,6 +711,7 @@ class ModelResourceTest(TestCase):
             result.rows[0].import_type, results.RowResult.IMPORT_TYPE_DELETE
         )
         self.assertFalse(Book.objects.filter(pk=self.book.pk))
+        self.assertIsNone(result.rows[0].original)
         self.assertIsNone(result.rows[0].instance)
         self.assertIsNone(result.rows[0].original)
 
