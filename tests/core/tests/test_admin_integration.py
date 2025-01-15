@@ -690,8 +690,8 @@ class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
             'attachment; filename="Book-{}.csv"'.format(date_str),
         )
         self.assertEqual(
-            b"id,name,author,author_email,imported,published,"
-            b"published_time,price,added,categories\r\n",
+            b"id,name,author,author_email,published,"
+            b"published_time,price,added,categories,imported\r\n",
             response.content,
         )
 
