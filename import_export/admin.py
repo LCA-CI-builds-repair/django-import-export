@@ -816,6 +816,11 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         if getattr(self.get_export_form, "is_original", False):
             form_type = self.get_export_form_class()
         else:
+            warnings.warn(
+                "ExportMixin.get_export_form() is deprecated and will be removed in "
+                "a future release. Please use get_export_form_class() instead.",
+                category=DeprecationWarning,
+            )
             form_type = self.get_export_form()
         formats = self.get_export_formats()
         form = form_type(
