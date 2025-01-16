@@ -857,11 +857,11 @@ class Resource(metaclass=DeclarativeMetaclass):
     def after_import_row(self, row, row_result, **kwargs):
         r"""
         Override to add additional logic. Does nothing by default.
-
+        
         :param row: A ``dict`` containing key / value data for the row to be imported.
-
-        :param row_result: A ``RowResult`` instance.
-          References the persisted ``instance`` as an attribute.
+        
+        :param row_result: A ``RowResult`` instance containing the result of 
+          importing the current row.instance`` as an attribute.
 
         :param \**kwargs:
             See :meth:`import_row`
