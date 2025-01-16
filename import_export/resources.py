@@ -816,7 +816,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         Diff representation headers.
         """
-        return self.get_user_visible_headers()
+        return [field.name for field in self.get_import_fields()]
 
     def before_import(self, dataset, **kwargs):
         r"""
