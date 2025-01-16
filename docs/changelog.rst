@@ -6,6 +6,8 @@ Please refer to :doc:`release notes<release_notes>`.
 4.0.0-beta.2 (unreleased)
 --------------------------
 
+- Fixed unused import (`copy.deepcopy`) causing flake8 failure in tests (#1704)
+
 - fix declaring existing model field(s) in ModelResource altering export order (#1663)
 - Updated `docker-compose` command with latest version syntax in `runtests.sh` (#1686)
 - Support export from model change form (#1687)
