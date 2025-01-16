@@ -654,7 +654,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                 resource.get_display_name(),
                 [f.column_name for f in resource.get_user_visible_fields()],
             )
-            for resource in resources
+            for resource in [resource]
         ]
 
         request.current_app = self.admin_site.name
