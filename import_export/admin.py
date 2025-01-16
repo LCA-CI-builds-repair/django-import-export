@@ -78,7 +78,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
     """
 
     #: template for change_list view
-    import_export_change_list_template = "admin/import_export/change_list_import.html"
+    import_export_change_list_template = "admin/import_export/change_list_import.html"  # No change
     #: template for import view
     import_template_name = "admin/import_export/import.html"
     #: form class to use for the initial import step
