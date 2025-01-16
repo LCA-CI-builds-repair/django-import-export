@@ -816,7 +816,8 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         Diff representation headers.
         """
-        return self.get_user_visible_headers()
+        return self.get_user_visible_headers()  # line 1360 moved to two lines
+        # Diff representation headers.
 
     def before_import(self, dataset, **kwargs):
         r"""
