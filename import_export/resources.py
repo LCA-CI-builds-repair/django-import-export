@@ -861,7 +861,10 @@ class Resource(metaclass=DeclarativeMetaclass):
         :param row: A ``dict`` containing key / value data for the row to be imported.
 
         :param row_result: A ``RowResult`` instance.
-          References the persisted ``instance`` as an attribute.
+          References the persisted model instance if the row was imported,
+          or None if the row was skipped.
+
+        :param \**kwargs: See :meth:`import_row`instance`` as an attribute.
 
         :param \**kwargs:
             See :meth:`import_row`
