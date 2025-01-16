@@ -5,6 +5,7 @@ Please refer to :doc:`release notes<release_notes>`.
 
 4.0.0-beta.2 (unreleased)
 --------------------------
+- Fixed unused import issue in `tests/core/tests/test_resources/test_resources.py` causing CI failure (#XXXX)
 
 - fix declaring existing model field(s) in ModelResource altering export order (#1663)
 - Updated `docker-compose` command with latest version syntax in `runtests.sh` (#1686)
