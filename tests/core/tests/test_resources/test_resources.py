@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 import tablib
 from core.models import (
-    Author,
+    self.assertIn(field.column_name, "email")Author,
     Book,
     Category,
     Entry,
