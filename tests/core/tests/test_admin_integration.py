@@ -104,6 +104,23 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
     def test_import_export_template(self):
         response = self.client.get("/admin/core/book/")
         self.assertEqual(response.status_code, 200)
+        
+        # Add input validation and a retry limit of 3 attempts
+        if response.status_code != 200:
+            # Add retry counter
+            attempts = 0
+            while attempts < MAX_ATTEMPTS:
+                try:
+                    # Try to process the import again
+                    response = self._do_import_post(self.book_import_url, "books.csv")
+                    break
+                except (ValueError, TypeError) as e:
+                    attempts += 1
+                    if attempts == MAX_ATTEMPTS:
+                        response = self.client.get(self.book_import_url)
+                        break
+                    print(f"Error: {e}. Try again.")
+                    inp = input("Enter two numbers: ")
         self.assertTemplateUsed(
             response, "admin/import_export/change_list_import_export.html"
         )
