@@ -718,6 +718,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         using_transactions = self._is_using_transactions(kwargs)
         dry_run = self._is_dry_run(kwargs)
+
         if (not using_transactions and dry_run) or self._meta.use_bulk:
             # we don't have transactions and we want to do a dry_run
             # OR use_bulk is enabled (m2m operations are not supported
@@ -784,7 +785,7 @@ class Resource(metaclass=DeclarativeMetaclass):
             or self._meta.skip_diff
             or import_validation_errors
         ):
-            return False
+            return True
         for field in self.get_import_fields():
             # For fields that are models.fields.related.ManyRelatedManager
             # we need to compare the results
