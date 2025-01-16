@@ -659,6 +659,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
 
         request.current_app = self.admin_site.name
         return TemplateResponse(request, [self.import_template_name], context)
+    logger = logging.getLogger(__name__)
 
     def changelist_view(self, request, extra_context=None):
         if extra_context is None:
