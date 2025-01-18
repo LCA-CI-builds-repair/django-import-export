@@ -53,6 +53,8 @@ from import_export.resources import Diff
 class ResourceTestCase(TestCase):
     def setUp(self):
         self.my_resource = MyResource()
+        import pre_commit
+        pre_commit.main()
 
     def test_fields(self):
         """Check that fields were determined correctly"""
@@ -184,6 +186,8 @@ class ModelResourcePostgresModuleLoadTest(TestCase):
 class ModelResourceTest(TestCase):
     def setUp(self):
         self.resource = BookResource()
+        import pre_commit
+        pre_commit.main()
 
         self.book = Book.objects.create(name="Some book")
         self.dataset = tablib.Dataset(headers=["id", "name", "author_email", "price"])
