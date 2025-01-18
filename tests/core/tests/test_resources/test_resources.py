@@ -1,7 +1,6 @@
 import json
 import sys
 from collections import OrderedDict
-from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
@@ -225,7 +224,13 @@ class ModelResourceTest(TestCase):
         fields = self.resource.fields
         self.assertIn("categories", fields)
 
-    def test_excluded_fields(self):
+    def test_excluded(self):
+        """Test that excluded fields are not included in resource fields"""
+        class ExcludedBookResource(resources.ModelResource):
+            class Meta:
+                model = Book
+                exclude = ['published']
+        self.assertNotIn('published', ExcludedBookResource().fields)_fields(self):
         self.assertNotIn("imported", self.resource.fields)
 
     def test_init_instance(self):
