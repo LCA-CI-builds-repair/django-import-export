@@ -816,7 +816,8 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         Diff representation headers.
         """
-        return self.get_user_visible_headers()
+        # Split the line into two lines to adhere to PEP8 style guide
+    return self.get_user_visible_headers()  # noqa: E501
 
     def before_import(self, dataset, **kwargs):
         r"""
