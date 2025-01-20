@@ -325,7 +325,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         * :meth:`~import_export.admin.ImportMixin.get_import_form_initial`
         * :meth:`~import_export.mixins.BaseImportMixin.get_import_resource_classes`
         """
-        formats = self.get_import_formats()
+        formats = self.get_import_formats()  # noqa: E501
         form_class = self.get_import_form_class(request)
         kwargs = self.get_import_form_kwargs(request)
 
@@ -374,7 +374,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             "data": request.POST or None,
             "files": request.FILES or None,
             "initial": self.get_import_form_initial(request),
-        }
+        }  # noqa: E501
 
     def get_import_form_initial(self, request):
         """
@@ -472,7 +472,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         form = kwargs.get("form")
         if form:
             kwargs.pop("form")
-            return kwargs
+            return kwargs  # noqa: E501
         return {}
 
     def write_to_tmp_storage(self, import_file, input_format):
