@@ -159,7 +159,9 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         if confirm_form.is_valid():
             import_formats = self.get_import_formats()
             input_format = import_formats[
-                int(confirm_form.cleaned_data["input_format"])
+                int(
+                    confirm_form.cleaned_data["input_format"]
+                )
             ](encoding=self.from_encoding)
             encoding = None if input_format.is_binary() else self.from_encoding
             tmp_storage_cls = self.get_tmp_storage_class()
