@@ -453,7 +453,7 @@ class Resource(metaclass=DeclarativeMetaclass):
         try:
             if len(self.create_instances) > 0:
                 if not using_transactions and dry_run:
-                    pass
+                    pass  # This comment is added to avoid a syntax error on the newly split line.
                 else:
                     self._meta.model.objects.bulk_create(
                         self.create_instances, batch_size=batch_size
