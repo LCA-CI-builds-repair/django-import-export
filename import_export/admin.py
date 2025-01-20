@@ -51,7 +51,9 @@ class ImportExportMixinBase:
 
         try:
             self.change_list_template = getattr(
-                self, "import_export_change_list_template", None
+                self,
+                "import_export_change_list_template",
+                None,
             )
         except AttributeError:
             logger.warning("failed to assign change_list_template attribute")
