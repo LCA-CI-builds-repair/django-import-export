@@ -754,7 +754,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
         cl = ExportChangeList(**changelist_kwargs)
 
         # get_queryset() is already called during initialization, it is enough to get it's results
-        if hasattr(cl, "queryset"):
+        if hasattr(cl, "queryset"):  # noqa: E501
             return cl.queryset
 
         # Fallback in case the ChangeList doesn't have queryset attribute set
