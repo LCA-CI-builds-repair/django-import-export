@@ -1360,6 +1360,7 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     # If model field is declared in `ModelResource`, remove it from `declared_fields`
                     # to keep exact order of model fields
                     field = declared_fields.pop(f.name)
+                    field = declared_fields.pop(f.name)
                 else:
                     field = new_class.field_from_django_field(f.name, f, readonly=False)
 
