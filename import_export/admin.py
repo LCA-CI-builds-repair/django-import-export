@@ -70,7 +70,7 @@ class ImportExportMixinBase:
 
 
 class ImportMixin(BaseImportMixin, ImportExportMixinBase):
-    """
+    """ 
     Import mixin.
 
     This is intended to be mixed with django.contrib.admin.ModelAdmin
@@ -747,6 +747,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
 
         class FakePaginator:
             count = 0
+
         original_get_paginator = self.get_paginator
         self.get_paginator = lambda request, queryset, per_page: FakePaginator()
         cl = ChangeList(**changelist_kwargs)
