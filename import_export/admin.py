@@ -83,7 +83,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
     import_template_name = "admin/import_export/import.html"
     #: form class to use for the initial import step
     import_form_class = ImportForm
-    #: form class to use for the confirm import step
+    # form class to use for the confirm import step
     confirm_form_class = ConfirmImportForm
     #: import data encoding
     from_encoding = "utf-8-sig"
