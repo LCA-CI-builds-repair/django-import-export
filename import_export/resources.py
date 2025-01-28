@@ -1386,7 +1386,7 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                     attrs = field_name.split("__")
                     for i, attr in enumerate(attrs):
                         verbose_path = ".".join(
-                            [opts.model.__name__] + attrs[0 : i + 1]
+                            [opts.model.__name__] + attrs[:i + 1]
                         )
 
                         try:
