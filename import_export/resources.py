@@ -804,8 +804,8 @@ class Resource(metaclass=DeclarativeMetaclass):
                     return False
 
                 if sorted(v.pk for v in instance_values) != sorted(
-                    v.pk for v in original_values
-                ):
+                        v.pk for v in original_values):
+
                     return False
             else:
                 if field.get_value(instance) != field.get_value(original):
