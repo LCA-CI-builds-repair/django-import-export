@@ -1405,7 +1405,8 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                             if isinstance(f, ForeignObjectRel):
                                 model = get_related_model(f)
                             else:
-                                if get_related_model(f) is None:
+                                related_model = get_related_model(f)
+                                if related_model is None:
                                     raise KeyError(
                                         "%s is not a relation" % verbose_path
                                     )
