@@ -891,7 +891,9 @@ class Resource(metaclass=DeclarativeMetaclass):
         if raise_errors:
             raise
 
-    def import_row(self, row, instance_loader, **kwargs):
+    def import_row(
+        self, row, instance_loader, **kwargs
+    ):
         r"""
         Imports data from ``tablib.Dataset``. Refer to :doc:`import_workflow`
         for a more complete description of the whole import process.
