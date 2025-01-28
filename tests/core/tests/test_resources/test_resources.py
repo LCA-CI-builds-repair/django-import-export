@@ -4,7 +4,6 @@ from collections import OrderedDict
 from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
-from unittest import mock, skipUnless
 from unittest.mock import patch
 
 import tablib
@@ -50,6 +49,7 @@ from import_export.options import ResourceOptions
 from import_export.resources import Diff
 
 
+@mock.patch('import_export.resources.ConnectionDoesNotExist', ConnectionDoesNotExist)
 class ResourceTestCase(TestCase):
     def setUp(self):
         self.my_resource = MyResource()
