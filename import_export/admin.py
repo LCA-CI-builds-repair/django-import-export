@@ -370,11 +370,12 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         form (including the initial values returned by
         :meth:`~import_export.admin.ImportMixin.get_import_form_initial`).
         """
-        return {
+        kwargs = {
             "data": request.POST or None,
             "files": request.FILES or None,
-            "initial": self.get_import_form_initial(request),
         }
+        kwargs["initial"] = self.get_import_form_initial(request)
+        return kwargs
 
     def get_import_form_initial(self, request):
         """
@@ -456,14 +457,15 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         """
         if import_form is None:
             return {}
-        return {
+        initial = {
             "import_file_name": import_form.cleaned_data[
                 "import_file"
             ].tmp_storage_name,
-            "original_file_name": import_form.cleaned_data["import_file"].name,
-            "input_format": import_form.cleaned_data["input_format"],
-            "resource": import_form.cleaned_data.get("resource", ""),
         }
+        initial["original_file_name"] = import_form.cleaned_data["import_file"].name
+        initial["input_format"] = import_form.cleaned_data["input_format"]
+        initial["resource"] = import_form.cleaned_data.get("resource", "")
+        return initial
 
     def get_import_data_kwargs(self, request, *args, **kwargs):
         """
