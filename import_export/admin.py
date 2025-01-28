@@ -185,7 +185,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         confirm_form,
         request,
         *args,
-        rollback_on_validation_errors=False,
+        rollback_on_validation_errors=True,
         **kwargs,
     ):
         res_kwargs = self.get_import_resource_kwargs(
@@ -201,7 +201,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             dry_run=False,
             file_name=confirm_form.cleaned_data.get("original_file_name"),
             user=request.user,
-            rollback_on_validation_errors=True,
+            rollback_on_validation_errors=rollback_on_validation_errors,
             **imp_kwargs,
         )
 
