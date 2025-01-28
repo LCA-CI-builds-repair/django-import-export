@@ -258,9 +258,7 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
         )
 
     def test_export_admin_action(self):
-        with mock.patch(
-            "core.admin.CategoryAdmin.export_admin_action"
-        ) as mock_export_admin_action:
+        with mock.patch("core.admin.CategoryAdmin.export_admin_action") as mock_export_admin_action:
             response = self.client.post(
                 self.category_change_url,
                 {
