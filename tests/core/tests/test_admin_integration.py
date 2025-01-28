@@ -649,7 +649,8 @@ class ImportAdminIntegrationTest(AdminTestMixin, TestCase):
 class ExportAdminIntegrationTest(AdminTestMixin, TestCase):
     def test_export_displays_resources_fields(self):
         response = self.client.get("/admin/core/book/export/")
-        self.assertEqual(response.status_code, 200)
+        with self.assertNumQueries(7):  # Should not contain COUNT queries from ModelAdmin.get_results()
+            self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.context["fields_list"],
             [
