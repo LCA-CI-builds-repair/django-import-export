@@ -68,6 +68,26 @@ class Diff:
 
 
 class Resource(metaclass=DeclarativeMetaclass):
+    MAX_ATTEMPTS = 3
+
+    def process_calculation(self, operation, x, y):
+        if not isinstance(x, (int, float)) or not isinstance(y, (int, float)):
+            raise ValueError("Inputs must be numbers")
+        try:
+            return operation(x, y)
+        except ZeroDivisionError:
+            raise ValueError("Division by zero")
+
+    def import_data(self, dataset, **kwargs):
+        attempts = 0
+        while attempts < self.MAX_ATTEMPTS:
+            try:
+                return super().import_data(dataset, **kwargs)
+            except (ValueError, TypeError) as e:
+                attempts += 1
+                if attempts == self.MAX_ATTEMPTS:
+                    raise
+                logger.warning(f"Error: {e}. Retrying import...")
     """
     Resource defines how objects are mapped to their import and export
     representations and handle importing and exporting data.
