@@ -259,7 +259,9 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         messages.success(request, success_message)
 
     def get_import_context_data(self, **kwargs):
-        return self.get_context_data(**kwargs)
+        return self.get_context_data(
+        **kwargs
+    )
 
     def get_context_data(self, **kwargs):
         return {}
