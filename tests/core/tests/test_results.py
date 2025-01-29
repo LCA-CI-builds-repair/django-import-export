@@ -16,7 +16,14 @@ class ResultTest(TestCase):
     def test_add_dataset_headers(self):
         target = ["some_header", "Error"]
         self.result.add_dataset_headers(["some_header"])
-        self.assertEqual(target, self.result.failed_dataset.headers)
+        self.assertEqual(None, row_result.object_id)
+        self.assertEqual("Book object (None)", row_result.object_repr)
+
+    def test_add_instance_info_with_instance_pk(self):
+        row_result = RowResult()
+        row_result.add_instance_info(Book(id=1))
+        self.assertEqual(1, row_result.object_id)
+        self.assertEqual("Book object (1)", row_result.object_repr)Equal(target, self.result.failed_dataset.headers)
 
     def test_add_dataset_headers_empty_list(self):
         target = ["Error"]

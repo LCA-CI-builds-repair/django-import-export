@@ -1,6 +1,5 @@
 import json
 import sys
-from collections import OrderedDict
 from copy import deepcopy
 from datetime import date
 from decimal import Decimal, InvalidOperation
@@ -860,6 +859,7 @@ class ModelResourceTest(TestCase):
         self.book.author = author
         resource = B()
         full_title = resource.export_field(resource.get_fields()[0], self.book)
+        self.assertEqual(full_title, f"{self.book.name} by {self.book.author.name}")
         self.assertEqual(
             full_title, "%s by %s" % (self.book.name, self.book.author.name)
         )
