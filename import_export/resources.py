@@ -696,7 +696,9 @@ class Resource(metaclass=DeclarativeMetaclass):
             if isinstance(field.widget, widgets.ManyToManyWidget):
                 continue
             try:
-                self.import_field(field, instance, row, **kwargs)
+                self.import_field(
+                    field, instance, row, **kwargs
+                )
             except ValueError as e:
                 errors[field.attribute] = ValidationError(force_str(e), code="invalid")
         if errors:
