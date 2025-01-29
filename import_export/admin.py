@@ -259,9 +259,11 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         messages.success(request, success_message)
 
     def get_import_context_data(self, **kwargs):
-        return self.get_context_data(**kwargs)
+        ctx = self.get_context_data(**kwargs)
+        ctx["media"] = self.media
+        return ctx
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs): # pragma: no cover
         return {}
 
     @original
