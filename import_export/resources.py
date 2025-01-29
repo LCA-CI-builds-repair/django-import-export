@@ -1277,10 +1277,10 @@ class Resource(metaclass=DeclarativeMetaclass):
             yield from queryset.iterator(chunk_size=self.get_chunk_size())
 
     def export(self, queryset=None, **kwargs):
-        """
-        Exports a resource.
+        """Exports a resource.
 
-        :param queryset: The queryset for export (optional).
+        :param queryset:
+            The queryset for export (optional).
 
         :returns: A ``tablib.Dataset``.
         """
