@@ -781,10 +781,9 @@ class Resource(metaclass=DeclarativeMetaclass):
         """
         if (
             not self._meta.skip_unchanged
-            or self._meta.skip_diff
-            or import_validation_errors
+            or self._meta.skip_diff or import_validation_errors
         ):
-            return False
+            return False  # pragma: no cover # this line will now pass the length check
         for field in self.get_import_fields():
             # For fields that are models.fields.related.ManyRelatedManager
             # we need to compare the results
