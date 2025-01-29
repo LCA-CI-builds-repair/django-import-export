@@ -573,7 +573,10 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                         rollback_on_validation_errors=True,
                         **kwargs,
                     )
-                    if not result.has_errors() and not result.has_validation_errors():
+                    if (
+                        not result.has_errors() 
+                        and not result.has_validation_errors()
+                    ):
                         return self.process_result(result, request)
                     else:
                         context["result"] = result
