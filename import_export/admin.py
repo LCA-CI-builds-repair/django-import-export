@@ -259,9 +259,10 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         messages.success(request, success_message)
 
     def get_import_context_data(self, **kwargs):
-        return self.get_context_data(**kwargs)
+        return self._get_context_data(**kwargs)
 
-    def get_context_data(self, **kwargs):
+    def _get_context_data(self, **kwargs):
+        """Overridable method for providing custom context data."""
         return {}
 
     @original
@@ -842,7 +843,7 @@ class ExportMixin(BaseExportMixin, ImportExportMixinBase):
             return response
 
         context = self.get_export_context_data()
-
+        context["resource"] = self.get_export_resource_classes()[0](model=self.model)
         context.update(self.admin_site.each_context(request))
 
         context["title"] = _("Export")
