@@ -679,7 +679,8 @@ class Resource(metaclass=DeclarativeMetaclass):
     def import_instance(self, instance, row, **kwargs):
         r"""
         Traverses every field in this Resource and calls
-        :meth:`~import_export.resources.Resource.import_field`. If
+        :meth:`~import_export.resources.Resource.import_field`.
+        If
         ``import_field()`` results in a ``ValueError`` being raised for
         one of more fields, those errors are captured and reraised as a single,
         multi-field ValidationError.
