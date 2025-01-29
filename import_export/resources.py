@@ -1395,7 +1395,9 @@ class ModelDeclarativeMetaclass(DeclarativeMetaclass):
                             logger.debug(e, exc_info=e)
                             raise FieldDoesNotExist(
                                 "%s: %s has no field named '%s'"
-                                % (verbose_path, model.__name__, attr)
+                                % (
+                                    verbose_path, model.__name__, attr
+                                )
                             )
 
                         if i < len(attrs) - 1:
