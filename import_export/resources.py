@@ -808,6 +808,10 @@ class Resource(metaclass=DeclarativeMetaclass):
                 ):
                     return False
             else:
+                """
+                For comparing non-m2m fields, compare the current value in `instance`
+                with the original persisted value in `original`
+                """
                 if field.get_value(instance) != field.get_value(original):
                     return False
         return True
