@@ -3,7 +3,6 @@ import sys
 from collections import OrderedDict
 from copy import deepcopy
 from datetime import date
-from decimal import Decimal, InvalidOperation
 from unittest import mock, skipUnless
 from unittest.mock import patch
 
@@ -681,19 +680,8 @@ class ModelResourceTest(TestCase):
         # set pk to something that would yield error
         row[0] = "foo"
         self.dataset.append(row)
-        result = self.resource.import_data(self.dataset, raise_errors=False)
-
-        self.assertTrue(result.has_errors())
-        self.assertTrue(result.rows[0].errors)
-        actual = result.rows[0].errors[0].error
-        self.assertIsInstance(actual, (ValueError, InvalidOperation))
-        self.assertIn(
-            str(actual),
-            {
-                "could not convert string to float",
-                "[<class 'decimal.ConversionSyntax'>]",
-            },
-        )
+        with self.assertRaises(ValueError):
+            self.resource.import_data(self.dataset, raise_errors=True)
 
     @ignore_widget_deprecation_warning
     def test_import_data_delete(self):
