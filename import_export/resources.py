@@ -1523,10 +1523,8 @@ class ModelResource(Resource, metaclass=ModelDeclarativeMetaclass):
         if cls._meta.widgets:
             cls_kwargs = cls._meta.widgets.get(field_name, {})
             widget_kwargs.update(cls_kwargs)
-        if (
-            issubclass(django_field.__class__, fields.CharField)
-            and django_field.blank is True
-        ):
+        if (issubclass(django_field.__class__, fields.CharField) and
+                django_field.blank is True):
             widget_kwargs.update({"coerce_to_string": True, "allow_blank": True})
         return widget_kwargs
 
