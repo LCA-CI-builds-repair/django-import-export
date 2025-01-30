@@ -248,13 +248,13 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
     def add_success_message(self, result, request):
         opts = self.model._meta
 
-        success_message = _(
-            "Import finished, with {} new and " "{} updated {}."
-        ).format(
-            result.totals[RowResult.IMPORT_TYPE_NEW],
-            result.totals[RowResult.IMPORT_TYPE_UPDATE],
-            opts.verbose_name_plural,
+        success_message = _("Import finished, with {new} new and {updated} updated {name}.").format(
+            new=result.totals[RowResult.IMPORT_TYPE_NEW],
+            updated=result.totals[RowResult.IMPORT_TYPE_UPDATE],
+            name=opts.verbose_name_plural,
         )
+
+        
 
         messages.success(request, success_message)
 
@@ -458,7 +458,10 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
             return {}
         return {
             "import_file_name": import_form.cleaned_data[
-                "import_file"
+                
+                
+                
+"import_file"
             ].tmp_storage_name,
             "original_file_name": import_form.cleaned_data["import_file"].name,
             "input_format": import_form.cleaned_data["input_format"],
