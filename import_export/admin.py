@@ -66,7 +66,9 @@ class ImportExportMixinBase:
     def changelist_view(self, request, extra_context=None):
         extra_context = extra_context or {}
         extra_context["base_change_list_template"] = self.base_change_list_template
-        return super().changelist_view(request, extra_context)
+        return super().changelist_view(
+            request, extra_context
+        )
 
 
 class ImportMixin(BaseImportMixin, ImportExportMixinBase):
