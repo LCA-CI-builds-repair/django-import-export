@@ -102,3 +102,12 @@ class ResultTest(TestCase):
         row_result.import_type = RowResult.IMPORT_TYPE_INVALID
         self.assertTrue(row_result.is_invalid())
         self.assertFalse(row_result.is_valid())
+
+    def test_has_validation_errors(self):
+        row_result1 = RowResult()
+        self.assertFalse(row_result1.has_validation_errors())
+        
+        row_result2 = RowResult()
+        error = Error(ValidationError("some error")) 
+        row_result2.validation_error = error
+        self.assertTrue(row_result2.has_validation_errors())

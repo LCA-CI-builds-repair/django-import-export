@@ -1,3 +1,4 @@
+import copy
 import json
 import sys
 from collections import OrderedDict
@@ -1696,3 +1697,14 @@ class BookResourceWithStringModelTest(TestCase):
 
     def test_resource_gets_correct_model_from_string(self):
         self.assertEqual(self.resource._meta.model, Book)
+
+    def test_import_data_after_error_row(self):
+        row1 = [None, "Book 1"]
+        row2 = ["invalid", "Book 2"]  # invalid 'id' value
+        row3 = [None, "Book 3"]
+        dataset = tablib.Dataset(headers=["id", "name"])
+        dataset.append(row1)
+        dataset.append(row2) 
+        dataset.append(row3)
+        result = self.resource.import_data(dataset, raise_errors=False)
+        self.assertEqual(len(Book.objects.all()), 2)
