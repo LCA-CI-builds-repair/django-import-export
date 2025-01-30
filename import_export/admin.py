@@ -216,7 +216,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         )
         return HttpResponseRedirect(url)
 
-    def generate_log_entries(self, result, request):
+        messages.success(request, success_message)
         if not self.get_skip_admin_log():
             # Add imported objects to LogEntry
             logentry_map = {
@@ -241,7 +241,7 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
                             object_repr=row.object_repr,
                             action_flag=logentry_map[row.import_type],
                             change_message=_(
-                                "%s through import_export" % row.import_type
+                                f"{row.import_type} through import_export"
                             ),
                         )
 
@@ -249,7 +249,8 @@ class ImportMixin(BaseImportMixin, ImportExportMixinBase):
         opts = self.model._meta
 
         success_message = _(
-            "Import finished, with {} new and " "{} updated {}."
+            "Import finished, with {} new and "
+            "{} updated {}."
         ).format(
             result.totals[RowResult.IMPORT_TYPE_NEW],
             result.totals[RowResult.IMPORT_TYPE_UPDATE],
